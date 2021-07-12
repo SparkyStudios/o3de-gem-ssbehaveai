@@ -1,0 +1,19 @@
+{
+    "gem_name": "SSBehaviorTree",
+    "display_name": "Sparky Studios - Behavior Tree",
+    "license": "Apache-2.0",
+    "origin": "https://github.com/sparkystudios/o3de-gem-ssbehaviortree",
+    "type": "Code",
+    "summary": "A collection of components and assets to provide a solid Behavior Tree system in Lumberyard projects.",
+    "canonical_tags": [
+        "Gem"
+    ],
+    "user_tags": [
+        "AI",
+        "Game",
+        "Code",
+        "BehaviorTree"
+    ],
+    "icon_path": "preview.png",
+    "requirements": ""
+}
