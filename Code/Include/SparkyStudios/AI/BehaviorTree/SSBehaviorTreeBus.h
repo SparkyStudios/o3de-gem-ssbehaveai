@@ -4,7 +4,7 @@
 #include <AzCore/EBus/EBus.h>
 #include <AzCore/Interface/Interface.h>
 
-namespace SSBehaviorTree
+namespace SparkyStudios::AI::BehaviorTree
 {
     class SSBehaviorTreeRequests
     {
@@ -14,8 +14,7 @@ namespace SSBehaviorTree
         // Put your public methods here
     };
 
-    class SSBehaviorTreeBusTraits
-        : public AZ::EBusTraits
+    class SSBehaviorTreeBusTraits : public AZ::EBusTraits
     {
     public:
         //////////////////////////////////////////////////////////////////////////
@@ -28,4 +27,4 @@ namespace SSBehaviorTree
     using SSBehaviorTreeRequestBus = AZ::EBus<SSBehaviorTreeRequests, SSBehaviorTreeBusTraits>;
     using SSBehaviorTreeInterface = AZ::Interface<SSBehaviorTreeRequests>;
 
-} // namespace SSBehaviorTree
+} // namespace SparkyStudios::AI::BehaviorTree

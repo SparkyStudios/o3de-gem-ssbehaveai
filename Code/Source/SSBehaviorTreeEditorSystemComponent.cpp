@@ -2,14 +2,13 @@
 #include <AzCore/Serialization/SerializeContext.h>
 #include <SSBehaviorTreeEditorSystemComponent.h>
 
-namespace SSBehaviorTree
+namespace SparkyStudios::AI::BehaviorTree
 {
     void SSBehaviorTreeEditorSystemComponent::Reflect(AZ::ReflectContext* context)
     {
         if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serializeContext->Class<SSBehaviorTreeEditorSystemComponent, SSBehaviorTreeSystemComponent>()
-                ->Version(0);
+            serializeContext->Class<SSBehaviorTreeEditorSystemComponent, SSBehaviorTreeSystemComponent>()->Version(0);
         }
     }
 
@@ -51,4 +50,4 @@ namespace SSBehaviorTree
         SSBehaviorTreeSystemComponent::Deactivate();
     }
 
-} // namespace SSBehaviorTree
+} // namespace SparkyStudios::AI::BehaviorTree

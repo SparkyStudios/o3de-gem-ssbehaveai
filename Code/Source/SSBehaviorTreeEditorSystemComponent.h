@@ -5,7 +5,7 @@
 
 #include <AzToolsFramework/Entity/EditorEntityContextBus.h>
 
-namespace SSBehaviorTree
+namespace SparkyStudios::AI::BehaviorTree
 {
     /// System component for SSBehaviorTree editor
     class SSBehaviorTreeEditorSystemComponent
@@ -13,6 +13,7 @@ namespace SSBehaviorTree
         , private AzToolsFramework::EditorEvents::Bus::Handler
     {
         using BaseSystemComponent = SSBehaviorTreeSystemComponent;
+
     public:
         AZ_COMPONENT(SSBehaviorTreeEditorSystemComponent, "{c6d81d4a-51ca-4c74-9d0d-96f813233c74}", BaseSystemComponent);
         static void Reflect(AZ::ReflectContext* context);
@@ -30,4 +31,4 @@ namespace SSBehaviorTree
         void Activate() override;
         void Deactivate() override;
     };
-} // namespace SSBehaviorTree
+} // namespace SparkyStudios::AI::BehaviorTree

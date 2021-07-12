@@ -3,9 +3,10 @@
 
 #include <AzCore/Component/Component.h>
 #include <AzCore/Component/TickBus.h>
-#include <SSBehaviorTree/SSBehaviorTreeBus.h>
 
-namespace SSBehaviorTree
+#include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
+
+namespace SparkyStudios::AI::BehaviorTree
 {
     class SSBehaviorTreeSystemComponent
         : public AZ::Component
@@ -44,4 +45,4 @@ namespace SSBehaviorTree
         ////////////////////////////////////////////////////////////////////////
     };
 
-} // namespace SSBehaviorTree
+} // namespace SparkyStudios::AI::BehaviorTree

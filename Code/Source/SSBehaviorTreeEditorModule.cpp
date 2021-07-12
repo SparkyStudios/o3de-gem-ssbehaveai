@@ -1,11 +1,10 @@
 
-#include <SSBehaviorTreeModuleInterface.h>
 #include <SSBehaviorTreeEditorSystemComponent.h>
+#include <SSBehaviorTreeModuleInterface.h>
 
-namespace SSBehaviorTree
+namespace SparkyStudios::AI::BehaviorTree
 {
-    class SSBehaviorTreeEditorModule
-        : public SSBehaviorTreeModuleInterface
+    class SSBehaviorTreeEditorModule : public SSBehaviorTreeModuleInterface
     {
     public:
         AZ_RTTI(SSBehaviorTreeEditorModule, "{2fc25376-c0a0-4b56-bfbe-5a65bad02586}", SSBehaviorTreeModuleInterface);
@@ -15,11 +14,13 @@ namespace SSBehaviorTree
         {
             // Push results of [MyComponent]::CreateDescriptor() into m_descriptors here.
             // Add ALL components descriptors associated with this gem to m_descriptors.
-            // This will associate the AzTypeInfo information for the components with the the SerializeContext, BehaviorContext and EditContext.
-            // This happens through the [MyComponent]::Reflect() function.
-            m_descriptors.insert(m_descriptors.end(), {
-                SSBehaviorTreeEditorSystemComponent::CreateDescriptor(),
-            });
+            // This will associate the AzTypeInfo information for the components with the the SerializeContext, BehaviorContext and
+            // EditContext. This happens through the [MyComponent]::Reflect() function.
+            m_descriptors.insert(
+                m_descriptors.end(),
+                {
+                    SSBehaviorTreeEditorSystemComponent::CreateDescriptor(),
+                });
         }
 
         /**
@@ -28,11 +29,11 @@ namespace SSBehaviorTree
          */
         AZ::ComponentTypeList GetRequiredSystemComponents() const override
         {
-            return AZ::ComponentTypeList {
+            return AZ::ComponentTypeList{
                 azrtti_typeid<SSBehaviorTreeEditorSystemComponent>(),
             };
         }
     };
-}// namespace SSBehaviorTree
+} // namespace SparkyStudios::AI::BehaviorTree
 
-AZ_DECLARE_MODULE_CLASS(Gem_SSBehaviorTree, SSBehaviorTree::SSBehaviorTreeEditorModule)
+AZ_DECLARE_MODULE_CLASS(Gem_SSBehaviorTree, SparkyStudios::AI::BehaviorTree::SSBehaviorTreeEditorModule)
