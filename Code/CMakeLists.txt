@@ -35,6 +35,7 @@ ly_add_target(
         PUBLIC
             AZ::AzCore
             AZ::AzFramework
+            3rdParty::BehaviorTreeCPP
 )
 
 # Here add SSBehaviorTree target, it depends on the SSBehaviorTree.Static
@@ -52,7 +53,6 @@ ly_add_target(
     BUILD_DEPENDENCIES
         PRIVATE
             Gem::SSBehaviorTree.Static
-            3rdParty::BehaviorTreeCPP
 )
 
 # By default, we will specify that the above target SSBehaviorTree would be used by
