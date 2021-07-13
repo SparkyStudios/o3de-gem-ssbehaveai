@@ -7,7 +7,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     }
 
     SSBehaviorTreeBlackboardProperty::SSBehaviorTreeBlackboardProperty(const char* name)
-        : id(AZ::Crc32(name))
+        : propertyId(AZ::Crc32(name))
         , name(name)
     {
     }
@@ -21,9 +21,9 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
                 ->PersistentId(
                     [](const void* instance) -> AZ::u64
                     {
-                        return reinterpret_cast<const SSBehaviorTreeBlackboardProperty*>(instance)->id;
+                        return reinterpret_cast<const SSBehaviorTreeBlackboardProperty*>(instance)->propertyId;
                     })
-                ->Field("ID", &SSBehaviorTreeBlackboardProperty::id)
+                ->Field("ID", &SSBehaviorTreeBlackboardProperty::propertyId)
                 ->Field("Name", &SSBehaviorTreeBlackboardProperty::name)
                 ->Field("Description", &SSBehaviorTreeBlackboardProperty::description)
                 ->Field("Visibility", &SSBehaviorTreeBlackboardProperty::visibility)

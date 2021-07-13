@@ -169,7 +169,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         /**
          * @brief The unique ID of this property.
          */
-        AZ::u64 id;
+        AZ::u64 propertyId;
 
         /**
          * @brief The name of this property in the behavior tree's blackboard.
