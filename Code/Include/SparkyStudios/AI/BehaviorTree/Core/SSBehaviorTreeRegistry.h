@@ -9,7 +9,8 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     /**
      * @brief The function used to build properties.
      */
-    using SSBehaviorTreeBlackboardPropertyBuilder = AZStd::function<Blackboard::SSBehaviorTreeBlackboardProperty*(const char*)>;
+    using SSBehaviorTreeBlackboardPropertyBuilder =
+        AZStd::function<AZStd::unique_ptr<Blackboard::SSBehaviorTreeBlackboardProperty>(const char*)>;
 
     /**
      * @brief The function used to build behavior tree nodes.

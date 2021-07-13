@@ -35,7 +35,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
 
         SSBehaviorTreeNodeBuilder builder = [](const AZStd::string& name, const SSBehaviorTreeNodeConfiguration& config)
         {
-            return AZStd::unique_ptr<SSBehaviorTreeNode>(aznew T(name, config));
+            return AZStd::make_unique<T>(name, config);
         };
 
         // Register the node in the BT factory.

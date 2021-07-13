@@ -40,13 +40,20 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         ~SSBehaviorTreeFactory();
 
         /**
+         * @brief Get the wrapped registry instance.
+         *
+         * @return AZStd::unique_ptr<SSBehaviorTreeRegistry>
+         */
+        const AZStd::unique_ptr<SSBehaviorTreeRegistry>& GetRegistry() const;
+
+        /**
          * @brief Creates a new blackboard property from the given type.
          *
          * @param type The property value type, as specified when registering with RegisterProperty.
          * @param name The instance name of the property.
          * @return SSBehaviorTreeBlackboardProperty*
          */
-        SSBehaviorTreeBlackboardProperty* CreateProperty(const AZStd::string& type, const char* name) const;
+        AZStd::unique_ptr<SSBehaviorTreeBlackboardProperty> CreateProperty(const AZStd::string& type, const char* name) const;
 
         /**
          * @brief Create a new behavior tree node from the given name. This method will only work for a node
@@ -63,6 +70,6 @@ namespace SparkyStudios::AI::BehaviorTree::Core
             const Nodes::SSBehaviorTreeNodeConfiguration& config = Nodes::SSBehaviorTreeNodeConfiguration()) const;
 
     private:
-        SSBehaviorTreeRegistry* m_registry;
+        AZStd::unique_ptr<SSBehaviorTreeRegistry> m_registry;
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Core

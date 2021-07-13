@@ -5,17 +5,23 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     SSBehaviorTreeFactory::SSBehaviorTreeFactory(SSBehaviorTreeRegistry* registry)
     {
         if (registry)
-            m_registry = AZStd::move(registry);
+            m_registry = AZStd::unique_ptr<SSBehaviorTreeRegistry>(registry);
         else
-            m_registry = aznew SSBehaviorTreeRegistry();
+            m_registry = AZStd::make_unique<SSBehaviorTreeRegistry>();
     }
 
     SSBehaviorTreeFactory::~SSBehaviorTreeFactory()
     {
-        delete m_registry;
+        m_registry.reset();
     }
 
-    SSBehaviorTreeBlackboardProperty* SSBehaviorTreeFactory::CreateProperty(const AZStd::string& type, const char* name) const
+    const AZStd::unique_ptr<SSBehaviorTreeRegistry>& SSBehaviorTreeFactory::GetRegistry() const
+    {
+        return m_registry;
+    }
+
+    AZStd::unique_ptr<SSBehaviorTreeBlackboardProperty> SSBehaviorTreeFactory::CreateProperty(
+        const AZStd::string& type, const char* name) const
     {
         auto it = m_registry->m_registeredTypeBuilders.find(type);
         if (it != m_registry->m_registeredTypeBuilders.end())
@@ -29,7 +35,10 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     {
         auto it = m_registry->m_registeredNodeBuilders.find(name);
         if (it != m_registry->m_registeredNodeBuilders.end())
-            return it->second(instanceName, config);
+        {
+            auto node = it->second(instanceName, config);
+            // node->setRegistrationID(name.c_str());
+        }
 
         throw std::runtime_error("Unable to create the node. Did you forget to register?");
     }
