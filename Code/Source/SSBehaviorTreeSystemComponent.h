@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <AzCore/Component/Component.h>
@@ -29,7 +28,7 @@ namespace SparkyStudios::AI::BehaviorTree
     protected:
         ////////////////////////////////////////////////////////////////////////
         // SSBehaviorTreeRequestBus interface implementation
-
+        const Core::SSBehaviorTreeFactory& GetFactory() const override;
         ////////////////////////////////////////////////////////////////////////
 
         ////////////////////////////////////////////////////////////////////////
@@ -43,6 +42,9 @@ namespace SparkyStudios::AI::BehaviorTree
         // AZTickBus interface implementation
         void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
         ////////////////////////////////////////////////////////////////////////
+
+    private:
+        Core::SSBehaviorTreeFactory m_factory;
     };
 
 } // namespace SparkyStudios::AI::BehaviorTree

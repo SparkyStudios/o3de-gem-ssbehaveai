@@ -78,4 +78,8 @@ namespace SparkyStudios::AI::BehaviorTree
     {
     }
 
+    const Core::SSBehaviorTreeFactory& SSBehaviorTreeSystemComponent::GetFactory() const
+    {
+        return m_factory;
+    }
 } // namespace SparkyStudios::AI::BehaviorTree
