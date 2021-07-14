@@ -42,5 +42,6 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         m_factory->registerBuilder<T>(name, builder);
 
         m_registeredNodeBuilders.insert(AZStd::make_pair(name, builder));
+        m_registeredNodeUuids.insert(AZStd::make_pair(name, AZ::RttiTypeId<T>()));
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Core

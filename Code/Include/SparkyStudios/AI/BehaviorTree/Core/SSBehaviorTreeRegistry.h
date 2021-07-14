@@ -77,6 +77,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         AZStd::unordered_map<AZStd::string, AZ::Uuid> m_registeredTypeUuids;
 
         AZStd::unordered_map<AZStd::string, SSBehaviorTreeNodeBuilder> m_registeredNodeBuilders;
+        AZStd::unordered_map<AZStd::string, AZ::Uuid> m_registeredNodeUuids;
 
         AZStd::unique_ptr<BT::BehaviorTreeFactory> m_factory;
 
