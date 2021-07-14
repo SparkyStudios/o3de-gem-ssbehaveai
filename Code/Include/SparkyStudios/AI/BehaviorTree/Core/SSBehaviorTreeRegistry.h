@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
+#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSbehaviorTreeFactory.h>
-#include <SparkyStudios/AI/BehaviorTree/Nodes/SSBehaviorTreeNode.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Core
 {
@@ -16,7 +16,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
      * @brief The function used to build behavior tree nodes.
      */
     using SSBehaviorTreeNodeBuilder =
-        AZStd::function<AZStd::unique_ptr<Nodes::SSBehaviorTreeNode>(const AZStd::string&, const Nodes::SSBehaviorTreeNodeConfiguration&)>;
+        AZStd::function<AZStd::unique_ptr<SSBehaviorTreeNode>(const AZStd::string&, const SSBehaviorTreeNodeConfiguration&)>;
 
     /**
      * @brief Register the blackboard properties and nodes used in behavior tree files.

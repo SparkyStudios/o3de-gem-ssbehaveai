@@ -5,13 +5,12 @@
 #include <AzCore/RTTI/RTTI.h>
 
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
+#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
-#include <SparkyStudios/AI/BehaviorTree/Nodes/SSBehaviorTreeNode.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Core
 {
     using Blackboard::SSBehaviorTreeBlackboardProperty;
-    using Nodes::SSBehaviorTreeNode;
 
     /**
      * @brief Create blackboard properties and nodes for a behavior tree.
@@ -67,7 +66,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         AZStd::unique_ptr<SSBehaviorTreeNode> CreateNode(
             const AZStd::string& name,
             const AZStd::string& instanceName,
-            const Nodes::SSBehaviorTreeNodeConfiguration& config = Nodes::SSBehaviorTreeNodeConfiguration()) const;
+            const SSBehaviorTreeNodeConfiguration& config = SSBehaviorTreeNodeConfiguration()) const;
 
     private:
         AZStd::unique_ptr<SSBehaviorTreeRegistry> m_registry;

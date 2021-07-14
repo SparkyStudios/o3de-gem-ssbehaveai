@@ -31,7 +31,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     }
 
     AZStd::unique_ptr<SSBehaviorTreeNode> SSBehaviorTreeFactory::CreateNode(
-        const AZStd::string& name, const AZStd::string& instanceName, const Nodes::SSBehaviorTreeNodeConfiguration& config) const
+        const AZStd::string& name, const AZStd::string& instanceName, const SSBehaviorTreeNodeConfiguration& config) const
     {
         auto it = m_registry->m_registeredNodeBuilders.find(name);
         if (it != m_registry->m_registeredNodeBuilders.end())

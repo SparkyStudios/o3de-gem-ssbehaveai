@@ -5,13 +5,14 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h
 
     Include/SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeFactory.h
+    Include/SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h
     Include/SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h
 
-    Include/SparkyStudios/AI/BehaviorTree/Nodes/SSBehaviorTreeNode.h
 
     Source/Blackboard/SSBehaviorTreeBlackboardProperty.cpp
 
     Source/Core/SSBehaviorTreeFactory.cpp
+    Source/Core/SSBehaviorTreeNode.cpp
     Source/Core/SSBehaviorTreeRegistry.cpp
 
     Source/SSBehaviorTreeModuleInterface.h
