@@ -22,12 +22,29 @@
 
 namespace linb
 {
-class bad_any_cast : public std::bad_cast
+class bad_any_cast : public std::exception
 {
   public:
     const char* what() const noexcept override
     {
         return "bad any cast";
+    }
+
+    bad_any_cast() noexcept
+        : exception("bad any cast", 1)
+    {
+    }
+
+    static bad_any_cast __construct_from_string_literal(const char* const _Message) noexcept
+    {
+        return bad_any_cast(_Message, 1);
+    }
+
+  private:
+
+    bad_any_cast(const char* const _Message, int) noexcept
+        : exception(_Message, 1)
+    {
     }
 };
 
