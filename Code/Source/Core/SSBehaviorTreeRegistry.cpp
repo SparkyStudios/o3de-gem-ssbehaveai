@@ -9,6 +9,12 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         m_registeredTypeUuids.insert(AZStd::make_pair(type, uuid));
     }
 
+    template<typename T>
+    void SSBehaviorTreeRegistry::RegisterProperty(const AZStd::string& type, const SSBehaviorTreeBlackboardPropertyBuilder& builder)
+    {
+        RegisterProperty(type, azrtti_typeid<T>(), builder);
+    }
+
     const SSBehaviorTreeBlackboardPropertyBuilder& SSBehaviorTreeRegistry::GetPropertyBuilder(const AZStd::string& type) const
     {
         auto it = m_registeredTypeBuilders.find(type);

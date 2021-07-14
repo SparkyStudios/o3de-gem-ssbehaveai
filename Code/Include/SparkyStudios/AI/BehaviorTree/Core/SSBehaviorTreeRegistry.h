@@ -47,6 +47,17 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         void RegisterProperty(const AZStd::string& type, const AZ::Uuid& uuid, const SSBehaviorTreeBlackboardPropertyBuilder& builder);
 
         /**
+         * @brief Registers a new blackboard property in this registry, given its type.
+         * The type parameter should have the AZ_RTTI macro for this override to work.
+         *
+         * @tparam T The type of the property value. Must have the AZ_RTTI macro.
+         * @param type The property value type.
+         * @param builder The property builder.
+         */
+        template<typename T>
+        void RegisterProperty(const AZStd::string& type, const SSBehaviorTreeBlackboardPropertyBuilder& builder);
+
+        /**
          * @brief Get the property builder for the given type.
          *
          * @param type The type to get the builder for.
