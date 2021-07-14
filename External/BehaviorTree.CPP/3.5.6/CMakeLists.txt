@@ -13,28 +13,7 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-#---- Include boost to add coroutines ----
-find_package(Boost COMPONENTS coroutine QUIET)
-
-if(Boost_FOUND)
-    string(REPLACE "." "0" Boost_VERSION_NODOT ${Boost_VERSION})
-    if(NOT Boost_VERSION_NODOT VERSION_LESS 105900)
-        message(STATUS "Found boost::coroutine2.")
-        add_definitions(-DBT_BOOST_COROUTINE2)
-        set(BT_COROUTINES true)
-    elseif(NOT Boost_VERSION_NODOT VERSION_LESS 105300)
-        message(STATUS "Found boost::coroutine.")
-        add_definitions(-DBT_BOOST_COROUTINE)
-        set(BT_COROUTINES true)
-    endif()
-    include_directories(${Boost_INCLUDE_DIRS})
-endif()
-
-
-if(NOT DEFINED BT_COROUTINES)
-    message(STATUS "Coroutines disabled. Install Boost to enable them (version 1.59+ recommended).")
-    add_definitions(-DBT_NO_COROUTINES)
-endif()
+add_definitions(-DBT_NO_COROUTINES)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -44,20 +23,11 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 #---- Find other packages ----
 find_package(Threads)
-find_package(ZMQ)
 
 list(APPEND BEHAVIOR_TREE_PUBLIC_LIBRARIES
     ${CMAKE_THREAD_LIBS_INIT}
     ${CMAKE_DL_LIBS}
 )
-
-if( ZMQ_FOUND )
-    message(STATUS "ZeroMQ found.")
-    add_definitions( -DZMQ_FOUND )
-    list(APPEND BT_SOURCE src/loggers/bt_zmq_publisher.cpp)
-else()
-    message(WARNING "ZeroMQ NOT found. Skipping the build of [PublisherZMQ] and [bt_recorder].")
-endif()
 
 set(BEHAVIOR_TREE_LIBRARY ${PROJECT_NAME})
 
@@ -209,16 +179,8 @@ if (WIN32)
     add_library(${BEHAVIOR_TREE_LIBRARY} STATIC ${BT_SOURCE} )
 endif()
 
-if( ZMQ_FOUND )
-    list(APPEND BUILD_TOOL_INCLUDE_DIRS ${ZMQ_INCLUDE_DIRS})
-endif()
-
 target_link_libraries(${BEHAVIOR_TREE_LIBRARY} PUBLIC
     ${BEHAVIOR_TREE_PUBLIC_LIBRARIES})
-
-target_link_libraries(${BEHAVIOR_TREE_LIBRARY} PRIVATE
-    ${Boost_LIBRARIES}
-    ${ZMQ_LIBRARIES})
 
 #get_target_property(my_libs ${BEHAVIOR_TREE_LIBRARY} INTERFACE_LINK_LIBRARIES)
 #list(REMOVE_ITEM _libs X)
@@ -233,10 +195,6 @@ target_include_directories(${BEHAVIOR_TREE_LIBRARY} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     ${BUILD_TOOL_INCLUDE_DIRS})
-
-if( ZMQ_FOUND )
-    target_compile_definitions(${BEHAVIOR_TREE_LIBRARY} PUBLIC ZMQ_FOUND)
-endif()
 
 if(MSVC)
     target_compile_options(${BEHAVIOR_TREE_LIBRARY} PRIVATE /W3 /WX)
