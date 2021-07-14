@@ -27,7 +27,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     }
 
     template<typename T>
-    Optional<T> SSBehaviorTreeNode::GetInputValue(const AZStd::string& name) const
+    Optional<T> SSBehaviorTreeNode::GetInputValue(const AZStd::string& id) const
     {
         Optional<T> value = getInput<T>(id.c_str());
 
