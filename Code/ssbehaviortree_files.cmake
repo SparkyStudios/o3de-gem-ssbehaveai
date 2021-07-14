@@ -8,6 +8,7 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h
     Include/SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h
 
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/DebugMessageNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/WaitNode.h
 
 
@@ -17,6 +18,7 @@ set(FILES
     Source/Core/SSBehaviorTreeNode.cpp
     Source/Core/SSBehaviorTreeRegistry.cpp
     
+    Source/Nodes/Common/DebugMessageNode.cpp
     Source/Nodes/Common/WaitNode.cpp
 
     Source/SSBehaviorTreeModuleInterface.h
