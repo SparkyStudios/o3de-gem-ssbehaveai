@@ -1,5 +1,5 @@
 if (CMAKE_BUILD_TYPE EQUAL "debug")
-    set(BEHAVIORTREECPP_LIBS ${BASE_PATH}/linux/lib/behaviortree_cpp_v3d.lib)
+    set(BEHAVIORTREECPP_LIBS ${BASE_PATH}/lib/linux/behaviortree_cpp_v3d.lib)
 else()
-    set(BEHAVIORTREECPP_LIBS ${BASE_PATH}/linux/lib/behaviortree_cpp_v3.lib)
+    set(BEHAVIORTREECPP_LIBS ${BASE_PATH}/lib/linux/behaviortree_cpp_v3.lib)
 endif()

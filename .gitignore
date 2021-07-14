@@ -1,6 +1,8 @@
 .vscode/
 .vs/
 
+External/BehaviorTree.CPP/**/lib/
+
 [Bb]uild/
 [Cc]ache/
 [Uu]ser/
