@@ -36,7 +36,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         auto it = m_registry->m_registeredNodeBuilders.find(name);
         if (it != m_registry->m_registeredNodeBuilders.end())
         {
-            auto node = it->second(instanceName, config);
+            auto node = it->second(instanceName.c_str(), config);
             // node->setRegistrationID(name.c_str());
         }
 

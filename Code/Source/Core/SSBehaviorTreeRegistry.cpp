@@ -33,15 +33,15 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         static_assert(AZStd::is_base_of<SSBehaviorTreeNode, T>::value, "T must be derived from SSBehaviorTreeNode");
         static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
 
-        SSBehaviorTreeNodeBuilder builder = [](const AZStd::string& name, const SSBehaviorTreeNodeConfiguration& config)
+        SSBehaviorTreeNodeBuilder builder = [](const std::string& name, const SSBehaviorTreeNodeConfiguration& config)
         {
             return AZStd::make_unique<T>(name, config);
         };
 
         // Register the node in the BT factory.
-        m_factory->registerBuilder<T>(name, builder);
+        m_factory->registerBuilder<T>(name.c_str(), builder);
 
         m_registeredNodeBuilders.insert(AZStd::make_pair(name, builder));
-        m_registeredNodeUuids.insert(AZStd::make_pair(name, AZ::RttiTypeId<T>()));
+        m_registeredNodeUuids.insert(AZStd::make_pair(name, azrtti_typeid<T>()));
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Core

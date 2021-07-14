@@ -16,7 +16,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
      * @brief The function used to build behavior tree nodes.
      */
     using SSBehaviorTreeNodeBuilder =
-        AZStd::function<AZStd::unique_ptr<SSBehaviorTreeNode>(const AZStd::string&, const SSBehaviorTreeNodeConfiguration&)>;
+        AZStd::function<AZStd::unique_ptr<SSBehaviorTreeNode>(const std::string&, const SSBehaviorTreeNodeConfiguration&)>;
 
     /**
      * @brief Register the blackboard properties and nodes used in behavior tree files.
