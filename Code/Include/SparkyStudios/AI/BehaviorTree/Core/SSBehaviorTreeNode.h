@@ -22,11 +22,17 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     class SSBehaviorTreeNode : public BT::StatefulActionNode
     {
     public:
+        AZ_CLASS_ALLOCATOR(SSBehaviorTreeNode, AZ::SystemAllocator, 0);
         AZ_RTTI(SSBehaviorTreeNode, "{bdc7ef90-5955-4ee7-9118-46f0d069194f}");
 
         SSBehaviorTreeNode(const std::string& name, const SSBehaviorTreeNodeConfiguration& config);
 
         virtual ~SSBehaviorTreeNode() = default;
+
+        /**
+         * @brief The name of the node in the behavior tree file.
+         */
+        static constexpr const char* NODE_NAME = "SSBehaviorTreeNode";
 
         /**
          * @brief Returns the list of ports provided by this node.
@@ -131,7 +137,8 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     class SSBehaviorTreeCondition : public BT::ConditionNode
     {
     public:
-        AZ_RTTI(SSBehaviorTreeNode, "{b951e9d3-6908-4693-8fbf-9b876f74fc89}");
+        AZ_CLASS_ALLOCATOR(SSBehaviorTreeCondition, AZ::SystemAllocator, 0);
+        AZ_RTTI(SSBehaviorTreeCondition, "{b951e9d3-6908-4693-8fbf-9b876f74fc89}");
 
         SSBehaviorTreeCondition(const std::string& name, const SSBehaviorTreeNodeConfiguration& config);
 
