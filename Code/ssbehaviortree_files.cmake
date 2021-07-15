@@ -12,6 +12,7 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/DebugMessageNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/WaitNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
 
 
     Source/Blackboard/SSBehaviorTreeBlackboardProperty.cpp
@@ -24,6 +25,7 @@ set(FILES
     Source/Nodes/Animation/AnimGraphSetNamedParameterNode.cpp
     Source/Nodes/Common/DebugMessageNode.cpp
     Source/Nodes/Common/WaitNode.cpp
+    Source/Nodes/Navigation/NavigationFindPathToEntityNode.cpp
 
     Source/SSBehaviorTreeModuleInterface.h
     Source/SSBehaviorTreeSystemComponent.cpp
