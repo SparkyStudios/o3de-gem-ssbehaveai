@@ -32,6 +32,8 @@ ly_add_target(
             .
             Source
     BUILD_DEPENDENCIES
+        PRIVATE
+            Gem::EMotionFX.Static
         PUBLIC
             AZ::AzCore
             AZ::AzFramework
