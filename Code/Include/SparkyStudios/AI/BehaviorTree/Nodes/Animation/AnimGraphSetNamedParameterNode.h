@@ -1,6 +1,9 @@
 #pragma once
 
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+
+#include <Integration/AnimGraphComponentBus.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 {

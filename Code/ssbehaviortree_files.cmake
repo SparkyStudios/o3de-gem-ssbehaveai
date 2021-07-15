@@ -16,7 +16,14 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterStringNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterVector2Node.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterVector3Node.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterBoolNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterFloatNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterRotationEulerNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterRotationNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterStringNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/DebugMessageNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/WaitNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
@@ -35,7 +42,13 @@ set(FILES
     Source/Nodes/Animation/AnimGraphGetNamedParameterRotationNode.cpp
     Source/Nodes/Animation/AnimGraphGetNamedParameterVector2Node.cpp
     Source/Nodes/Animation/AnimGraphGetNamedParameterVector3Node.cpp
+    Source/Nodes/Animation/AnimGraphSetNamedParameterBoolNode.cpp
+    Source/Nodes/Animation/AnimGraphSetNamedParameterFloatNode.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterNode.cpp
+    Source/Nodes/Animation/AnimGraphSetNamedParameterRotationEulerNode.cpp
+    Source/Nodes/Animation/AnimGraphSetNamedParameterRotationNode.cpp
+    Source/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.cpp
+    Source/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.cpp
     Source/Nodes/Common/DebugMessageNode.cpp
     Source/Nodes/Common/WaitNode.cpp
     Source/Nodes/Navigation/NavigationFindPathToEntityNode.cpp
