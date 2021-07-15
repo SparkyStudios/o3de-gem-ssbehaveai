@@ -121,7 +121,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         void SetValueFromString(const char* value);
 
-        Nodes::Common::DebugMessageNode::DebugMessageLevel value = Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO;
+        Nodes::Common::DebugMessageNode::DebugMessageLevel m_value = Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO;
 
     protected:
         void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property) override;

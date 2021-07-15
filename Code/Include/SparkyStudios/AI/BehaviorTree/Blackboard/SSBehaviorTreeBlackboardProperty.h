@@ -169,27 +169,27 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         /**
          * @brief The unique ID of this property.
          */
-        AZ::u64 propertyId;
+        AZ::u64 m_id;
 
         /**
          * @brief The name of this property in the behavior tree's blackboard.
          */
-        AZStd::string name;
+        AZStd::string m_name;
 
         /**
          * @brief The suffix to display in the editor for this property.
          */
-        AZStd::string suffix;
+        AZStd::string m_suffix;
 
         /**
          * @brief The property's description. Also used by the editor.
          */
-        AZStd::string description;
+        AZStd::string m_description;
 
         /**
          * @brief Defines if this property is visible in the editor or not.
          */
-        AZ::Crc32 visibility;
+        AZ::Crc32 m_visibility;
 
     protected:
         /**

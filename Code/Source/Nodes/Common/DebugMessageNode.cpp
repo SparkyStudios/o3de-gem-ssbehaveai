@@ -77,7 +77,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
                 ->Value("error", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_ERROR);
 
             sc->Class<SSBehaviorTreeBlackboardPropertyDebugMessageLevel, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
-                "Value", &SSBehaviorTreeBlackboardPropertyDebugMessageLevel::value);
+                "value", &SSBehaviorTreeBlackboardPropertyDebugMessageLevel::m_value);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
@@ -91,13 +91,13 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
                 ec->Class<SSBehaviorTreeBlackboardPropertyDebugMessageLevel>(
                       "SS Behavior Tree Blackboard Property (DebugMessageLevel)", "A blackboard property.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Visibility, &SSBehaviorTreeBlackboardProperty::visibility)
+                    ->Attribute(AZ::Edit::Attributes::Visibility, &SSBehaviorTreeBlackboardProperty::m_visibility)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::ComboBox, &SSBehaviorTreeBlackboardPropertyDebugMessageLevel::value, "value",
+                        AZ::Edit::UIHandlers::ComboBox, &SSBehaviorTreeBlackboardPropertyDebugMessageLevel::m_value, "value",
                         "A debug message level.")
-                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &SSBehaviorTreeBlackboardProperty::name)
-                    ->Attribute(AZ::Edit::Attributes::Suffix, &SSBehaviorTreeBlackboardProperty::suffix)
-                    ->Attribute(AZ::Edit::Attributes::DescriptionTextOverride, &SSBehaviorTreeBlackboardProperty::description);
+                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &SSBehaviorTreeBlackboardProperty::m_name)
+                    ->Attribute(AZ::Edit::Attributes::Suffix, &SSBehaviorTreeBlackboardProperty::m_suffix)
+                    ->Attribute(AZ::Edit::Attributes::DescriptionTextOverride, &SSBehaviorTreeBlackboardProperty::m_description);
             }
         }
     }
@@ -114,13 +114,13 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SSBehaviorTreeBlackboardPropertyDebugMessageLevel(
         const char* name, const Nodes::Common::DebugMessageNode::DebugMessageLevel& value)
         : SSBehaviorTreeBlackboardProperty(name)
-        , value(value)
+        , m_value(value)
     {
     }
 
     const void* SSBehaviorTreeBlackboardPropertyDebugMessageLevel::GetDataAddress() const
     {
-        return &value;
+        return &m_value;
     }
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyDebugMessageLevel::GetDataTypeUuid() const
@@ -128,20 +128,19 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         return azrtti_typeid<Nodes::Common::DebugMessageNode::DebugMessageLevel>();
     }
 
-    SSBehaviorTreeBlackboardPropertyDebugMessageLevel* SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Clone(
-        const char* instanceName) const
+    SSBehaviorTreeBlackboardPropertyDebugMessageLevel* SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Clone(const char* name) const
     {
-        return aznew SSBehaviorTreeBlackboardPropertyDebugMessageLevel(instanceName ? instanceName : name.c_str(), value);
+        return aznew SSBehaviorTreeBlackboardPropertyDebugMessageLevel(name ? name : m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
     {
-        blackboard->set<Nodes::Common::DebugMessageNode::DebugMessageLevel>(name.c_str(), value);
+        blackboard->set<Nodes::Common::DebugMessageNode::DebugMessageLevel>(m_name.c_str(), m_value);
     }
 
-    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SetValueFromString(const char* btValue)
+    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SetValueFromString(const char* value)
     {
-        value = BT::convertFromString<Nodes::Common::DebugMessageNode::DebugMessageLevel>(btValue);
+        m_value = BT::convertFromString<Nodes::Common::DebugMessageNode::DebugMessageLevel>(value);
     }
 
     void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property)
@@ -151,7 +150,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         if (p)
         {
-            value = p->value;
+            m_value = p->m_value;
         }
     }
 } // namespace SparkyStudios::AI::BehaviorTree::Blackboard
