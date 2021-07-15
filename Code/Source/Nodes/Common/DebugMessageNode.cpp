@@ -16,14 +16,14 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
     {
         // 1 - Register properties
         registry->RegisterProperty<DebugMessageLevel>(
-            "SparkyStudios::AI::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel",
+            "DebugMessageNode::DebugMessageLevel",
             [](const char* name)
             {
                 return AZStd::make_unique<Blackboard::SSBehaviorTreeBlackboardPropertyDebugMessageLevel>(name);
             });
 
-        // 2 - Register node
-        registry->RegisterNode<DebugMessageNode>(NODE_NAME);
+        // 2 - Add node for delayed registration
+        registry->DelayNodeRegistration<DebugMessageNode>(NODE_NAME);
     }
 
     Core::SSBehaviorTreePortsList DebugMessageNode::providedPorts()

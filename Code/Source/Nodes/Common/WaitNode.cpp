@@ -14,8 +14,8 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
     void WaitNode::RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry)
     {
-        // 1 - Register node
-        registry->RegisterNode<WaitNode>(NODE_NAME);
+        // 1 - Add node for delayed registration
+        registry->DelayNodeRegistration<WaitNode>(NODE_NAME);
     }
 
     Core::SSBehaviorTreePortsList WaitNode::providedPorts()

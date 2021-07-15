@@ -34,7 +34,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     }
 
     template<typename T>
-    void SSBehaviorTreeRegistry::RegisterNode(const AZStd::string& name)
+    void SSBehaviorTreeRegistry::DelayNodeRegistration(const AZStd::string& name)
     {
         static_assert(AZStd::is_base_of<SSBehaviorTreeNode, T>::value, "T must be derived from SSBehaviorTreeNode");
         static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
@@ -44,10 +44,29 @@ namespace SparkyStudios::AI::BehaviorTree::Core
             return AZStd::make_unique<T>(name, config);
         };
 
-        // Register the node in the BT factory.
-        m_factory->registerBuilder<T>(name.c_str(), builder);
-
-        m_registeredNodeBuilders.insert(AZStd::make_pair(name, builder));
+        m_delayedRegisterers.insert(AZStd::make_pair(name, AZStd::make_pair({ BT::getType<T>(), name.c_str(), BT::getProvidedPorts<T>() }, builder));
         m_registeredNodeUuids.insert(AZStd::make_pair(name, azrtti_typeid<T>()));
+    }
+
+    void SSBehaviorTreeRegistry::EnableNodes(const AZStd::vector<AZStd::string>& nodes)
+    {
+        for (const auto& node : nodes)
+        {
+            RegisterNode(node);
+        }
+
+        // TODO: Should I need to clear the delayed nodes?
+    }
+
+    void SSBehaviorTreeRegistry::RegisterNode(const AZStd::string& name)
+    {
+        if (auto findIt = m_delayedRegisterers.find(name); findIt != m_delayedRegisterers.end())
+        {
+            // Register the node in the BT factory.
+            m_factory->registerBuilder(findIt->second.first, findIt->second.second);
+
+            // Mark the node as registered.
+            m_registeredNodeBuilders.insert(AZStd::make_pair(name, findIt->second.second));
+        }
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Core

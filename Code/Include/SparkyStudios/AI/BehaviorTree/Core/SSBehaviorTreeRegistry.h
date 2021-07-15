@@ -75,20 +75,38 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         const AZ::Uuid& GetPropertyUuid(const AZStd::string& type) const;
 
         /**
-         * @brief Register a new node in this registry.
+         * @brief Add a node for the registration process.
          *
-         * @tparam T The node's type.
-         * @param name The name of the node in the behavior tree file.
+         * @tparam T The type of the node.
+         * @param name The name of the node in the behavior tree.
          */
         template<typename T>
-        void RegisterNode(const AZStd::string& name);
+        void DelayNodeRegistration(const AZStd::string& name);
+
+        /**
+         * @brief Perform the node registration process.
+         *
+         * @param nodes The list of nodes to register. These nodes must have
+         * been added for registration using DelayNodeRegistration().
+         */
+        void EnableNodes(const AZStd::vector<AZStd::string>& nodes);
 
     private:
+        /**
+         * @brief Register a new node in this registry. The node should be saved for a delayed registration
+         * before this call.
+         *
+         * @param name The name of the node in the behavior tree file.
+         */
+        void RegisterNode(const AZStd::string& name);
+
         AZStd::unordered_map<AZStd::string, SSBehaviorTreeBlackboardPropertyBuilder> m_registeredTypeBuilders;
         AZStd::unordered_map<AZStd::string, AZ::Uuid> m_registeredTypeUuids;
 
         AZStd::unordered_map<AZStd::string, SSBehaviorTreeNodeBuilder> m_registeredNodeBuilders;
         AZStd::unordered_map<AZStd::string, AZ::Uuid> m_registeredNodeUuids;
+
+        AZStd::unordered_map<AZStd::string, AZStd::pair<BT::TreeNodeManifest, SSBehaviorTreeNodeBuilder>> m_delayedRegisterers;
 
         AZStd::unique_ptr<BT::BehaviorTreeFactory> m_factory;
 
