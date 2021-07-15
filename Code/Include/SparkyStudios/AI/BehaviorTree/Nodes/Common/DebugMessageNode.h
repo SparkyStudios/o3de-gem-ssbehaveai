@@ -6,6 +6,8 @@
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 {
+#pragma region DebugMessageNode
+
     class DebugMessageNode : public Core::SSBehaviorTreeNode
     {
     public:
@@ -40,6 +42,47 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
     protected:
         Core::SSBehaviorTreeNodeStatus Tick() override;
     };
+
+#pragma endregion
+
+#pragma region SSBehaviorTreeBlackboardPropertyDebugMessageLevel
+
+    class SSBehaviorTreeBlackboardPropertyDebugMessageLevel : public Blackboard::SSBehaviorTreeBlackboardProperty
+    {
+    public:
+        AZ_CLASS_ALLOCATOR(SSBehaviorTreeBlackboardPropertyDebugMessageLevel, AZ::SystemAllocator, 0);
+        AZ_RTTI(
+            SSBehaviorTreeBlackboardPropertyDebugMessageLevel,
+            "{09ef7645-63e9-40ac-88f2-2e489caf101d}",
+            Blackboard::SSBehaviorTreeBlackboardProperty);
+
+        using DebugMessageLevel = DebugMessageNode::DebugMessageLevel;
+
+        static void Reflect(AZ::ReflectContext* context);
+
+        SSBehaviorTreeBlackboardPropertyDebugMessageLevel();
+
+        SSBehaviorTreeBlackboardPropertyDebugMessageLevel(const char* name);
+
+        SSBehaviorTreeBlackboardPropertyDebugMessageLevel(const char* name, const DebugMessageLevel& value);
+
+        const void* GetDataAddress() const override;
+
+        const AZ::Uuid& GetDataTypeUuid() const override;
+
+        SSBehaviorTreeBlackboardPropertyDebugMessageLevel* Clone(const char* name = nullptr) const override;
+
+        void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
+
+        void SetValueFromString(const char* value);
+
+        DebugMessageLevel m_value = DebugMessageLevel::LEVEL_INFO;
+
+    protected:
+        void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property) override;
+    };
+
+#pragma endregion
 } // namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
 namespace AZ
@@ -92,38 +135,3 @@ namespace BT
         return SparkyStudios::AI::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO;
     }
 } // namespace BT
-
-namespace SparkyStudios::AI::BehaviorTree::Blackboard
-{
-    class SSBehaviorTreeBlackboardPropertyDebugMessageLevel : public SSBehaviorTreeBlackboardProperty
-    {
-    public:
-        AZ_CLASS_ALLOCATOR(SSBehaviorTreeBlackboardPropertyDebugMessageLevel, AZ::SystemAllocator, 0);
-        AZ_RTTI(
-            SSBehaviorTreeBlackboardPropertyDebugMessageLevel, "{09ef7645-63e9-40ac-88f2-2e489caf101d}", SSBehaviorTreeBlackboardProperty);
-
-        static void Reflect(AZ::ReflectContext* context);
-
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel();
-
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel(const char* name);
-
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel(
-            const char* name, const Nodes::Common::DebugMessageNode::DebugMessageLevel& value);
-
-        const void* GetDataAddress() const override;
-
-        const AZ::Uuid& GetDataTypeUuid() const override;
-
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel* Clone(const char* name = nullptr) const override;
-
-        void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
-
-        void SetValueFromString(const char* value);
-
-        Nodes::Common::DebugMessageNode::DebugMessageLevel m_value = Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO;
-
-    protected:
-        void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property) override;
-    };
-} // namespace SparkyStudios::AI::BehaviorTree::Blackboard

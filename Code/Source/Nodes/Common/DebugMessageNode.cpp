@@ -2,6 +2,8 @@
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 {
+#pragma region DebugMessageNode
+
     DebugMessageNode::DebugMessageNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
         : Core::SSBehaviorTreeNode(name, config)
     {
@@ -9,18 +11,13 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
     void DebugMessageNode::Reflect(AZ::ReflectContext* context)
     {
-        Blackboard::SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Reflect(context);
+        SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Reflect(context);
     }
 
     void DebugMessageNode::RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry)
     {
         // 1 - Register properties
-        registry->RegisterProperty<DebugMessageLevel>(
-            "DebugMessageNode::DebugMessageLevel",
-            [](const char* name)
-            {
-                return AZStd::make_unique<Blackboard::SSBehaviorTreeBlackboardPropertyDebugMessageLevel>(name);
-            });
+        registry->RegisterProperty<SSBehaviorTreeBlackboardPropertyDebugMessageLevel>("DebugMessageNode::DebugMessageLevel");
 
         // 2 - Add node for delayed registration
         registry->DelayNodeRegistration<DebugMessageNode>(NODE_NAME);
@@ -61,32 +58,32 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
         return Core::SSBehaviorTreeNodeStatus::SUCCESS;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
-namespace SparkyStudios::AI::BehaviorTree::Blackboard
-{
+#pragma endregion
+
+#pragma region SSBehaviorTreeBlackboardPropertyDebugMessageLevel
+
     void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Reflect(AZ::ReflectContext* context)
     {
         if (AZ::SerializeContext* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            sc->Enum<Nodes::Common::DebugMessageNode::DebugMessageLevel>()
+            sc->Enum<DebugMessageLevel>()
                 ->Version(1)
-                ->Value("silent", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_SILENT)
-                ->Value("info", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO)
-                ->Value("warning", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_WARNING)
-                ->Value("error", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_ERROR);
+                ->Value("silent", DebugMessageLevel::LEVEL_SILENT)
+                ->Value("info", DebugMessageLevel::LEVEL_INFO)
+                ->Value("warning", DebugMessageLevel::LEVEL_WARNING)
+                ->Value("error", DebugMessageLevel::LEVEL_ERROR);
 
             sc->Class<SSBehaviorTreeBlackboardPropertyDebugMessageLevel, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyDebugMessageLevel::m_value);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
-                ec->Enum<Nodes::Common::DebugMessageNode::DebugMessageLevel>(
-                      "[DebugMessageNode] Debug Message Level", "The message level of the DebugMessage node.")
-                    ->Value("Silent", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_SILENT)
-                    ->Value("Information", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO)
-                    ->Value("Warning", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_WARNING)
-                    ->Value("Error", Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_ERROR);
+                ec->Enum<DebugMessageLevel>("[DebugMessageNode] Debug Message Level", "The message level of the DebugMessage node.")
+                    ->Value("Silent", DebugMessageLevel::LEVEL_SILENT)
+                    ->Value("Information", DebugMessageLevel::LEVEL_INFO)
+                    ->Value("Warning", DebugMessageLevel::LEVEL_WARNING)
+                    ->Value("Error", DebugMessageLevel::LEVEL_ERROR);
 
                 ec->Class<SSBehaviorTreeBlackboardPropertyDebugMessageLevel>(
                       "SS Behavior Tree Blackboard Property (DebugMessageLevel)", "A blackboard property.")
@@ -112,7 +109,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     }
 
     SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SSBehaviorTreeBlackboardPropertyDebugMessageLevel(
-        const char* name, const Nodes::Common::DebugMessageNode::DebugMessageLevel& value)
+        const char* name, const DebugMessageLevel& value)
         : SSBehaviorTreeBlackboardProperty(name)
         , m_value(value)
     {
@@ -125,7 +122,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyDebugMessageLevel::GetDataTypeUuid() const
     {
-        return azrtti_typeid<Nodes::Common::DebugMessageNode::DebugMessageLevel>();
+        return azrtti_typeid<DebugMessageLevel>();
     }
 
     SSBehaviorTreeBlackboardPropertyDebugMessageLevel* SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Clone(const char* name) const
@@ -135,12 +132,12 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
     {
-        blackboard->set<Nodes::Common::DebugMessageNode::DebugMessageLevel>(m_name.c_str(), m_value);
+        blackboard->set<DebugMessageLevel>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SetValueFromString(const char* value)
     {
-        m_value = BT::convertFromString<Nodes::Common::DebugMessageNode::DebugMessageLevel>(value);
+        m_value = BT::convertFromString<DebugMessageLevel>(value);
     }
 
     void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property)
@@ -153,4 +150,6 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
             m_value = p->m_value;
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Blackboard
+
+#pragma endregion
+} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Common

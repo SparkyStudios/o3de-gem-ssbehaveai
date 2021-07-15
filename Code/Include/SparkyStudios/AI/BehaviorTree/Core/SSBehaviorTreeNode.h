@@ -11,8 +11,8 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     using SSBehaviorTreeNodeStatus = BT::NodeStatus;
     using SSBehaviorTreePortsList = BT::PortsList;
     using SSBehaviorTreeBlackboard = BT::Blackboard;
-    template<typename T>
 
+    template<typename T>
     using Optional = BT::Optional<T>;
     using Result = BT::Result;
 

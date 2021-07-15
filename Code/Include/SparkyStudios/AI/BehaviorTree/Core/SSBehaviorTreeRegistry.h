@@ -2,10 +2,11 @@
 
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/BehaviorTree/Core/SSbehaviorTreeFactory.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Core
 {
+    class SSBehaviorTreeFactory;
+
     /**
      * @brief The function used to build properties.
      */
@@ -56,6 +57,17 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          */
         template<typename T>
         void RegisterProperty(const AZStd::string& type, const SSBehaviorTreeBlackboardPropertyBuilder& builder);
+
+        /**
+         * @brief Registers a new blackboard property in this registry, given its type.
+         * The type parameter should have the AZ_RTTI macro for this override to work.
+         * This override will use the default builder.
+         *
+         * @tparam T The type of the property value. Must have the AZ_RTTI macro.
+         * @param type The property value type.
+         */
+        template<typename T>
+        void RegisterProperty(const AZStd::string& type);
 
         /**
          * @brief Get the property builder for the given type.

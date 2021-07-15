@@ -12,6 +12,25 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     template<typename T>
     void SSBehaviorTreeRegistry::RegisterProperty(const AZStd::string& type, const SSBehaviorTreeBlackboardPropertyBuilder& builder)
     {
+        static_assert(
+            AZStd::is_base_of<SSBehaviorTreeBlackboardProperty, T>::value, "T must be derived from SSBehaviorTreeBlackboardProperty");
+        static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
+
+        RegisterProperty(type, azrtti_typeid<T>(), builder);
+    }
+
+    template<typename T>
+    void SSBehaviorTreeRegistry::RegisterProperty(const AZStd::string& type)
+    {
+        static_assert(
+            AZStd::is_base_of<SSBehaviorTreeBlackboardProperty, T>::value, "T must be derived from SSBehaviorTreeBlackboardProperty");
+        static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
+
+        SSBehaviorTreeBlackboardPropertyBuilder builder = [](const char* name)
+        {
+            return AZStd::make_unique<T>(name);
+        };
+
         RegisterProperty(type, azrtti_typeid<T>(), builder);
     }
 
@@ -44,7 +63,9 @@ namespace SparkyStudios::AI::BehaviorTree::Core
             return AZStd::make_unique<T>(name, config);
         };
 
-        m_delayedRegisterers.insert(AZStd::make_pair(name, AZStd::make_pair({ BT::getType<T>(), name.c_str(), BT::getProvidedPorts<T>() }, builder));
+        BT::TreeNodeManifest manifest{ BT::getType<T>(), name.c_str(), BT::getProvidedPorts<T>() };
+
+        m_delayedRegisterers.insert(AZStd::make_pair(name, AZStd::make_pair(manifest, builder)));
         m_registeredNodeUuids.insert(AZStd::make_pair(name, azrtti_typeid<T>()));
     }
 
