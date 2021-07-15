@@ -14,7 +14,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
     {
         Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
 
-        ports.merge(PortsList({
+        ports.merge(Core::SSBehaviorTreePortsList({
             BT::InputPort<AZStd::string>(NODE_PORT_PARAMETER_NAME, NODE_PORT_PARAMETER_DESCRIPTION),
             BT::InputPort<T>(NODE_PORT_VALUE_NAME, NODE_PORT_VALUE_DESCRIPTION),
         }));
