@@ -31,14 +31,6 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         AZ_RTTI(SSBehaviorTreeRegistry, "{1a24e981-17fc-4d02-ac71-ff0e575b09ba}");
 
         /**
-         * @brief Reflect this class in the given O3DE ReflectContext.
-         * Used for serialization purposes.
-         *
-         * @param context The ReflectContext in which describe this class.
-         */
-        static void Reflect(AZ::ReflectContext* reflection);
-
-        /**
          * @brief Registers a new blackboard property in this registry, given its type.
          *
          * @param type The property value type.
