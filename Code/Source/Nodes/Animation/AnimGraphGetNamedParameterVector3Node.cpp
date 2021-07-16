@@ -1,3 +1,5 @@
+#include <StdAfx.h>
+
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterVector3Node.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation

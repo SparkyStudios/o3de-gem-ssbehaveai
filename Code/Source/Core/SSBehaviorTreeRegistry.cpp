@@ -1,3 +1,5 @@
+#include <StdAfx.h>
+
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Core

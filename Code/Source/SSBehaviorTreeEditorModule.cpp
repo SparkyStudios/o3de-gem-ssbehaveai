@@ -1,3 +1,4 @@
+#include <StdAfx.h>
 
 #include <SSBehaviorTreeEditorSystemComponent.h>
 #include <SSBehaviorTreeModuleInterface.h>

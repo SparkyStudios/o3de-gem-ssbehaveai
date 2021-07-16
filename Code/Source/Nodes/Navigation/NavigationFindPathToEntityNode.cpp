@@ -1,3 +1,5 @@
+#include <StdAfx.h>
+
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation

@@ -1,8 +1,6 @@
-#pragma once
+#include <StdAfx.h>
 
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterNode.h>
-
-#include <Integration/AnimGraphComponentBus.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 {

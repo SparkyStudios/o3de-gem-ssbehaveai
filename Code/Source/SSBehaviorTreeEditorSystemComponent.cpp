@@ -1,3 +1,4 @@
+#include <StdAfx.h>
 
 #include <AzCore/Serialization/SerializeContext.h>
 #include <SSBehaviorTreeEditorSystemComponent.h>

@@ -1,3 +1,5 @@
+#include <StdAfx.h>
+
 #include <AzCore/Module/Module.h>
 
 // DO NOT MODIFY THIS LINE UNLESS YOU RENAME THE GEM
