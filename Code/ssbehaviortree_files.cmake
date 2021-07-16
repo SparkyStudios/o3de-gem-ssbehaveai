@@ -5,6 +5,7 @@ set(FILES
 
     Include/SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h
 
+    Include/SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h
     Include/SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h
 
     Include/SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeFactory.h
@@ -32,6 +33,8 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
 
 
+    Source/Blackboard/SSBehaviorTreeBlackboard.h
+    Source/Blackboard/SSBehaviorTreeBlackboard.cpp
     Source/Blackboard/SSBehaviorTreeBlackboardProperty.cpp
 
     Source/Core/SSBehaviorTreeFactory.cpp
