@@ -39,7 +39,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         if (it != m_registry->m_registeredNodeBuilders.end())
         {
             auto node = it->second(instanceName.c_str(), config);
-            // node->setRegistrationID(name.c_str());
+            node->setRegistrationID(name.c_str());
         }
 
         throw std::runtime_error("Unable to create the node. Did you forget to register?");
