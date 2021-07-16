@@ -4,14 +4,12 @@
 
 #include <AzCore/RTTI/RTTI.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
+#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Core
 {
-    using Blackboard::SSBehaviorTreeBlackboardProperty;
-
     /**
      * @brief Create blackboard properties and nodes for a behavior tree.
      *
@@ -50,9 +48,9 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          *
          * @param type The property value type, as specified when registering with RegisterProperty.
          * @param name The instance name of the property.
-         * @return SSBehaviorTreeBlackboardProperty*
+         * @return AZStd::unique_ptr<Blackboard::SSBehaviorTreeBlackboardProperty>
          */
-        AZStd::unique_ptr<SSBehaviorTreeBlackboardProperty> CreateProperty(const AZStd::string& type, const char* name) const;
+        AZStd::unique_ptr<Blackboard::SSBehaviorTreeBlackboardProperty> CreateProperty(const AZStd::string& type, const char* name) const;
 
         /**
          * @brief Create a new behavior tree node from the given name. This method will only work for a node
@@ -64,9 +62,16 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @return AZStd::unique_ptr<SSBehaviorTreeNode>
          */
         AZStd::unique_ptr<SSBehaviorTreeNode> CreateNode(
-            const AZStd::string& name,
-            const AZStd::string& instanceName,
-            const SSBehaviorTreeNodeConfiguration& config = SSBehaviorTreeNodeConfiguration()) const;
+            const AZStd::string& name, const AZStd::string& instanceName, const SSBehaviorTreeNodeConfiguration& config = {}) const;
+
+        /**
+         * @brief Create a behavior tree from the given XML text.
+         *
+         * @param text The XML text to parse into a behavior tree.
+         * @param blackboard The blackboard instance which this behavior tree will use.
+         * @return BT::Tree
+         */
+        BT::Tree CreateTreeFromText(AZStd::string& text, const Blackboard::SSBehaviorTreeBlackboard& blackboard = {});
 
     private:
         AZStd::shared_ptr<SSBehaviorTreeRegistry> m_registry;

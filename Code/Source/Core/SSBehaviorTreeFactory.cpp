@@ -44,4 +44,9 @@ namespace SparkyStudios::AI::BehaviorTree::Core
 
         throw std::runtime_error("Unable to create the node. Did you forget to register?");
     }
+
+    BT::Tree SSBehaviorTreeFactory::CreateTreeFromText(AZStd::string& text, const Blackboard::SSBehaviorTreeBlackboard& blackboard)
+    {
+        return m_registry->m_factory->createTreeFromText(text.c_str(), blackboard.m_blackboard);
+    }
 } // namespace SparkyStudios::AI::BehaviorTree::Core
