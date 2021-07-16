@@ -33,6 +33,9 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
 
 
+    Source/Assets/SSBehaviorTreeAsset.h
+    Source/Assets/SSBehaviorTreeAsset.cpp
+
     Source/Blackboard/SSBehaviorTreeBlackboard.h
     Source/Blackboard/SSBehaviorTreeBlackboard.cpp
     Source/Blackboard/SSBehaviorTreeBlackboardProperty.cpp
