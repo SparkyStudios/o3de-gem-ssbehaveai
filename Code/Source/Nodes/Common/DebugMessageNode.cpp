@@ -16,7 +16,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
         SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Reflect(context);
     }
 
-    void DebugMessageNode::RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void DebugMessageNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
     {
         // 1 - Register properties
         registry->RegisterProperty<SSBehaviorTreeBlackboardPropertyDebugMessageLevel>("DebugMessageNode::DebugMessageLevel");

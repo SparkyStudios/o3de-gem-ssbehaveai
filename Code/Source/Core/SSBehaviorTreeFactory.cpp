@@ -7,9 +7,9 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     SSBehaviorTreeFactory::SSBehaviorTreeFactory(SSBehaviorTreeRegistry* registry)
     {
         if (registry)
-            m_registry = AZStd::unique_ptr<SSBehaviorTreeRegistry>(registry);
+            m_registry = AZStd::shared_ptr<SSBehaviorTreeRegistry>(registry);
         else
-            m_registry = AZStd::make_unique<SSBehaviorTreeRegistry>();
+            m_registry = AZStd::shared_ptr<SSBehaviorTreeRegistry>(aznew SSBehaviorTreeRegistry());
     }
 
     SSBehaviorTreeFactory::~SSBehaviorTreeFactory()
@@ -17,7 +17,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         m_registry.reset();
     }
 
-    const AZStd::unique_ptr<SSBehaviorTreeRegistry>& SSBehaviorTreeFactory::GetRegistry() const
+    const AZStd::shared_ptr<SSBehaviorTreeRegistry>& SSBehaviorTreeFactory::GetRegistry() const
     {
         return m_registry;
     }

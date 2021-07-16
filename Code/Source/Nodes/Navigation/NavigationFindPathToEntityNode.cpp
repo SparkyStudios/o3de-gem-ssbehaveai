@@ -21,7 +21,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation
         SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::Reflect(context);
     }
 
-    void NavigationFindPathToEntityNode::RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void NavigationFindPathToEntityNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
     {
         // 1 - Register properties
         registry->RegisterProperty<SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState>(
@@ -140,15 +140,13 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation
     {
     }
 
-    void NavigationFindPathToEntityNode::TraversalPathUpdate(const AZ::Vector3& nextPathPosition, const AZ::Vector3& inflectionPosition)
+    void NavigationFindPathToEntityNode::TraversalPathUpdate(
+        [[maybe_unused]] const AZ::Vector3& nextPathPosition, [[maybe_unused]] const AZ::Vector3& inflectionPosition)
     {
-        AZ_UNUSED(nextPathPosition);
-        AZ_UNUSED(inflectionPosition);
     }
 
-    void NavigationFindPathToEntityNode::TraversalInProgress(float distanceRemaining)
+    void NavigationFindPathToEntityNode::TraversalInProgress([[maybe_unused]] float distanceRemaining)
     {
-        AZ_UNUSED(distanceRemaining);
     }
 
     void NavigationFindPathToEntityNode::TraversalComplete()

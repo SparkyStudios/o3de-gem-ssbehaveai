@@ -36,14 +36,14 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @brief Destroy the SSBehaviorTreeFactory.
          * This will also destroy the registry.
          */
-        ~SSBehaviorTreeFactory();
+        virtual ~SSBehaviorTreeFactory();
 
         /**
          * @brief Get the wrapped registry instance.
          *
-         * @return AZStd::unique_ptr<SSBehaviorTreeRegistry>
+         * @return const AZStd::shared_ptr<SSBehaviorTreeRegistry>&
          */
-        const AZStd::unique_ptr<SSBehaviorTreeRegistry>& GetRegistry() const;
+        const AZStd::shared_ptr<SSBehaviorTreeRegistry>& GetRegistry() const;
 
         /**
          * @brief Creates a new blackboard property from the given type.
@@ -69,6 +69,6 @@ namespace SparkyStudios::AI::BehaviorTree::Core
             const SSBehaviorTreeNodeConfiguration& config = SSBehaviorTreeNodeConfiguration()) const;
 
     private:
-        AZStd::unique_ptr<SSBehaviorTreeRegistry> m_registry;
+        AZStd::shared_ptr<SSBehaviorTreeRegistry> m_registry;
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Core

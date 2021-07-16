@@ -42,7 +42,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
          *
          * @param registry The registry to register this node in.
          */
-        static void RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
 
         /**
          * @brief Returns the list of ports returned by this node.

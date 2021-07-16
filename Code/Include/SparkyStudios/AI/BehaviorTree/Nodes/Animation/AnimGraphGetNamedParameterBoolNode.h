@@ -16,7 +16,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 
         static void Reflect(AZ::ReflectContext* reflection);
 
-        static void RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
 
         static Core::SSBehaviorTreePortsList providedPorts();
 

@@ -15,7 +15,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
         AZ_UNUSED(context);
     }
 
-    void AnimGraphSetNamedParameterStringNode::RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void AnimGraphSetNamedParameterStringNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
     {
         // 1 - Register node
         registry->DelayNodeRegistration<AnimGraphSetNamedParameterStringNode>(NODE_NAME);

@@ -25,7 +25,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
         static void Reflect(AZ::ReflectContext* context);
 
-        static void RegisterNode(const AZStd::unique_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
 
         enum class DebugMessageLevel
         {
