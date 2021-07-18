@@ -26,13 +26,14 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
         return AnimGraphSetNamedParameterNode<AZStd::string>::providedPorts();
     }
 
-    void AnimGraphSetNamedParameterStringNode::SetParameter() override
+    void AnimGraphSetNamedParameterStringNode::SetParameter()
     {
         Core::Optional<AZStd::string> value = GetInputValue<AZStd::string>(NODE_PORT_VALUE_NAME);
         if (value.has_value())
         {
             EBUS_EVENT_ID(
-                GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterString, m_parameterIndex, value.value());
+                GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterString, m_parameterIndex,
+                value.value().c_str());
         }
     }
 } // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
