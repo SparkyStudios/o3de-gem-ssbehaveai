@@ -28,35 +28,16 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     {
     }
 
-    template<typename T>
-    Optional<T> SSBehaviorTreeNode::GetInputValue(const AZStd::string& id) const
-    {
-        Optional<T> value = getInput<T>(id.c_str());
-
-        if (!value)
-            AZ_Error(
-                "SSBehaviorTree", false, "[%s:%s] Missing required input {%s}: %s", registrationName().c_str(), name().c_str(), id.c_str(),
-                value.error().c_str());
-
-        return value;
-    }
-
-    template<typename T>
-    Result SSBehaviorTreeNode::SetOutputValue(const AZStd::string& id, const T& value)
-    {
-        return setOutput<T>(id.c_str(), value);
-    }
-
     AZ::EntityId SSBehaviorTreeNode::GetEntityId()
     {
         AZ::EntityId id = AZ::EntityId();
-        SSBehaviorTreeBlackboard::Ptr blackboard = GetBlackboard();
+        BT::Blackboard::Ptr blackboard = GetBlackboard();
         blackboard->get<AZ::EntityId>("entityId", id);
 
         return id;
     }
 
-    const SSBehaviorTreeBlackboard::Ptr& SSBehaviorTreeNode::GetBlackboard() const
+    const BT::Blackboard::Ptr& SSBehaviorTreeNode::GetBlackboard() const
     {
         return config().blackboard;
     }

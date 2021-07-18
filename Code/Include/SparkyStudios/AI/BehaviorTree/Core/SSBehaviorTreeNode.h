@@ -10,7 +10,6 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     using SSBehaviorTreeNodeConfiguration = BT::NodeConfiguration;
     using SSBehaviorTreeNodeStatus = BT::NodeStatus;
     using SSBehaviorTreePortsList = BT::PortsList;
-    using SSBehaviorTreeBlackboard = BT::Blackboard;
 
     template<typename T>
     using Optional = BT::Optional<T>;
@@ -77,7 +76,19 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @return Optional<T>
          */
         template<typename T>
-        Optional<T> GetInputValue(const AZStd::string& id) const;
+        Optional<T> GetInputValue(const AZStd::string& id) const
+        {
+            Optional<T> value = getInput<T>(id.c_str());
+
+            if (!value)
+            {
+                AZ_Error(
+                    "SSBehaviorTree", false, "[%s:%s] Missing required input {%s}: %s", registrationName().c_str(), name().c_str(),
+                    id.c_str(), value.error().c_str());
+            }
+
+            return value;
+        }
 
         /**
          * @brief Set the value of an output port with the given id.
@@ -88,7 +99,10 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @return Result
          */
         template<typename T>
-        Result SetOutputValue(const AZStd::string& id, const T& value);
+        Result SetOutputValue(const AZStd::string& id, const T& value)
+        {
+            return setOutput<T>(id.c_str(), value);
+        }
 
         /**
          * @brief Gets the ID of the entity to which this node's behavior tree
@@ -100,9 +114,9 @@ namespace SparkyStudios::AI::BehaviorTree::Core
 
         /**
          * @brief Gets the blackbord instance of this node's behavior tree.
-         * @return SSBehaviorTreeBlackboard::Ptr
+         * @return BT::Blackboard::Ptr
          */
-        const SSBehaviorTreeBlackboard::Ptr& GetBlackboard() const;
+        const BT::Blackboard::Ptr& GetBlackboard() const;
 
         /**
          * @brief Gets the name used for the registration of this node in

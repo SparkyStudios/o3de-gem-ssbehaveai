@@ -48,7 +48,14 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @param builder The property builder.
          */
         template<typename T>
-        void RegisterProperty(const AZStd::string& type, const SSBehaviorTreeBlackboardPropertyBuilder& builder);
+        void RegisterProperty(const AZStd::string& type, const SSBehaviorTreeBlackboardPropertyBuilder& builder)
+        {
+            static_assert(
+                AZStd::is_base_of<SSBehaviorTreeBlackboardProperty, T>::value, "T must be derived from SSBehaviorTreeBlackboardProperty");
+            static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
+
+            RegisterProperty(type, azrtti_typeid<T>(), builder);
+        }
 
         /**
          * @brief Registers a new blackboard property in this registry, given its type.
@@ -59,7 +66,20 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @param type The property value type.
          */
         template<typename T>
-        void RegisterProperty(const AZStd::string& type);
+        void RegisterProperty(const AZStd::string& type)
+        {
+            static_assert(
+                AZStd::is_base_of<Blackboard::SSBehaviorTreeBlackboardProperty, T>::value,
+                "T must be derived from SSBehaviorTreeBlackboardProperty");
+            static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
+
+            SSBehaviorTreeBlackboardPropertyBuilder builder = [](const char* name)
+            {
+                return AZStd::make_unique<T>(name);
+            };
+
+            RegisterProperty(type, azrtti_typeid<T>(), builder);
+        }
 
         /**
          * @brief Get the property builder for the given type.
@@ -85,7 +105,26 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @param name The name of the node in the behavior tree.
          */
         template<typename T>
-        void DelayNodeRegistration(const AZStd::string& name);
+        void DelayNodeRegistration(const AZStd::string& name)
+        {
+            static_assert(AZStd::is_base_of<SSBehaviorTreeNode, T>::value, "T must be derived from SSBehaviorTreeNode");
+            static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
+            static_assert(
+                AZStd::is_same<decltype(T::Reflect), void(AZ::ReflectContext*)>::value,
+                "T must implement the 'static void Reflect(AZ::ReflectContext*)' method.");
+
+            SSBehaviorTreeNodeBuilder builder = [](const std::string& name, const SSBehaviorTreeNodeConfiguration& config)
+            {
+                return AZStd::make_unique<T>(name, config);
+            };
+
+            BT::TreeNodeManifest manifest{ BT::getType<T>(), name.c_str(), BT::getProvidedPorts<T>() };
+
+            m_delayedRegisterers.insert(AZStd::make_pair(name, AZStd::make_pair(manifest, builder)));
+            m_delayedReflectors.insert(AZStd::make_pair(name, T::Reflect));
+
+            m_registeredNodeUuids.insert(AZStd::make_pair(name, azrtti_typeid<T>()));
+        }
 
         /**
          * @brief Perform the node registration process.
@@ -101,8 +140,9 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * before this call.
          *
          * @param name The name of the node in the behavior tree file.
+         * @param context The reflection context.
          */
-        void RegisterNode(const AZStd::string& name);
+        void RegisterNode(const AZStd::string& name, AZ::ReflectContext* context = nullptr);
 
         AZStd::unordered_map<AZStd::string, SSBehaviorTreeBlackboardPropertyBuilder> m_registeredTypeBuilders;
         AZStd::unordered_map<AZStd::string, AZ::Uuid> m_registeredTypeUuids;
@@ -111,9 +151,11 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         AZStd::unordered_map<AZStd::string, AZ::Uuid> m_registeredNodeUuids;
 
         AZStd::unordered_map<AZStd::string, AZStd::pair<BT::TreeNodeManifest, SSBehaviorTreeNodeBuilder>> m_delayedRegisterers;
+        AZStd::unordered_map<AZStd::string, AZ::ReflectionFunction> m_delayedReflectors;
 
-        AZStd::unique_ptr<BT::BehaviorTreeFactory> m_factory;
+        AZStd::unique_ptr<BT::BehaviorTreeFactory> m_factory = AZStd::make_unique<BT::BehaviorTreeFactory>();
 
         AZ::Uuid m_invalidUuid = AZ::Uuid::CreateNull();
+        SSBehaviorTreeBlackboardPropertyBuilder m_invalidBuilder;
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Core
