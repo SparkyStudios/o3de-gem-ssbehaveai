@@ -132,9 +132,9 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
         return aznew SSBehaviorTreeBlackboardPropertyDebugMessageLevel(name ? name : m_name.c_str(), m_value);
     }
 
-    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
+    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::AddBlackboardEntry(const Blackboard::SSBehaviorTreeBlackboard& blackboard) const
     {
-        blackboard->set<DebugMessageLevel>(m_name.c_str(), m_value);
+        blackboard.m_blackboard->set<DebugMessageLevel>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SetValueFromString(const char* value)

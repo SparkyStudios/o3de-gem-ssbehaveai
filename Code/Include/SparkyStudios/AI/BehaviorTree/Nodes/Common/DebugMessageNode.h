@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
@@ -72,7 +73,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
         SSBehaviorTreeBlackboardPropertyDebugMessageLevel* Clone(const char* name = nullptr) const override;
 
-        void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
+        void AddBlackboardEntry(const Blackboard::SSBehaviorTreeBlackboard& blackboard) const override;
 
         void SetValueFromString(const char* value);
 

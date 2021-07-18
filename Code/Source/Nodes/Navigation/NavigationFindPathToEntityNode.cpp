@@ -287,9 +287,9 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation
     }
 
     void SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::AddBlackboardEntry(
-        const BT::Blackboard::Ptr& blackboard) const
+        const Blackboard::SSBehaviorTreeBlackboard& blackboard) const
     {
-        blackboard->set<NavigationState>(m_name.c_str(), m_value);
+        blackboard.m_blackboard->set<NavigationState>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::SetValueFromString(const char* value)
