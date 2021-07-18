@@ -33,7 +33,7 @@ namespace SparkyStudios::AI::BehaviorTree::Assets
 
         AZ::IO::MemoryStream CreateMemoryStream() const
         {
-            return AZ::IO::MemoryStream(m_buffer.data(), m_buffer.size());
+            return { m_buffer.data(), m_buffer.size() };
         }
 
         const char* GetDebugName()

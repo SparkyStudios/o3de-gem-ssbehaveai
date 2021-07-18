@@ -1,13 +1,15 @@
 #include <StdAfx.h>
 
-#include <Source/Assets/SSBehaviorTreeAsset.h>
+#include <Assets/SSBehaviorTreeAsset.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Assets
 {
-    static constexpr const char* _default_content = "<root main_tree_to_execute=\"MainTree\">\n"
-                                                    "    <BehaviorTree ID=\"MainTree\">\n"
-                                                    "    </BehaviorTree>\n"
-                                                    "</root>";
+    static constexpr const char* _default_content =
+        "<root main_tree_to_execute=\"MainTree\">\n"
+        "    <BehaviorTree ID=\"MainTree\">\n"
+        "        <DebugMessage type=\"warning\" message=\"No valid behavior tree asset provided.\" />"
+        "    </BehaviorTree>\n"
+        "</root>";
 
     /**
      * @brief Construct a new SSBehaviorTreeAsset::SSBehaviorTreeAsset object
