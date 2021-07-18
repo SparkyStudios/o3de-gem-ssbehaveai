@@ -43,7 +43,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
             *this = AZStd::move(rhs);
         }
 
-        SSBehaviorTreeBlackboard& operator=(SSBehaviorTreeBlackboard&& rhs);
+        SSBehaviorTreeBlackboard& operator=(SSBehaviorTreeBlackboard&& rhs) noexcept;
     };
 
 } // namespace SparkyStudios::AI::BehaviorTree::Blackboard

@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 
-#include <Source/Blackboard/SSBehaviorTreeBlackboard.h>
+#include <Blackboard/SSBehaviorTreeBlackboard.h>
 
 #include <AzCore/RTTI/BehaviorContext.h>
 
@@ -37,7 +37,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         Clear();
     }
 
-    SSBehaviorTreeBlackboard& SSBehaviorTreeBlackboard::operator=(SSBehaviorTreeBlackboard&& rhs)
+    SSBehaviorTreeBlackboard& SSBehaviorTreeBlackboard::operator=(SSBehaviorTreeBlackboard&& rhs) noexcept
     {
         m_name.swap(rhs.m_name);
         m_properties.swap(rhs.m_properties);
