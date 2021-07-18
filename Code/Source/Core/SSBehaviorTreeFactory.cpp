@@ -2,6 +2,8 @@
 
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeFactory.h>
 
+#include <AzCore/std/smart_ptr/make_shared.h>
+
 namespace SparkyStudios::AI::BehaviorTree::Core
 {
     SSBehaviorTreeFactory::SSBehaviorTreeFactory(SSBehaviorTreeRegistry* registry)
@@ -9,7 +11,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         if (registry)
             m_registry = AZStd::shared_ptr<SSBehaviorTreeRegistry>(registry);
         else
-            m_registry = AZStd::shared_ptr<SSBehaviorTreeRegistry>(aznew SSBehaviorTreeRegistry());
+            m_registry = AZStd::make_shared<SSBehaviorTreeRegistry>();
     }
 
     SSBehaviorTreeFactory::~SSBehaviorTreeFactory()
@@ -22,30 +24,32 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         return m_registry;
     }
 
-    AZStd::unique_ptr<SSBehaviorTreeBlackboardProperty> SSBehaviorTreeFactory::CreateProperty(
+    AZStd::unique_ptr<Blackboard::SSBehaviorTreeBlackboardProperty> SSBehaviorTreeFactory::CreateProperty(
         const AZStd::string& type, const char* name) const
     {
-        auto it = m_registry->m_registeredTypeBuilders.find(type);
-        if (it != m_registry->m_registeredTypeBuilders.end())
-            return it->second(name);
+        if (auto findIt = m_registry->m_registeredTypeBuilders.find(type); findIt != m_registry->m_registeredTypeBuilders.end())
+            return findIt->second(name);
 
+        AZ_Error("SSBehaviorTree", false, "Unable to create the property. Did you forget to register?");
         return nullptr;
     }
 
     AZStd::unique_ptr<SSBehaviorTreeNode> SSBehaviorTreeFactory::CreateNode(
         const AZStd::string& name, const AZStd::string& instanceName, const SSBehaviorTreeNodeConfiguration& config) const
     {
-        auto it = m_registry->m_registeredNodeBuilders.find(name);
-        if (it != m_registry->m_registeredNodeBuilders.end())
+        if (auto findIt = m_registry->m_registeredNodeBuilders.find(name); findIt != m_registry->m_registeredNodeBuilders.end())
         {
-            auto node = it->second(instanceName.c_str(), config);
+            AZStd::unique_ptr<SSBehaviorTreeNode> node = findIt->second(instanceName.c_str(), config);
             node->setRegistrationID(name.c_str());
+            return node;
         }
 
-        throw std::runtime_error("Unable to create the node. Did you forget to register?");
+        AZ_Error("SSBehaviorTree", false, "Unable to create the node. Did you forget to register?");
+        return nullptr;
     }
 
-    BT::Tree SSBehaviorTreeFactory::CreateTreeFromText(AZStd::string& text, const Blackboard::SSBehaviorTreeBlackboard& blackboard)
+    BT::Tree SSBehaviorTreeFactory::CreateTreeFromText(
+        const AZStd::string& text, const Blackboard::SSBehaviorTreeBlackboard& blackboard) const
     {
         return m_registry->m_factory->createTreeFromText(text.c_str(), blackboard.m_blackboard);
     }

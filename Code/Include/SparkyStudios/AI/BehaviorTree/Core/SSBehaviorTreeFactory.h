@@ -71,7 +71,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          * @param blackboard The blackboard instance which this behavior tree will use.
          * @return BT::Tree
          */
-        BT::Tree CreateTreeFromText(AZStd::string& text, const Blackboard::SSBehaviorTreeBlackboard& blackboard = {});
+        BT::Tree CreateTreeFromText(const AZStd::string& text, const Blackboard::SSBehaviorTreeBlackboard& blackboard = {}) const;
 
     private:
         AZStd::shared_ptr<SSBehaviorTreeRegistry> m_registry;
