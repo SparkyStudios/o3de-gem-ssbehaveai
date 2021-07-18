@@ -3,7 +3,7 @@
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
 
-#include <Source/Assets/SSBehaviorTreeAsset.h>
+#include <Assets/SSBehaviorTreeAsset.h>
 
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/Component/Component.h>
@@ -35,7 +35,8 @@ namespace BT
 
         if (parts.size() != 2)
         {
-            throw RuntimeError("Invalid AZ::Vector2 value given. Please format the value as \"float,float\"");
+            AZ_Warning("SSBehaviorTree", false, "Invalid AZ::Vector2 value given. Please format the value as \"float,float\"");
+            return AZ::Vector2::CreateZero();
         }
         else
         {
@@ -60,7 +61,7 @@ namespace BT
     template<>
     inline AZStd::string convertFromString(StringView str)
     {
-        return AZStd::string(str.cbegin(), str.cend());
+        return { str.cbegin(), str.cend() };
     }
 
     // ====================================================================================================
@@ -75,13 +76,11 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         AZ_RTTI(SSBehaviorTreeBlackboardPropertyNil, "{5d73a500-4c1a-4215-8097-2ef78a047fcd}", SSBehaviorTreeBlackboardProperty);
 
         static void Reflect(AZ::ReflectContext* context);
-        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(BT::Blackboard::Ptr context, const char* name);
+        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(const BT::Blackboard::Ptr& context, const char* name);
 
-        SSBehaviorTreeBlackboardPropertyNil()
-        {
-        }
+        SSBehaviorTreeBlackboardPropertyNil() = default;
 
-        SSBehaviorTreeBlackboardPropertyNil(const char* name)
+        explicit SSBehaviorTreeBlackboardPropertyNil(const char* name)
             : SSBehaviorTreeBlackboardProperty(name)
         {
         }
@@ -91,8 +90,8 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         SSBehaviorTreeBlackboardPropertyNil* Clone(const char* name) const override;
 
-        virtual void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
-        virtual void SetValueFromString(const char* value) override;
+        void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const override;
+        void SetValueFromString(const char* value) override;
 
     protected:
         void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty) override;
@@ -105,14 +104,14 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         AZ_RTTI(SSBehaviorTreeBlackboardPropertyBoolean, "{07ca41eb-9ca2-4d89-90de-9bee15fd2be7}", SSBehaviorTreeBlackboardProperty);
 
         static void Reflect(AZ::ReflectContext* context);
-        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(BT::Blackboard::Ptr context, const char* name);
+        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(const BT::Blackboard::Ptr& context, const char* name);
 
         SSBehaviorTreeBlackboardPropertyBoolean()
             : m_value(false)
         {
         }
 
-        SSBehaviorTreeBlackboardPropertyBoolean(const char* name)
+        explicit SSBehaviorTreeBlackboardPropertyBoolean(const char* name)
             : SSBehaviorTreeBlackboardProperty(name)
             , m_value(false)
         {
@@ -133,8 +132,8 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         SSBehaviorTreeBlackboardPropertyBoolean* Clone(const char* name) const override;
 
-        virtual void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
-        virtual void SetValueFromString(const char* value) override;
+        void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const override;
+        void SetValueFromString(const char* value) override;
 
         bool m_value;
 
@@ -149,14 +148,14 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         AZ_RTTI(SSBehaviorTreeBlackboardPropertyNumber, "{8dbed5bd-9bc0-4890-9d9d-63f42fc17351}", SSBehaviorTreeBlackboardProperty);
 
         static void Reflect(AZ::ReflectContext* context);
-        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(BT::Blackboard::Ptr context, const char* name);
+        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(const BT::Blackboard::Ptr& context, const char* name);
 
         SSBehaviorTreeBlackboardPropertyNumber()
             : m_value(0.0f)
         {
         }
 
-        SSBehaviorTreeBlackboardPropertyNumber(const char* name)
+        explicit SSBehaviorTreeBlackboardPropertyNumber(const char* name)
             : SSBehaviorTreeBlackboardProperty(name)
             , m_value(0.0f)
         {
@@ -177,8 +176,8 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         SSBehaviorTreeBlackboardPropertyNumber* Clone(const char* name) const override;
 
-        virtual void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
-        virtual void SetValueFromString(const char* value) override;
+        void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const override;
+        void SetValueFromString(const char* value) override;
 
         double m_value;
 
@@ -193,13 +192,11 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         AZ_RTTI(SSBehaviorTreeBlackboardPropertyString, "{89bcffdc-f977-40b3-bcbf-57660eb8dfa5}", SSBehaviorTreeBlackboardProperty);
 
         static void Reflect(AZ::ReflectContext* context);
-        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(BT::Blackboard::Ptr context, const char* name);
+        static SSBehaviorTreeBlackboardProperty* TryCreateProperty(const BT::Blackboard::Ptr& context, const char* name);
 
-        SSBehaviorTreeBlackboardPropertyString()
-        {
-        }
+        SSBehaviorTreeBlackboardPropertyString() = default;
 
-        SSBehaviorTreeBlackboardPropertyString(const char* name)
+        explicit SSBehaviorTreeBlackboardPropertyString(const char* name)
             : SSBehaviorTreeBlackboardProperty(name)
         {
         }
@@ -219,8 +216,8 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         SSBehaviorTreeBlackboardPropertyString* Clone(const char* name = nullptr) const override;
 
-        virtual void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
-        virtual void SetValueFromString(const char* value) override;
+        void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const override;
+        void SetValueFromString(const char* value) override;
 
         AZStd::string m_value;
 
@@ -236,16 +233,14 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         static void Reflect(AZ::ReflectContext* context);
 
-        SSBehaviorTreeBlackboardPropertyEntityRef()
-        {
-        }
+        SSBehaviorTreeBlackboardPropertyEntityRef() = default;
 
-        SSBehaviorTreeBlackboardPropertyEntityRef(const char* name)
+        explicit SSBehaviorTreeBlackboardPropertyEntityRef(const char* name)
             : SSBehaviorTreeBlackboardProperty(name)
         {
         }
 
-        virtual ~SSBehaviorTreeBlackboardPropertyEntityRef() = default;
+        ~SSBehaviorTreeBlackboardPropertyEntityRef() override = default;
 
         const void* GetDataAddress() const override
         {
@@ -256,8 +251,8 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         SSBehaviorTreeBlackboardPropertyEntityRef* Clone(const char* name = nullptr) const override;
 
-        virtual void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
-        virtual void SetValueFromString(const char* value) override;
+        void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const override;
+        void SetValueFromString(const char* value) override;
 
         AZ::EntityId m_value;
 
@@ -273,16 +268,14 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         static void Reflect(AZ::ReflectContext* context);
 
-        SSBehaviorTreeBlackboardPropertyVector2()
-        {
-        }
+        SSBehaviorTreeBlackboardPropertyVector2() = default;
 
-        SSBehaviorTreeBlackboardPropertyVector2(const char* name)
+        explicit SSBehaviorTreeBlackboardPropertyVector2(const char* name)
             : SSBehaviorTreeBlackboardProperty(name)
         {
         }
 
-        virtual ~SSBehaviorTreeBlackboardPropertyVector2() = default;
+        ~SSBehaviorTreeBlackboardPropertyVector2() override = default;
 
         const void* GetDataAddress() const override
         {
@@ -293,8 +286,8 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
         SSBehaviorTreeBlackboardPropertyVector2* Clone(const char* name = nullptr) const override;
 
-        virtual void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const override;
-        virtual void SetValueFromString(const char* value) override;
+        void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const override;
+        void SetValueFromString(const char* value) override;
 
         AZ::Vector2 m_value = AZ::Vector2::CreateZero();
 

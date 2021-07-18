@@ -1,6 +1,6 @@
 #pragma once
 
-#include <behaviortree_cpp_v3/bt_factory.h>
+#include <StdAfx.h>
 
 #include <AzCore/Math/Uuid.h>
 #include <AzCore/Math/Vector2.h>
@@ -12,6 +12,8 @@
 
 namespace SparkyStudios::AI::BehaviorTree::Blackboard
 {
+    struct SSBehaviorTreeBlackboard;
+
     /**
      * @brief A wrapper around a value in the behavior tree blackboard.
      */
@@ -26,21 +28,19 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @warning Doesn't use this constructor directly. Use the SSBehaviorTreeBlackboardProperty(const char* name)
          * constructor instead.
          */
-        SSBehaviorTreeBlackboardProperty();
+        SSBehaviorTreeBlackboardProperty() = default;
 
         /**
          * @brief Construct a new SSBehaviorTreeBlackboardProperty with the given name.
          *
          * @param name The property name in the blackboard.
          */
-        SSBehaviorTreeBlackboardProperty(const char* name);
+        explicit SSBehaviorTreeBlackboardProperty(const char* name);
 
         /**
          * @brief Destroy the SSBehaviorTreeBlackboardProperty.
          */
-        virtual ~SSBehaviorTreeBlackboardProperty()
-        {
-        }
+        virtual ~SSBehaviorTreeBlackboardProperty() = default;
 
         /**
          * @brief Reflect this class in the given O3DE ReflectContext.
@@ -56,7 +56,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @return true When this property wraps a null value.
          * @return false When this property does not wrap a null value.
          */
-        bool IsNil();
+        bool IsNil() const;
 
         /**
          * @brief Check if this property wraps a boolean value.
@@ -64,7 +64,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @return true When this property wraps a boolean value.
          * @return false When this property does not wrap a boolean value.
          */
-        bool IsBoolean();
+        bool IsBoolean() const;
 
         /**
          * @brief Check if this property wraps a number value.
@@ -72,7 +72,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @return true When this property wraps a number value.
          * @return false When this property does not wrap a number value.
          */
-        bool IsNumber();
+        bool IsNumber() const;
 
         /**
          * @brief Check if this property wraps a string value.
@@ -80,7 +80,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @return true When this property wraps a string value.
          * @return false When this property does not wrap a string value.
          */
-        bool IsString();
+        bool IsString() const;
 
         /**
          * @brief Check if this property wraps an entity ID value.
@@ -88,7 +88,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @return true When this property wraps an entity ID value.
          * @return false When this property does not wrap an entity ID value.
          */
-        bool IsEntity();
+        bool IsEntity() const;
 
         /**
          * @brief Check if this property wraps a Vector2 value.
@@ -96,7 +96,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @return true When this property wraps a Vector2 value.
          * @return false When this property does not wrap a Vector2 value.
          */
-        bool IsVector2();
+        bool IsVector2() const;
 
         /**
          * @brief Check if this property wraps a Vector3 value.
@@ -104,7 +104,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          * @return true When this property wraps a Vector3 value.
          * @return false When this property does not wrap a Vector3 value.
          */
-        bool IsVector3();
+        bool IsVector3() const;
 
         /**
          * @brief Check if this property wraps an enumerated value.
@@ -156,13 +156,13 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
          *
          * @param blackboard The blackboard in which add this property.
          */
-        virtual void AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const = 0;
+        virtual void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const = 0;
 
         /**
          * @brief Try to convert the given string into a value supported by this property.
          * If the conversion succeeds, the result is stored in this property.
          *
-         * @param value The value to convert and store, mostly comming from the behavior tree's blackboard.
+         * @param value The value to convert and store, mostly coming from the behavior tree's blackboard.
          */
         virtual void SetValueFromString(const char* value) = 0;
 

@@ -2,12 +2,10 @@
 
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
 
+#include <Blackboard/SSBehaviorTreeBlackboard.h>
+
 namespace SparkyStudios::AI::BehaviorTree::Blackboard
 {
-    SSBehaviorTreeBlackboardProperty::SSBehaviorTreeBlackboardProperty()
-    {
-    }
-
     SSBehaviorTreeBlackboardProperty::SSBehaviorTreeBlackboardProperty(const char* name)
         : m_id(AZ::Crc32(name))
         , m_name(name)
@@ -16,7 +14,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     void SSBehaviorTreeBlackboardProperty::Reflect(AZ::ReflectContext* context)
     {
-        if (AZ::SerializeContext* sc = azrtti_cast<AZ::SerializeContext*>(context))
+        if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
             sc->Class<SSBehaviorTreeBlackboardProperty>()
                 ->Version(1)
@@ -33,38 +31,39 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         }
     }
 
-    bool SSBehaviorTreeBlackboardProperty::IsNil()
+    bool SSBehaviorTreeBlackboardProperty::IsNil() const
     {
-        return GetDataTypeUuid() == AZ::SerializeTypeInfo<void*>::GetUuid();
+        return GetDataTypeUuid() == azrtti_typeid<SSBehaviorTreeBlackboardPropertyNil>();
     }
 
-    bool SSBehaviorTreeBlackboardProperty::IsBoolean()
+    bool SSBehaviorTreeBlackboardProperty::IsBoolean() const
     {
-        return GetDataTypeUuid() == AZ::SerializeTypeInfo<bool>::GetUuid();
+        return GetDataTypeUuid() == azrtti_typeid<SSBehaviorTreeBlackboardPropertyBoolean>();
     }
 
-    bool SSBehaviorTreeBlackboardProperty::IsNumber()
+    bool SSBehaviorTreeBlackboardProperty::IsNumber() const
     {
-        return GetDataTypeUuid() == AZ::SerializeTypeInfo<double>::GetUuid();
+        return GetDataTypeUuid() == azrtti_typeid<SSBehaviorTreeBlackboardPropertyNumber>();
     }
 
-    bool SSBehaviorTreeBlackboardProperty::IsString()
+    bool SSBehaviorTreeBlackboardProperty::IsString() const
     {
-        return GetDataTypeUuid() == AZ::SerializeGenericTypeInfo<AZStd::string>::GetClassTypeId();
+        return GetDataTypeUuid() == azrtti_typeid<SSBehaviorTreeBlackboardPropertyString>();
     }
 
-    bool SSBehaviorTreeBlackboardProperty::IsEntity()
+    bool SSBehaviorTreeBlackboardProperty::IsEntity() const
     {
-        return GetDataTypeUuid() == AZ::SerializeTypeInfo<AZ::EntityId>::GetUuid();
+        return GetDataTypeUuid() == azrtti_typeid<SSBehaviorTreeBlackboardPropertyEntityRef>();
     }
 
-    bool SSBehaviorTreeBlackboardProperty::IsVector2()
+    bool SSBehaviorTreeBlackboardProperty::IsVector2() const
     {
-        return GetDataTypeUuid() == AZ::SerializeTypeInfo<AZ::Vector2>::GetUuid();
+        return GetDataTypeUuid() == azrtti_typeid<SSBehaviorTreeBlackboardPropertyVector2>();
     }
 
-    bool SSBehaviorTreeBlackboardProperty::IsVector3()
+    bool SSBehaviorTreeBlackboardProperty::IsVector3() const
     {
-        return GetDataTypeUuid() == AZ::SerializeTypeInfo<AZ::Vector3>::GetUuid();
+        // TODO: Implement a SSBehaviorTreeBlackboardPropertyVector3
+        return false;
     }
 } // namespace SparkyStudios::AI::BehaviorTree::Blackboard

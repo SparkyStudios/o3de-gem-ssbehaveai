@@ -10,7 +10,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     SSBehaviorTreeBlackboardProperty* SSBehaviorTreeBlackboard::GetProperty(const char* propertyName)
     {
-        for (SSBehaviorTreeBlackboardProperty* prop : m_properties)
+        for (auto* prop : m_properties)
         {
             if (prop->m_name == propertyName)
             {
@@ -23,13 +23,15 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     void SSBehaviorTreeBlackboard::Clear()
     {
-        for (SSBehaviorTreeBlackboardProperty* prop : m_properties)
+        for (auto* prop : m_properties)
         {
             delete prop;
         }
 
         m_properties.clear();
-        // m_blackboard.swap(BT::Blackboard::create());
+
+        BT::Blackboard::Ptr bb = BT::Blackboard::create();
+        m_blackboard.swap(bb);
     }
 
     SSBehaviorTreeBlackboard::~SSBehaviorTreeBlackboard()
@@ -50,19 +52,16 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
 #pragma region SSBehaviorTreeBlackboardPropertyNil
 
-    void SSBehaviorTreeBlackboardPropertyNil::Reflect(AZ::ReflectContext* reflection)
+    void SSBehaviorTreeBlackboardPropertyNil::Reflect(AZ::ReflectContext* context)
     {
-        AZ::SerializeContext* serializeContext = azrtti_cast<AZ::SerializeContext*>(reflection);
-
-        if (serializeContext)
+        if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serializeContext->Class<SSBehaviorTreeBlackboardPropertyNil, SSBehaviorTreeBlackboardProperty>()
-                ->Version(1)
-                ->SerializeWithNoData();
+            sc->Class<SSBehaviorTreeBlackboardPropertyNil, SSBehaviorTreeBlackboardProperty>()->Version(1)->SerializeWithNoData();
         }
     }
 
-    SSBehaviorTreeBlackboardProperty* SSBehaviorTreeBlackboardPropertyNil::TryCreateProperty(BT::Blackboard::Ptr context, const char* name)
+    SSBehaviorTreeBlackboardProperty* SSBehaviorTreeBlackboardPropertyNil::TryCreateProperty(
+        const BT::Blackboard::Ptr& context, const char* name)
     {
         SSBehaviorTreeBlackboardProperty* retVal = nullptr;
 
@@ -84,7 +83,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyNil::GetDataTypeUuid() const
     {
-        return AZ::SerializeTypeInfo<void*>::GetUuid();
+        return azrtti_typeid<void*>();
     }
 
     SSBehaviorTreeBlackboardPropertyNil* SSBehaviorTreeBlackboardPropertyNil::Clone(const char* name) const
@@ -94,10 +93,10 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     void SSBehaviorTreeBlackboardPropertyNil::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty)
     {
-        (void)scriptProperty;
+        AZ_UNUSED(scriptProperty);
     }
 
-    void SSBehaviorTreeBlackboardPropertyNil::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
+    void SSBehaviorTreeBlackboardPropertyNil::AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const
     {
         AZ_UNUSED(blackboard);
     }
@@ -111,19 +110,17 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
 #pragma region SSBehaviorTreeBlackboardPropertyBoolean
 
-    void SSBehaviorTreeBlackboardPropertyBoolean::Reflect(AZ::ReflectContext* reflection)
+    void SSBehaviorTreeBlackboardPropertyBoolean::Reflect(AZ::ReflectContext* context)
     {
-        AZ::SerializeContext* serializeContext = azrtti_cast<AZ::SerializeContext*>(reflection);
-
-        if (serializeContext)
+        if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serializeContext->Class<SSBehaviorTreeBlackboardPropertyBoolean, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyBoolean, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyBoolean::m_value);
         }
     }
 
     SSBehaviorTreeBlackboardProperty* SSBehaviorTreeBlackboardPropertyBoolean::TryCreateProperty(
-        BT::Blackboard::Ptr context, const char* name)
+        const BT::Blackboard::Ptr& context, const char* name)
     {
         SSBehaviorTreeBlackboardProperty* retVal = nullptr;
 
@@ -145,13 +142,13 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyBoolean::GetDataTypeUuid() const
     {
-        return AZ::SerializeTypeInfo<bool>::GetUuid();
+        return azrtti_typeid<bool>();
     }
 
     void SSBehaviorTreeBlackboardPropertyBoolean::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty)
     {
-        const SSBehaviorTreeBlackboardPropertyBoolean* booleanProperty =
-            azrtti_cast<const SSBehaviorTreeBlackboardPropertyBoolean*>(scriptProperty);
+        const auto* booleanProperty = azrtti_cast<const SSBehaviorTreeBlackboardPropertyBoolean*>(scriptProperty);
+
         AZ_Error(
             "SSBehaviorTreeBlackboardPropertyBoolean", booleanProperty,
             "Invalid call to CloneData. Types must match before clone attempt is made.\n");
@@ -162,9 +159,9 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         }
     }
 
-    void SSBehaviorTreeBlackboardPropertyBoolean::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
+    void SSBehaviorTreeBlackboardPropertyBoolean::AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const
     {
-        blackboard->set<bool>(m_name.c_str(), m_value);
+        blackboard.m_blackboard->set<bool>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyBoolean::SetValueFromString(const char* value)
@@ -176,19 +173,17 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
 #pragma region SSBehaviorTreeBlackboardPropertyNumber
 
-    void SSBehaviorTreeBlackboardPropertyNumber::Reflect(AZ::ReflectContext* reflection)
+    void SSBehaviorTreeBlackboardPropertyNumber::Reflect(AZ::ReflectContext* context)
     {
-        AZ::SerializeContext* serializeContext = azrtti_cast<AZ::SerializeContext*>(reflection);
-
-        if (serializeContext)
+        if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serializeContext->Class<SSBehaviorTreeBlackboardPropertyNumber, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyNumber, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyNumber::m_value);
         }
     }
 
     SSBehaviorTreeBlackboardProperty* SSBehaviorTreeBlackboardPropertyNumber::TryCreateProperty(
-        BT::Blackboard::Ptr context, const char* name)
+        const BT::Blackboard::Ptr& context, const char* name)
     {
         SSBehaviorTreeBlackboardProperty* retVal = nullptr;
 
@@ -210,13 +205,13 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyNumber::GetDataTypeUuid() const
     {
-        return AZ::SerializeTypeInfo<double>::GetUuid();
+        return azrtti_typeid<double>();
     }
 
     void SSBehaviorTreeBlackboardPropertyNumber::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty)
     {
-        const SSBehaviorTreeBlackboardPropertyNumber* numberProperty =
-            azrtti_cast<const SSBehaviorTreeBlackboardPropertyNumber*>(scriptProperty);
+        const auto* numberProperty = azrtti_cast<const SSBehaviorTreeBlackboardPropertyNumber*>(scriptProperty);
+
         AZ_Error(
             "SSBehaviorTreeBlackboardPropertyNumber", numberProperty,
             "Invalid call to CloneData. Types must match before clone attempt is made.\n");
@@ -227,9 +222,9 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         }
     }
 
-    void SSBehaviorTreeBlackboardPropertyNumber::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
+    void SSBehaviorTreeBlackboardPropertyNumber::AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const
     {
-        blackboard->set<double>(m_name.c_str(), m_value);
+        blackboard.m_blackboard->set<double>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyNumber::SetValueFromString(const char* value)
@@ -241,19 +236,17 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
 #pragma region SSBehaviorTreeBlackboardPropertyString
 
-    void SSBehaviorTreeBlackboardPropertyString::Reflect(AZ::ReflectContext* reflection)
+    void SSBehaviorTreeBlackboardPropertyString::Reflect(AZ::ReflectContext* context)
     {
-        AZ::SerializeContext* serializeContext = azrtti_cast<AZ::SerializeContext*>(reflection);
-
-        if (serializeContext)
+        if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serializeContext->Class<SSBehaviorTreeBlackboardPropertyString, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyString, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyString::m_value);
         }
     }
 
     SSBehaviorTreeBlackboardProperty* SSBehaviorTreeBlackboardPropertyString::TryCreateProperty(
-        BT::Blackboard::Ptr context, const char* name)
+        const BT::Blackboard::Ptr& context, const char* name)
     {
         SSBehaviorTreeBlackboardProperty* retVal = nullptr;
 
@@ -275,13 +268,13 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyString::GetDataTypeUuid() const
     {
-        return AZ::SerializeGenericTypeInfo<AZStd::string>::GetClassTypeId();
+        return azrtti_typeid<AZStd::string>();
     }
 
     void SSBehaviorTreeBlackboardPropertyString::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty)
     {
-        const SSBehaviorTreeBlackboardPropertyString* stringProperty =
-            azrtti_cast<const SSBehaviorTreeBlackboardPropertyString*>(scriptProperty);
+        const auto* stringProperty = azrtti_cast<const SSBehaviorTreeBlackboardPropertyString*>(scriptProperty);
+
         AZ_Error(
             "SSBehaviorTreeBlackboardPropertyString", stringProperty,
             "Invalid call to CloneData. Types must match before clone attempt is made.\n");
@@ -292,9 +285,9 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         }
     }
 
-    void SSBehaviorTreeBlackboardPropertyString::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
+    void SSBehaviorTreeBlackboardPropertyString::AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const
     {
-        blackboard->set<AZStd::string>(m_name.c_str(), m_value);
+        blackboard.m_blackboard->set<AZStd::string>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyString::SetValueFromString(const char* value)
@@ -306,47 +299,44 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
 #pragma region SSBehaviorTreeBlackboardPropertyEntityRef
 
-    void SSBehaviorTreeBlackboardPropertyEntityRef::Reflect(AZ::ReflectContext* reflection)
+    void SSBehaviorTreeBlackboardPropertyEntityRef::Reflect(AZ::ReflectContext* context)
     {
-        AZ::SerializeContext* serializeContext = azrtti_cast<AZ::SerializeContext*>(reflection);
-
-        if (serializeContext)
+        if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serializeContext->Class<SSBehaviorTreeBlackboardPropertyEntityRef, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyEntityRef, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyEntityRef::m_value);
         }
     }
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyEntityRef::GetDataTypeUuid() const
     {
-        return AZ::SerializeTypeInfo<AZ::EntityId>::GetUuid();
+        return azrtti_typeid<AZ::EntityId>();
     }
 
     SSBehaviorTreeBlackboardPropertyEntityRef* SSBehaviorTreeBlackboardPropertyEntityRef::Clone(const char* name) const
     {
-        SSBehaviorTreeBlackboardPropertyEntityRef* clonedValue =
-            aznew SSBehaviorTreeBlackboardPropertyEntityRef(name ? name : m_name.c_str());
+        auto* clonedValue = aznew SSBehaviorTreeBlackboardPropertyEntityRef(name ? name : m_name.c_str());
         clonedValue->m_value = m_value;
         return clonedValue;
     }
 
     void SSBehaviorTreeBlackboardPropertyEntityRef::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty)
     {
-        const SSBehaviorTreeBlackboardPropertyEntityRef* entityProperty =
-            azrtti_cast<const SSBehaviorTreeBlackboardPropertyEntityRef*>(scriptProperty);
+        const auto* entityProperty = azrtti_cast<const SSBehaviorTreeBlackboardPropertyEntityRef*>(scriptProperty);
 
         AZ_Error(
             "SSBehaviorTreeBlackboardPropertyEntityRef", entityProperty,
             "Invalid call to CloneData. Types must match before clone attempt is made.\n");
+
         if (entityProperty)
         {
             m_value = entityProperty->m_value;
         }
     }
 
-    void SSBehaviorTreeBlackboardPropertyEntityRef::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
+    void SSBehaviorTreeBlackboardPropertyEntityRef::AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const
     {
-        blackboard->set<AZ::EntityId>(m_name.c_str(), m_value);
+        blackboard.m_blackboard->set<AZ::EntityId>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyEntityRef::SetValueFromString(const char* value)
@@ -358,46 +348,44 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
 
 #pragma region SSBehaviorTreeBlackboardPropertyVector2
 
-    void SSBehaviorTreeBlackboardPropertyVector2::Reflect(AZ::ReflectContext* reflection)
+    void SSBehaviorTreeBlackboardPropertyVector2::Reflect(AZ::ReflectContext* context)
     {
-        AZ::SerializeContext* serializeContext = azrtti_cast<AZ::SerializeContext*>(reflection);
-
-        if (serializeContext)
+        if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serializeContext->Class<SSBehaviorTreeBlackboardPropertyVector2, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyVector2, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyVector2::m_value);
         }
     }
 
     const AZ::Uuid& SSBehaviorTreeBlackboardPropertyVector2::GetDataTypeUuid() const
     {
-        return AZ::SerializeTypeInfo<AZ::Vector2>::GetUuid();
+        return azrtti_typeid<AZ::Vector2>();
     }
 
     SSBehaviorTreeBlackboardPropertyVector2* SSBehaviorTreeBlackboardPropertyVector2::Clone(const char* name) const
     {
-        SSBehaviorTreeBlackboardPropertyVector2* clonedValue = aznew SSBehaviorTreeBlackboardPropertyVector2(name ? name : m_name.c_str());
+        auto* clonedValue = aznew SSBehaviorTreeBlackboardPropertyVector2(name ? name : m_name.c_str());
         clonedValue->m_value = m_value;
         return clonedValue;
     }
 
     void SSBehaviorTreeBlackboardPropertyVector2::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty)
     {
-        const SSBehaviorTreeBlackboardPropertyVector2* entityProperty =
-            azrtti_cast<const SSBehaviorTreeBlackboardPropertyVector2*>(scriptProperty);
+        const auto* entityProperty = azrtti_cast<const SSBehaviorTreeBlackboardPropertyVector2*>(scriptProperty);
 
         AZ_Error(
             "SSBehaviorTreeBlackboardPropertyVector2", entityProperty,
             "Invalid call to CloneData. Types must match before clone attempt is made.\n");
+
         if (entityProperty)
         {
             m_value = entityProperty->m_value;
         }
     }
 
-    void SSBehaviorTreeBlackboardPropertyVector2::AddBlackboardEntry(const BT::Blackboard::Ptr& blackboard) const
+    void SSBehaviorTreeBlackboardPropertyVector2::AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const
     {
-        blackboard->set<AZ::Vector2>(m_name.c_str(), m_value);
+        blackboard.m_blackboard->set<AZ::Vector2>(m_name.c_str(), m_value);
     }
 
     void SSBehaviorTreeBlackboardPropertyVector2::SetValueFromString(const char* value)
