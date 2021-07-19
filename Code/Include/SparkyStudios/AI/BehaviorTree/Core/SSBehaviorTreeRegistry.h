@@ -51,7 +51,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         void RegisterProperty(const AZStd::string& type, const SSBehaviorTreeBlackboardPropertyBuilder& builder)
         {
             static_assert(
-                AZStd::is_base_of<SSBehaviorTreeBlackboardProperty, T>::value, "T must be derived from SSBehaviorTreeBlackboardProperty");
+                AZStd::is_base_of<Blackboard::SSBehaviorTreeBlackboardProperty, T>::value, "T must be derived from SSBehaviorTreeBlackboardProperty");
             static_assert(!AZStd::is_abstract<T>::value, "T must not be abstract");
 
             RegisterProperty(type, azrtti_typeid<T>(), builder);
