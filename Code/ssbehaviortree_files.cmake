@@ -46,22 +46,24 @@ set(FILES
     
     Source/Nodes/Animation/AnimGraphGetNamedParameterBoolNode.cpp
     Source/Nodes/Animation/AnimGraphGetNamedParameterFloatNode.cpp
-    Source/Nodes/Animation/AnimGraphGetNamedParameterNode.cpp
     Source/Nodes/Animation/AnimGraphGetNamedParameterRotationEulerNode.cpp
     Source/Nodes/Animation/AnimGraphGetNamedParameterRotationNode.cpp
+    Source/Nodes/Animation/AnimGraphGetNamedParameterStringNode.cpp
     Source/Nodes/Animation/AnimGraphGetNamedParameterVector2Node.cpp
     Source/Nodes/Animation/AnimGraphGetNamedParameterVector3Node.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterBoolNode.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterFloatNode.cpp
-    Source/Nodes/Animation/AnimGraphSetNamedParameterNode.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterRotationEulerNode.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterRotationNode.cpp
+    Source/Nodes/Animation/AnimGraphSetNamedParameterStringNode.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.cpp
     Source/Nodes/Common/DebugMessageNode.cpp
     Source/Nodes/Common/WaitNode.cpp
     Source/Nodes/Navigation/NavigationFindPathToEntityNode.cpp
 
+    Source/SSBehaviorTreeComponent.h
+    Source/SSBehaviorTreeComponent.cpp
     Source/SSBehaviorTreeModuleInterface.h
     Source/SSBehaviorTreeSystemComponent.cpp
     Source/SSBehaviorTreeSystemComponent.h
