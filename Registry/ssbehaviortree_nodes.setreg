@@ -1,0 +1,14 @@
+{
+  "SparkyStudios": {
+    "Gems": {
+      "AI": {
+        "BehaviorTree": {
+          "AvailableNodes": [
+            "DebugMessage",
+            "Wait"
+          ]
+        }
+      }
+    }
+  }
+}

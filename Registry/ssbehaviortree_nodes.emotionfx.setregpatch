@@ -1,0 +1,72 @@
+[
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphGetNamedParameterBool"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphGetNamedParameterFloat"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphGetNamedParameterRotationEuler"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphGetNamedParameterRotation"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphGetNamedParameterString"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphGetNamedParameterVector2"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphGetNamedParameterVector3"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphSetNamedParameterBool"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphSetNamedParameterFloat"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphSetNamedParameterRotationEuler"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphSetNamedParameterRotation"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphSetNamedParameterString"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphSetNamedParameterVector2"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "AnimGraphSetNamedParameterVector3"
+  }
+]

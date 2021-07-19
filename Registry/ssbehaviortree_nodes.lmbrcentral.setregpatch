@@ -1,0 +1,7 @@
+[
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "NavigationFindPathToEntity"
+  }
+]
