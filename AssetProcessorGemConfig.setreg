@@ -1,13 +1,13 @@
 {
-    "Amazon": {
-        "AssetProcessor": {
-            "Settings": {
-                "RC SSBehaviorTree Asset": {
-                    "pattern": ".*ssbt",
-                    "params": "copy",
-                    "productAssetType": "{96ECA204-2ED5-4160-90EF-2A0E8444210C}"
-                }
-            }
+  "Amazon": {
+    "AssetProcessor": {
+      "Settings": {
+        "RC SSBehaviorTree Asset": {
+          "pattern": ".*ssbt",
+          "params": "copy",
+          "productAssetType": "{7f72ee8b-0b82-40ae-bd9b-cf34eaf35377}"
         }
+      }
     }
+  }
 }
