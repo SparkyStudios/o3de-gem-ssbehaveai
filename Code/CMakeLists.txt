@@ -33,6 +33,7 @@ ly_add_target(
             Source
     BUILD_DEPENDENCIES
         PRIVATE
+            Gem::LmbrCentral.Static
             Gem::EMotionFX.Static
         PUBLIC
             AZ::AzCore
@@ -136,6 +137,8 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 PRIVATE
                     AZ::AzTest
                     AZ::AzFramework
+                    Gem::LmbrCentral.Static
+                    Gem::EMotionFX.Static
                     Gem::SSBehaviorTree.Static
         )
 
