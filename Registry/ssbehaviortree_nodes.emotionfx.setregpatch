@@ -68,5 +68,10 @@
     "op": "add",
     "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterVector3"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionGetBlendInTime"
   }
 ]

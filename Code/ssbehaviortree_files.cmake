@@ -29,6 +29,7 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterStringNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendInTimeNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/DebugMessageNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/WaitNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
@@ -59,6 +60,7 @@ set(FILES
     Source/Nodes/Animation/AnimGraphSetNamedParameterStringNode.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.cpp
+    Source/Nodes/Animation/SimpleMotionGetBlendInTimeNode.cpp
     Source/Nodes/Common/DebugMessageNode.cpp
     Source/Nodes/Common/WaitNode.cpp
     Source/Nodes/Navigation/NavigationFindPathToEntityNode.cpp

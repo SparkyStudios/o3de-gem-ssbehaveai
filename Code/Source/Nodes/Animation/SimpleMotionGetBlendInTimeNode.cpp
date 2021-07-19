@@ -6,7 +6,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 {
     SimpleMotionGetBlendInTimeNode::SimpleMotionGetBlendInTimeNode(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : SSBehaviorTreeNodeBase(name, config)
+        : Core::SSBehaviorTreeNode(name, config)
     {
     }
 
@@ -15,9 +15,9 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
         AZ_UNUSED(context);
     }
 
-    void SimpleMotionGetBlendInTimeNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
+    void SimpleMotionGetBlendInTimeNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
     {
-        registry->DelayNodeRegistration(NODE_NAME);
+        registry->DelayNodeRegistration<SimpleMotionGetBlendInTimeNode>(NODE_NAME);
     }
 
     Core::SSBehaviorTreePortsList SimpleMotionGetBlendInTimeNode::providedPorts()
