@@ -8,7 +8,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
     {
     public:
         AZ_CLASS_ALLOCATOR(AnimGraphGetNamedParameterFloatNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(AnimGraphGetNamedParameterFloatNode, "{b4bd8edd-6793-4943-981c-1d150d02efef}", AnimGraphGetNamedParameterNode);
+        AZ_RTTI(AnimGraphGetNamedParameterFloatNode, "{b4bd8edd-6793-4943-981c-1d150d02efef}", AnimGraphGetNamedParameterNode<float>);
 
         static constexpr const char* NODE_NAME = "AnimGraphGetNamedParameterFloat";
 

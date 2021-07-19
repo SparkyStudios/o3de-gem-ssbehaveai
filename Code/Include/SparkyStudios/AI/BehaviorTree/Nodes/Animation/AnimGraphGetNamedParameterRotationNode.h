@@ -8,7 +8,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
     {
     public:
         AZ_CLASS_ALLOCATOR(AnimGraphGetNamedParameterRotationNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(AnimGraphGetNamedParameterRotationNode, "{1a04009d-28b1-45c6-bf95-52ffddb214d3}", AnimGraphGetNamedParameterNode);
+        AZ_RTTI(AnimGraphGetNamedParameterRotationNode, "{1a04009d-28b1-45c6-bf95-52ffddb214d3}", AnimGraphGetNamedParameterNode<AZ::Quaternion>);
 
         static constexpr const char* NODE_NAME = "AnimGraphGetNamedParameterRotation";
 

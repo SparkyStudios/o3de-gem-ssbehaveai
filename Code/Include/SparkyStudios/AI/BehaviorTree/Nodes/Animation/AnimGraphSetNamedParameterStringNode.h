@@ -8,7 +8,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
     {
     public:
         AZ_CLASS_ALLOCATOR(AnimGraphSetNamedParameterStringNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(AnimGraphSetNamedParameterStringNode, "{397cec57-b565-4cb4-a4be-0a725c9ea6c1}", AnimGraphSetNamedParameterNode);
+        AZ_RTTI(AnimGraphSetNamedParameterStringNode, "{397cec57-b565-4cb4-a4be-0a725c9ea6c1}", AnimGraphSetNamedParameterNode<AZStd::string>);
 
         static constexpr const char* NODE_NAME = "AnimGraphSetNamedParameterString";
 

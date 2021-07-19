@@ -8,7 +8,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
     {
     public:
         AZ_CLASS_ALLOCATOR(AnimGraphGetNamedParameterRotationEulerNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(AnimGraphGetNamedParameterRotationEulerNode, "{78a08bdb-ac11-4aef-9c04-0651a6ee22b4}", AnimGraphGetNamedParameterNode);
+        AZ_RTTI(AnimGraphGetNamedParameterRotationEulerNode, "{78a08bdb-ac11-4aef-9c04-0651a6ee22b4}", AnimGraphGetNamedParameterNode<AZ::Vector3>);
 
         static constexpr const char* NODE_NAME = "AnimGraphGetNamedParameterRotationEuler";
 
