@@ -44,6 +44,9 @@ namespace SparkyStudios::AI::BehaviorTree
         ////////////////////////////////////////////////////////////////////////
 
     private:
+        void RegisterDefaultProperties();
+        void RegisterDefaultNodes();
+
         Core::SSBehaviorTreeFactory m_factory;
     };
 

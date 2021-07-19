@@ -5,6 +5,8 @@
 
 #include <AzToolsFramework/Entity/EditorEntityContextBus.h>
 
+#include <Assets/SSBehaviorTreeAssetHandler.h>
+
 namespace SparkyStudios::AI::BehaviorTree
 {
     /// System component for SSBehaviorTree editor
@@ -30,5 +32,7 @@ namespace SparkyStudios::AI::BehaviorTree
         // AZ::Component
         void Activate() override;
         void Deactivate() override;
+
+        Assets::SSBehaviorTreeAssetHandler* m_assetHandler;
     };
 } // namespace SparkyStudios::AI::BehaviorTree

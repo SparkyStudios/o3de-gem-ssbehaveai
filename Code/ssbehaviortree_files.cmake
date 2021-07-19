@@ -3,6 +3,7 @@ set(FILES
     Source/StdAfx.cpp
     Source/StdAfx.h
 
+    Include/SparkyStudios/AI/BehaviorTree/Nodes.h
     Include/SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h
 
     Include/SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h
