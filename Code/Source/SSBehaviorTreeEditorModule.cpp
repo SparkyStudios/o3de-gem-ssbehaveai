@@ -1,5 +1,7 @@
 #include <StdAfx.h>
 
+#include <SSBehaviorTreeComponent.h>
+#include <SSBehaviorTreeEditorComponent.h>
 #include <SSBehaviorTreeEditorSystemComponent.h>
 #include <SSBehaviorTreeModuleInterface.h>
 
@@ -8,19 +10,17 @@ namespace SparkyStudios::AI::BehaviorTree
     class SSBehaviorTreeEditorModule : public SSBehaviorTreeModuleInterface
     {
     public:
-        AZ_RTTI(SSBehaviorTreeEditorModule, "{2fc25376-c0a0-4b56-bfbe-5a65bad02586}", SSBehaviorTreeModuleInterface);
         AZ_CLASS_ALLOCATOR(SSBehaviorTreeEditorModule, AZ::SystemAllocator, 0);
+        AZ_RTTI(SSBehaviorTreeEditorModule, "{2fc25376-c0a0-4b56-bfbe-5a65bad02586}", SSBehaviorTreeModuleInterface);
 
         SSBehaviorTreeEditorModule()
         {
-            // Push results of [MyComponent]::CreateDescriptor() into m_descriptors here.
-            // Add ALL components descriptors associated with this gem to m_descriptors.
-            // This will associate the AzTypeInfo information for the components with the the SerializeContext, BehaviorContext and
-            // EditContext. This happens through the [MyComponent]::Reflect() function.
             m_descriptors.insert(
                 m_descriptors.end(),
                 {
                     SSBehaviorTreeEditorSystemComponent::CreateDescriptor(),
+                    SSBehaviorTreeComponent::CreateDescriptor(),
+                    SSBehaviorTreeEditorComponent::CreateDescriptor(),
                 });
         }
 
