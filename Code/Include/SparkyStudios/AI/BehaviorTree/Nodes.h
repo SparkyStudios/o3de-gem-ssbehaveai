@@ -21,6 +21,22 @@
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterStringNode.h>
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.h>
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendInTimeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendOutTimeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetLoopMotionNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetMotionNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetPlaySpeedNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetPlayTimeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionPlayNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetBlendInTimeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetBlendOutTimeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetLoopMotionNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetMirrorMotionNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetMotionNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetPlaySpeedNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetPlayTimeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetRetargetMotionNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetReverseMotionNode.h>
 
 // Common
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Common/DebugMessageNode.h>

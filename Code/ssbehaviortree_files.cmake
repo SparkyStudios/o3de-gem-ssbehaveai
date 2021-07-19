@@ -30,6 +30,21 @@ set(FILES
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendInTimeNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendOutTimeNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetLoopMotionNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetMotionNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetPlaySpeedNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetPlayTimeNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionPlayNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetBlendInTimeNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetBlendOutTimeNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetLoopMotionNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetMirrorMotionNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetMotionNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetPlaySpeedNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetPlayTimeNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetRetargetMotionNode.h
+    Include/SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetReverseMotionNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/DebugMessageNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Common/WaitNode.h
     Include/SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
@@ -61,6 +76,21 @@ set(FILES
     Source/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.cpp
     Source/Nodes/Animation/AnimGraphSetNamedParameterVector3Node.cpp
     Source/Nodes/Animation/SimpleMotionGetBlendInTimeNode.cpp
+    Source/Nodes/Animation/SimpleMotionGetBlendOutTimeNode.cpp
+    Source/Nodes/Animation/SimpleMotionGetLoopMotionNode.cpp
+    Source/Nodes/Animation/SimpleMotionGetMotionNode.cpp
+    Source/Nodes/Animation/SimpleMotionGetPlaySpeedNode.cpp
+    Source/Nodes/Animation/SimpleMotionGetPlayTimeNode.cpp
+    Source/Nodes/Animation/SimpleMotionPlayNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetBlendInTimeNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetBlendOutTimeNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetLoopMotionNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetMirrorMotionNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetMotionNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetPlaySpeedNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetPlayTimeNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetRetargetMotionNode.cpp
+    Source/Nodes/Animation/SimpleMotionSetReverseMotionNode.cpp
     Source/Nodes/Common/DebugMessageNode.cpp
     Source/Nodes/Common/WaitNode.cpp
     Source/Nodes/Navigation/NavigationFindPathToEntityNode.cpp

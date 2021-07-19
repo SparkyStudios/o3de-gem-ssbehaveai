@@ -1,28 +1,28 @@
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendInTimeNode.h>
+#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendOutTimeNode.h>
 
 #include <Integration/SimpleMotionComponentBus.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 {
-    SimpleMotionGetBlendInTimeNode::SimpleMotionGetBlendInTimeNode(
+    SimpleMotionGetBlendOutTimeNode::SimpleMotionGetBlendOutTimeNode(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
         : Core::SSBehaviorTreeNode(name, config)
     {
     }
 
-    void SimpleMotionGetBlendInTimeNode::Reflect(AZ::ReflectContext* context)
+    void SimpleMotionGetBlendOutTimeNode::Reflect(AZ::ReflectContext* reflection)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(reflection);
     }
 
-    void SimpleMotionGetBlendInTimeNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void SimpleMotionGetBlendOutTimeNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
     {
-        registry->DelayNodeRegistration<SimpleMotionGetBlendInTimeNode>(NODE_NAME);
+        registry->DelayNodeRegistration<SimpleMotionGetBlendOutTimeNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList SimpleMotionGetBlendInTimeNode::providedPorts()
+    Core::SSBehaviorTreePortsList SimpleMotionGetBlendOutTimeNode::providedPorts()
     {
         Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
 
@@ -33,10 +33,10 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
         return ports;
     }
 
-    Core::SSBehaviorTreeNodeStatus SimpleMotionGetBlendInTimeNode::Tick()
+    Core::SSBehaviorTreeNodeStatus SimpleMotionGetBlendOutTimeNode::Tick()
     {
         float value;
-        EBUS_EVENT_ID_RESULT(value, GetEntityId(), EMotionFX::Integration::SimpleMotionComponentRequestBus, GetBlendInTime);
+        EBUS_EVENT_ID_RESULT(value, GetEntityId(), EMotionFX::Integration::SimpleMotionComponentRequestBus, GetBlendOutTime);
         SetOutputValue<float>(NODE_PORT_VALUE_NAME, value);
 
         return Core::SSBehaviorTreeNodeStatus::SUCCESS;

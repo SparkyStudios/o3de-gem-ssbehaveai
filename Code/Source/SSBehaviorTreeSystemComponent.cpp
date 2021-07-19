@@ -72,6 +72,22 @@ namespace SparkyStudios::AI::BehaviorTree
         Nodes::Animation::AnimGraphSetNamedParameterStringNode::RegisterNode(m_factory.GetRegistry());
         Nodes::Animation::AnimGraphSetNamedParameterVector2Node::RegisterNode(m_factory.GetRegistry());
         Nodes::Animation::AnimGraphSetNamedParameterVector3Node::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionGetBlendInTimeNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionGetBlendOutTimeNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionGetLoopMotionNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionGetMotionNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionGetPlaySpeedNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionGetPlayTimeNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionPlayNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetBlendInTimeNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetBlendOutTimeNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetLoopMotionNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetMirrorMotionNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetMotionNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetPlaySpeedNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetPlayTimeNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetRetargetMotionNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::Animation::SimpleMotionSetReverseMotionNode::RegisterNode(m_factory.GetRegistry());
 
         // Common
         Nodes::Common::DebugMessageNode::RegisterNode(m_factory.GetRegistry());

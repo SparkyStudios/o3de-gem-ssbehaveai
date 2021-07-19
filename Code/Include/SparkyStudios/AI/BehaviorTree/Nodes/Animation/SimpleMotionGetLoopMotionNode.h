@@ -5,20 +5,20 @@
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 {
-    class SimpleMotionGetBlendInTimeNode : public Core::SSBehaviorTreeNode
+    class SimpleMotionGetLoopMotionNode : public Core::SSBehaviorTreeNode
     {
     public:
-        AZ_CLASS_ALLOCATOR(SimpleMotionGetBlendInTimeNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(SimpleMotionGetBlendInTimeNode, "{9df18a09-5b84-4f63-9cbf-a3350ae17773}", Core::SSBehaviorTreeNode);
+        AZ_CLASS_ALLOCATOR(SimpleMotionGetLoopMotionNode, AZ::SystemAllocator, 0);
+        AZ_RTTI(SimpleMotionGetLoopMotionNode, "{063fa57b-bdba-48c8-9d4f-ae28cf97e446}", Core::SSBehaviorTreeNode);
 
-        static constexpr const char* NODE_NAME = "SimpleMotionGetBlendInTime";
+        static constexpr const char* NODE_NAME = "SimpleMotionGetLoopMotion";
 
         static constexpr const char* NODE_PORT_VALUE_NAME = "value";
         static constexpr const char* NODE_PORT_VALUE_DESCRIPTION = "The blackboard entry in which the value should be set.";
 
-        SimpleMotionGetBlendInTimeNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
+        SimpleMotionGetLoopMotionNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
 
-        static void Reflect(AZ::ReflectContext* context);
+        static void Reflect(AZ::ReflectContext* reflection);
 
         static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
 

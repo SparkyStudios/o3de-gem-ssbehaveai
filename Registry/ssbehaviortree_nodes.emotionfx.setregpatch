@@ -73,5 +73,80 @@
     "op": "add",
     "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
     "value": "SimpleMotionGetBlendInTime"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionGetBlendOutTime"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionGetLoopMotion"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionGetMotion"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionGetPlaySpeed"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionGetPlayTime"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionPlay"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetBlendInTime"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetBlendOutTime"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetLoopMotion"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetMirrorMotion"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetMotion"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetPlaySpeed"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetPlayTime"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetRetargetMotion"
+  },
+  {
+    "op": "add",
+    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "value": "SimpleMotionSetReverse"
   }
 ]
