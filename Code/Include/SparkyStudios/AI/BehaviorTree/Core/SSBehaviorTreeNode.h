@@ -43,14 +43,12 @@ namespace SparkyStudios::AI::BehaviorTree::Core
          */
         static SSBehaviorTreePortsList providedPorts();
 
-#if defined(SSBEHAVIORTREE_EDITOR)
         /**
          * @brief Gets the category in which this node will be represented in the editor.
          *
          * @return const std::string A string value representing the category of this node.
          */
         virtual const std::string NodeCategory() const;
-#endif
 
     protected:
         /**

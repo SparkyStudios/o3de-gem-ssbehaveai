@@ -40,6 +40,11 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
 
         static Core::SSBehaviorTreePortsList providedPorts();
 
+        const std::string NodeCategory() const override
+        {
+            return "Common";
+        }
+
     protected:
         Core::SSBehaviorTreeNodeStatus Tick() override;
     };

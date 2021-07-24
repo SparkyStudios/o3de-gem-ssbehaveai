@@ -44,6 +44,11 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
             return ports;
         }
 
+        const std::string NodeCategory() const override
+        {
+            return "Animation";
+        }
+
     protected:
         void Start() override
         {

@@ -55,6 +55,11 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation
 
         static Core::SSBehaviorTreePortsList providedPorts();
 
+        const std::string NodeCategory() const override
+        {
+            return "Navigation";
+        }
+
         void OnTraversalStarted(LmbrCentral::PathfindRequest::NavigationRequestId requestId) override;
 
         void OnTraversalPathUpdate(

@@ -101,11 +101,8 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         return Condition() ? SSBehaviorTreeNodeStatus::SUCCESS : SSBehaviorTreeNodeStatus::FAILURE;
     }
 
-#if defined(SSBEHAVIORTREE_EDITOR)
     const std::string SSBehaviorTreeNode::NodeCategory() const
     {
         return std::string();
     }
-#endif
-
 } // namespace SparkyStudios::AI::BehaviorTree::Core

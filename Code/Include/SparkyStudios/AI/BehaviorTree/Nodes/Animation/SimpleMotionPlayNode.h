@@ -21,6 +21,11 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 
         static Core::SSBehaviorTreePortsList providedPorts();
 
+        const std::string NodeCategory() const override
+        {
+            return "Animation";
+        }
+
     protected:
         Core::SSBehaviorTreeNodeStatus Tick();
     };
