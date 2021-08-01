@@ -1,7 +1,8 @@
-.vscode/
+.idea/
 .vs/
+.vscode/
 
-External/BehaviorTree.CPP/**/lib/
+External/**/**/lib/
 
 [Bb]uild/
 [Cc]ache/
