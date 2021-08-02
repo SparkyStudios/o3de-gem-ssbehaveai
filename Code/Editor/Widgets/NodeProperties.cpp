@@ -1,7 +1,9 @@
 #include <Editor/Application/precompiled.h>
 
 #include <QComboBox>
+#include <QDropEvent>
 #include <QLineEdit>
+#include <QMimeData>
 
 #include <Editor/Widgets/NodeProperties.h>
 #include <Editor/Widgets/ui_NodeProperties.h>
@@ -102,8 +104,8 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
                     }
 
                     auto* form_field = new QLineEdit();
-                    // form_field->setAlignment(Qt::AlignHCenter);
-                    // form_field->setMaximumWidth(140);
+                    form_field->setAcceptDrops(true);
+
                     if (auto findIt = portsMapping.find(port_it.first); findIt != portsMapping.end())
                     {
                         form_field->setText(findIt->second);
@@ -113,30 +115,8 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
                         form_field->setText(port_it.second.defaultValue);
                     }
 
-                    // connect(
-                    //     form_field, &GrootLineEdit::doubleClicked, this,
-                    //     [this, form_field]()
-                    //     {
-                    //         emit this->portValueDoubleChicked(form_field);
-                    //     });
-
-                    // connect(
-                    //     form_field, &GrootLineEdit::lostFocus, this,
-                    //     [this]()
-                    //     {
-                    //         emit this->portValueDoubleChicked(nullptr);
-                    //     });
-
                     QLabel* form_label = new QLabel(label, this);
                     form_label->setToolTip(description);
-
-                    // form_field->setMinimumWidth(DEFAULT_FIELD_WIDTH);
-
-                    // _ports_widgets.insert(std::make_pair(port_it.first, form_field));
-
-                    // form_field->setStyleSheet("color: rgb(30,30,30); "
-                    //                           "background-color: rgb(200,200,200); "
-                    //                           "border: 0px; ");
 
                     ui->formLayout->addRow(form_label, form_field);
 
