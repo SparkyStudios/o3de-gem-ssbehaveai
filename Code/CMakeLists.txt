@@ -21,8 +21,9 @@ endif()
 # Note: We include the common files and the platform specific files which are set in ssbehaviortree_common_files.cmake
 # and in ${pal_dir}/ssbehaviortree_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
 ly_add_target(
-    NAME SSBehaviorTree.Static STATIC
-    NAMESPACE Gem
+    NAME BehaviorTree.Core.Static STATIC
+    NAMESPACE SparkyStudios::AI
+    OUTPUT_NAME SparkyStudios.AI.BehaviorTree.Static
     FILES_CMAKE
         ssbehaviortree_files.cmake
     INCLUDE_DIRECTORIES
@@ -43,8 +44,9 @@ ly_add_target(
 
 # Here add SSBehaviorTree target, it depends on the SSBehaviorTree.Static
 ly_add_target(
-    NAME SSBehaviorTree ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
-    NAMESPACE Gem
+    NAME BehaviorTree.Core ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+    NAMESPACE SparkyStudios::AI
+    OUTPUT_NAME SparkyStudios.AI.BehaviorTree
     FILES_CMAKE
         ssbehaviortree_shared_files.cmake
     INCLUDE_DIRECTORIES
@@ -55,21 +57,22 @@ ly_add_target(
             Source
     BUILD_DEPENDENCIES
         PRIVATE
-            Gem::SSBehaviorTree.Static
+            SparkyStudios::AI::BehaviorTree.Core.Static
 )
 
 # By default, we will specify that the above target SSBehaviorTree would be used by
 # Client and Server type targets when this gem is enabled.  If you don't want it
 # active in Clients or Servers by default, delete one of both of the following lines:
-ly_create_alias(NAME SSBehaviorTree.Clients NAMESPACE Gem TARGETS Gem::SSBehaviorTree)
-ly_create_alias(NAME SSBehaviorTree.Servers NAMESPACE Gem TARGETS Gem::SSBehaviorTree)
+ly_create_alias(NAME SSBehaviorTree.Clients NAMESPACE Gem TARGETS SparkyStudios::AI::BehaviorTree.Core)
+ly_create_alias(NAME SSBehaviorTree.Servers NAMESPACE Gem TARGETS SparkyStudios::AI::BehaviorTree.Core)
 
 # If we are on a host platform, we want to add the host tools targets like the SSBehaviorTree.Editor target which
 # will also depend on SSBehaviorTree.Static
 if(PAL_TRAIT_BUILD_HOST_TOOLS)
     ly_add_target(
-        NAME SSBehaviorTree.Editor.Static STATIC
-        NAMESPACE Gem
+        NAME BehaviorTree.Editor.Static STATIC
+        NAMESPACE SparkyStudios::AI
+        OUTPUT_NAME SparkyStudios.AI.BehaviorTree.Editor.Static
         FILES_CMAKE
             ssbehaviortree_editor_files.cmake
         INCLUDE_DIRECTORIES
@@ -81,17 +84,22 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
         BUILD_DEPENDENCIES
             PUBLIC
                 AZ::AzToolsFramework
-                Gem::SSBehaviorTree.Static
+                AZ::AzFramework
+                AZ::AzQtComponents
+                SparkyStudios::AI::BehaviorTree.Core.Static
+                3rdParty::Qt::Widgets
+                3rdParty::QtNodeEditor
         COMPILE_DEFINITIONS
             PRIVATE
                 SSBEHAVIORTREE_EDITOR
+                NODE_EDITOR_STATIC
     )
 
     ly_add_target(
-        NAME SSBehaviorTree.Editor GEM_MODULE
-        NAMESPACE Gem
+        NAME BehaviorTree.Editor GEM_MODULE
+        NAMESPACE SparkyStudios::AI
         AUTOMOC
-        OUTPUT_NAME Gem.SSBehaviorTree.Editor
+        OUTPUT_NAME SparkyStudios.AI.BehaviorTree.Editor
         FILES_CMAKE
             ssbehaviortree_editor_shared_files.cmake
         INCLUDE_DIRECTORIES
@@ -102,16 +110,51 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Include
         BUILD_DEPENDENCIES
             PUBLIC
-                Gem::SSBehaviorTree.Editor.Static
+                SparkyStudios::AI::BehaviorTree.Editor.Static
+        COMPILE_DEFINITIONS
+            PRIVATE
+                SSBEHAVIORTREE_EDITOR
+                NODE_EDITOR_STATIC
     )
+
+    ly_add_target(
+        NAME BehaviorTree.Editor.App APPLICATION
+        OUTPUT_NAME BehaviorTree.Editor
+        NAMESPACE SparkyStudios::AI
+        AUTOMOC
+        AUTOUIC
+        AUTORCC
+        FILES_CMAKE
+            ssbehaviortree_app_files.cmake
+        INCLUDE_DIRECTORIES
+            PRIVATE
+                Include
+                .
+                Source
+        BUILD_DEPENDENCIES
+            PRIVATE
+                SparkyStudios::AI::BehaviorTree.Editor.Static
+                3rdParty::Qt::Core
+                3rdParty::Qt::Concurrent
+                3rdParty::Qt::Widgets
+                AZ::AzCore
+                AZ::AzFramework
+                AZ::AzQtComponents
+                AZ::AzToolsFramework
+                Gem::LmbrCentral.Static
+                Gem::EMotionFX.Static
+        COMPILE_DEFINITIONS
+            PRIVATE
+                SSBEHAVIORTREE_EDITOR
+                NODE_EDITOR_STATIC
+    )
+
 
     # By default, we will specify that the above target SSBehaviorTree would be used by
     # Tool and Builder type targets when this gem is enabled.  If you don't want it
     # active in Tools or Builders by default, delete one of both of the following lines:
-    ly_create_alias(NAME SSBehaviorTree.Tools    NAMESPACE Gem TARGETS Gem::SSBehaviorTree.Editor)
-    ly_create_alias(NAME SSBehaviorTree.Builders NAMESPACE Gem TARGETS Gem::SSBehaviorTree.Editor)
-
-
+    ly_create_alias(NAME SSBehaviorTree.Tools    NAMESPACE Gem TARGETS SparkyStudios::AI::BehaviorTree.Editor)
+    ly_create_alias(NAME SSBehaviorTree.Builders NAMESPACE Gem TARGETS SparkyStudios::AI::BehaviorTree.Editor)
 endif()
 
 ################################################################################
@@ -123,8 +166,9 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
     if(PAL_TRAIT_SSBEHAVIORTREE_TEST_SUPPORTED)
         # We support SSBehaviorTree.Tests on this platform, add SSBehaviorTree.Tests target which depends on SSBehaviorTree.Static
         ly_add_target(
-            NAME SSBehaviorTree.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
-            NAMESPACE Gem
+            NAME BehaviorTree.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+            NAMESPACE SparkyStudios::AI
+            OUTPUT_NAME SparkyStudios.AI.BehaviorTree.Tests
             FILES_CMAKE
                 ssbehaviortree_files.cmake
                 ssbehaviortree_tests_files.cmake
@@ -139,12 +183,12 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     AZ::AzFramework
                     Gem::LmbrCentral.Static
                     Gem::EMotionFX.Static
-                    Gem::SSBehaviorTree.Static
+                    SparkyStudios::AI::BehaviorTree.Core.Static
         )
 
         # Add SSBehaviorTree.Tests to googletest
         ly_add_googletest(
-            NAME Gem::SSBehaviorTree.Tests
+            NAME SparkyStudios::AI::BehaviorTree.Tests
         )
     endif()
 
@@ -154,8 +198,9 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
         if(PAL_TRAIT_SSBEHAVIORTREE_EDITOR_TEST_SUPPORTED)
             # We support SSBehaviorTree.Editor.Tests on this platform, add SSBehaviorTree.Editor.Tests target which depends on SSBehaviorTree.Editor
             ly_add_target(
-                NAME SSBehaviorTree.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
-                NAMESPACE Gem
+                NAME BehaviorTree.Editor.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
+                NAMESPACE SparkyStudios::AI
+                OUTPUT_NAME SparkyStudios.AI.BehaviorTree.Editor.Tests
                 FILES_CMAKE
                     ssbehaviortree_editor_tests_files.cmake
                 INCLUDE_DIRECTORIES
@@ -166,12 +211,12 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                 BUILD_DEPENDENCIES
                     PRIVATE
                         AZ::AzTest
-                        Gem::SSBehaviorTree.Editor
+                        SparkyStudios::AI::BehaviorTree.Editor
             )
 
             # Add SSBehaviorTree.Editor.Tests to googletest
             ly_add_googletest(
-                NAME Gem::SSBehaviorTree.Editor.Tests
+                NAME SparkyStudios::AI::BehaviorTree.Editor.Tests
             )
         endif()
     endif()

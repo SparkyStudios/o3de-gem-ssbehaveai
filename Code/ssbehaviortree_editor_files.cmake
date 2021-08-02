@@ -1,5 +1,8 @@
 
 set(FILES
+    Source/StdAfx.cpp
+    Source/StdAfx.h
+
     Source/Assets/SSBehaviorTreeAssetHandler.cpp
     Source/Assets/SSBehaviorTreeAssetHandler.h
 
