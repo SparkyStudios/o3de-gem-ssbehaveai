@@ -128,12 +128,49 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         }
 
         /**
+         * @brief Get the Uuid of the specified node.
+         *
+         * @param type The type of the node to get the Uuid.
+         * @return const AZ::Uuid&
+         */
+        const AZ::Uuid& GetNodeUuid(const AZStd::string& type) const;
+
+        /**
          * @brief Perform the node registration process.
          *
          * @param nodes The list of nodes to register. These nodes must have
          * been added for registration using DelayNodeRegistration().
          */
         void EnableNodes(const AZStd::vector<AZStd::string>& nodes);
+
+        /**
+         * @brief Enable all the nodes of the registry.
+         */
+        void EnableNodes();
+
+        /**
+         * @brief Get the list of registered properties.
+         *
+         * @return AZStd::vector<AZStd::string>
+         */
+        AZStd::vector<AZStd::string> GetRegisteredProperties() const;
+
+        /**
+         * @brief Get the list of registered nodes.
+         *
+         * @return AZStd::vector<AZStd::string>
+         */
+        AZStd::vector<AZStd::string> GetRegisteredNodes() const;
+
+        /**
+         * @brief Returns the internal BT factory for advanced usage.
+         *
+         * @return const AZStd::unique_ptr<BT::BehaviorTreeFactory>&
+         */
+        const AZStd::unique_ptr<BT::BehaviorTreeFactory>& GetBTFactory() const
+        {
+            return m_factory;
+        }
 
     private:
         /**

@@ -28,6 +28,14 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         return m_invalidUuid;
     }
 
+    const AZ::Uuid& SSBehaviorTreeRegistry::GetNodeUuid(const AZStd::string& type) const
+    {
+        if (auto findIt = m_registeredNodeUuids.find(type); findIt != m_registeredNodeUuids.end())
+            return findIt->second;
+
+        return m_invalidUuid;
+    }
+
     void SSBehaviorTreeRegistry::EnableNodes(const AZStd::vector<AZStd::string>& nodes)
     {
         AZ::SerializeContext* serializeContext = nullptr;
@@ -35,7 +43,7 @@ namespace SparkyStudios::AI::BehaviorTree::Core
 
         if (!serializeContext)
         {
-            AZ_Error("SSBehaviorTreeEditor", false, "Can't get serialize context from component application.");
+            AZ_Error("SSBehaviorTree", false, "Can't get serialize context from component application.");
             return;
         }
 
@@ -48,21 +56,62 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         // TODO: Should I need to clear the delayed nodes?
     }
 
+    void SSBehaviorTreeRegistry::EnableNodes()
+    {
+        AZ::SerializeContext* serializeContext = nullptr;
+        EBUS_EVENT_RESULT(serializeContext, AZ::ComponentApplicationBus, GetSerializeContext);
+
+        if (!serializeContext)
+        {
+            AZ_Error("SSBehaviorTree", false, "Can't get serialize context from component application.");
+            return;
+        }
+
+        for (const auto& node : m_delayedRegisterers)
+        {
+            AZ_Printf("SSBehaviorTree", "Enabling node: %s\n", node.first.c_str());
+            RegisterNode(node.first, serializeContext);
+        }
+    }
+
+    AZStd::vector<AZStd::string> SSBehaviorTreeRegistry::GetRegisteredProperties() const
+    {
+        AZStd::vector<AZStd::string> properties;
+        for (const auto& pair : m_registeredTypeBuilders)
+        {
+            properties.push_back(pair.first);
+        }
+        return properties;
+    }
+
+    AZStd::vector<AZStd::string> SSBehaviorTreeRegistry::GetRegisteredNodes() const
+    {
+        AZStd::vector<AZStd::string> nodes;
+        for (const auto& pair : m_registeredNodeBuilders)
+        {
+            nodes.push_back(pair.first);
+        }
+        return nodes;
+    }
+
     void SSBehaviorTreeRegistry::RegisterNode(const AZStd::string& name, AZ::ReflectContext* context)
     {
         if (auto findIt = m_delayedRegisterers.find(name); findIt != m_delayedRegisterers.end())
         {
-            if (context)
+            if (auto notFoundIt = m_registeredNodeBuilders.find(name); notFoundIt == m_registeredNodeBuilders.end())
             {
-                // If the node is found in the delayed registration list, its reflector is also registered.
-                m_delayedReflectors[name](context);
+                if (context)
+                {
+                    // If the node is found in the delayed registration list, its reflector is also registered.
+                    m_delayedReflectors[name](context);
+                }
+
+                // Register the node in the BT factory.
+                m_factory->registerBuilder(findIt->second.first, findIt->second.second);
+
+                // Mark the node as registered.
+                m_registeredNodeBuilders.insert(AZStd::make_pair(name, findIt->second.second));
             }
-
-            // Register the node in the BT factory.
-            m_factory->registerBuilder(findIt->second.first, findIt->second.second);
-
-            // Mark the node as registered.
-            m_registeredNodeBuilders.insert(AZStd::make_pair(name, findIt->second.second));
         }
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Core
