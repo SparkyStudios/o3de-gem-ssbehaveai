@@ -49,9 +49,11 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         void OnActionClearTriggered(bool createMew);
         void OnPushUndo();
         void OnCreateAbsBehaviorTree(const Core::AbstractBehaviorTree& tree, const QString& bt_name, bool secondary_tabs = true);
-        void OnActionSaveTriggered();
-        void OnActionSaveAsTriggered();
+        void OnActionNewTrigerred();
+        bool OnActionSaveTriggered();
+        bool OnActionSaveAsTriggered();
         void OnActionLoadTriggered();
+        void OnActionQuitTriggered();
         void OnAddToModelRegistry(const Core::NodeModel& model);
         void OnTabRenameRequested(int tab_index, QString new_name = QString());
         void OnTreeNodeEdited(QString prev_ID, QString new_ID);
@@ -83,7 +85,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
             SUBTREE_REFRESH
         };
 
-        void setupShortcuts();
+        void setupMenu();
         Widgets::GraphicContainer* createTab(const QString& name, bool setActive = true);
         std::shared_ptr<QtNodes::DataModelRegistry> createDataModelRegistry();
         void loadSavedStateFromJson(SavedState state);
@@ -94,7 +96,8 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         void streamElementAttributes(QXmlStreamWriter& stream, const QDomElement& element) const;
         void recursivelySaveNodeCanonically(QXmlStreamWriter& stream, const QDomNode& parent_node) const;
         QtNodes::Node* subTreeExpand(Widgets::GraphicContainer& container, QtNodes::Node& node, MainWindow::SubtreeExpandOption option);
-        void saveFile(bool overwrite);
+        bool saveFile(bool overwrite);
+        bool checkDirty(const QString& message);
 
         AzQtComponents::FancyDocking* m_fancyDocking;
 
@@ -116,6 +119,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         QString _main_tree;
 
         QString _opened_file;
+        bool _dirty_file;
 
         QString _project_path;
     };

@@ -18,6 +18,7 @@
 #include <QInputDialog>
 #include <QLabel>
 #include <QMenu>
+#include <QMenuBar>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSettings>
@@ -79,7 +80,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         resize(800, 600);
         setCentralWidget(m_tabWidget);
 
-        setupShortcuts();
+        setupMenu();
 
         createTab("UnsavedTree");
         OnTabSetMainTree(0);
@@ -380,6 +381,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         if (createNew)
         {
             createTab("BehaviorTree");
+            clearUndoStacks();
         }
     }
 
@@ -421,14 +423,22 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         clearUndoStacks();
     }
 
-    void MainWindow::OnActionSaveTriggered()
+    void MainWindow::OnActionNewTrigerred()
     {
-        saveFile(false);
+        if (checkDirty(tr("You will lost your changes if you create a new file, do you want to save the current one?")))
+        {
+            OnActionClearTriggered(true);
+        }
     }
 
-    void MainWindow::OnActionSaveAsTriggered()
+    bool MainWindow::OnActionSaveTriggered()
     {
-        saveFile(true);
+        return saveFile(false);
+    }
+
+    bool MainWindow::OnActionSaveAsTriggered()
+    {
+        return saveFile(true);
     }
 
     void MainWindow::OnActionLoadTriggered()
@@ -471,6 +481,14 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         LoadFromXML(xml_text);
         _opened_file = fileName;
         m_statusBar->SetOpenedFileName(fileInfo.baseName());
+    }
+
+    void MainWindow::OnActionQuitTriggered()
+    {
+        if (checkDirty(tr("Do you want to save the current file before closing?")))
+        {
+            close();
+        }
     }
 
     void MainWindow::OnAddToModelRegistry(const Core::NodeModel& model)
@@ -601,26 +619,25 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         }
     }
 
-    void MainWindow::setupShortcuts()
+    void MainWindow::setupMenu()
     {
-        // ------------
-        auto* arrange_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_G, Qt::Key_A), this);
-        connect(arrange_shortcut, &QShortcut::activated, this, &MainWindow::OnAutoArrange);
-        // ------------
-        auto* undo_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this);
-        connect(undo_shortcut, &QShortcut::activated, this, &MainWindow::OnUndoInvoked);
-        // ------------
-        auto* redo_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z), this);
-        connect(redo_shortcut, &QShortcut::activated, this, &MainWindow::OnRedoInvoked);
-        // ------------
-        auto* save_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
-        connect(save_shortcut, &QShortcut::activated, this, &MainWindow::OnActionSaveTriggered);
-        // ------------
-        auto* save_as_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S), this);
-        connect(save_as_shortcut, &QShortcut::activated, this, &MainWindow::OnActionSaveAsTriggered);
-        // ------------
-        auto* open_shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_O), this);
-        connect(open_shortcut, &QShortcut::activated, this, &MainWindow::OnActionLoadTriggered);
+        QMenuBar* mb = menuBar();
+
+        QMenu* fileMenu = mb->addMenu(tr("&File"));
+        QMenu* editMenu = mb->addMenu(tr("&Edit"));
+        // QMenu* helpMenu = mb->addMenu(tr("&Help"));
+
+        fileMenu->addAction(tr("&New"), this, &MainWindow::OnActionNewTrigerred, QKeySequence(Qt::CTRL + Qt::Key_N));
+        fileMenu->addAction(tr("&Open..."), this, &MainWindow::OnActionLoadTriggered, QKeySequence(Qt::CTRL + Qt::Key_O));
+        fileMenu->addAction(tr("&Save"), this, &MainWindow::OnActionSaveTriggered, QKeySequence(Qt::CTRL + Qt::Key_S));
+        fileMenu->addAction(tr("Save &As..."), this, &MainWindow::OnActionSaveAsTriggered, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+        fileMenu->addSeparator();
+        fileMenu->addAction(tr("&Quit"), this, &MainWindow::OnActionQuitTriggered, QKeySequence(Qt::CTRL + Qt::Key_Q));
+
+        editMenu->addAction(tr("&Undo"), this, &MainWindow::OnUndoInvoked, QKeySequence(Qt::CTRL + Qt::Key_Z));
+        editMenu->addAction(tr("&Redo"), this, &MainWindow::OnRedoInvoked, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+        editMenu->addSeparator();
+        editMenu->addAction(tr("Rearrange &Graph"), this, &MainWindow::OnAutoArrange, QKeySequence(Qt::CTRL + Qt::Key_G, Qt::Key_A));
     }
 
     Widgets::GraphicContainer* MainWindow::createTab(const QString& name, bool setActive)
@@ -769,6 +786,8 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         {
             saved.json_states[it.first] = it.second->scene()->saveToMemory();
         }
+
+        _dirty_file = true;
 
         return saved;
     }
@@ -1086,7 +1105,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         return nullptr;
     }
 
-    void MainWindow::saveFile(bool overwrite)
+    bool MainWindow::saveFile(bool overwrite)
     {
         for (auto& it : _tab_info)
         {
@@ -1094,7 +1113,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
             if (!container->containsValidTree())
             {
                 QMessageBox::warning(this, tr("Warning"), tr("Malformed behavior tree. File can not be saved."), QMessageBox::Cancel);
-                return;
+                return false;
             }
         }
 
@@ -1113,7 +1132,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
             fileName = QFileDialog::getSaveFileName(this, "Save BehaviorTree to file", directory_path, "SS BehaviorTree files (*.ssbt)");
             if (fileName.isEmpty())
             {
-                return;
+                return false;
             }
             if (!fileName.endsWith(".ssbt"))
             {
@@ -1141,6 +1160,31 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
 
         _opened_file = fileName;
         m_statusBar->SetOpenedFileName(fileInfo.baseName());
+
+        _dirty_file = false;
+
+        return true;
+    }
+
+    bool MainWindow::checkDirty(const QString& message)
+    {
+        if (_dirty_file)
+        {
+            QMessageBox::StandardButton result = QMessageBox::warning(
+                this, "The current file have unsaved changes", message, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+                QMessageBox::Save);
+
+            if (result == QMessageBox::Save)
+            {
+                return OnActionSaveTriggered();
+            }
+            else if (result == QMessageBox::Cancel)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 } // namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
 
