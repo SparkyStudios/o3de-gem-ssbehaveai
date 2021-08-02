@@ -2,7 +2,6 @@
 
 #include <SparkyStudios/AI/BehaviorTree/Nodes.h>
 
-#include <Blackboard/SSBehaviorTreeBlackboard.h>
 #include <SSBehaviorTreeSystemComponent.h>
 
 #include <AzCore/Module/DynamicModuleHandle.h>

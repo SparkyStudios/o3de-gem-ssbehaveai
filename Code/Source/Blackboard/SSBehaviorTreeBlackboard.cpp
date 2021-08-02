@@ -1,6 +1,6 @@
 #include <StdAfx.h>
 
-#include <Blackboard/SSBehaviorTreeBlackboard.h>
+#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
 
 #include <AzCore/RTTI/BehaviorContext.h>
 

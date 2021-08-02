@@ -1,7 +1,8 @@
 #pragma once
 
+#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
+
 #include <Assets/SSBehaviorTreeAsset.h>
-#include <Blackboard/SSBehaviorTreeBlackboard.h>
 
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/Component/Component.h>

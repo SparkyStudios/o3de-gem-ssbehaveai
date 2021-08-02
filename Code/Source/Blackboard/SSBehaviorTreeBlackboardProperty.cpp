@@ -1,8 +1,7 @@
 #include <StdAfx.h>
 
+#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
-
-#include <Blackboard/SSBehaviorTreeBlackboard.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Blackboard
 {

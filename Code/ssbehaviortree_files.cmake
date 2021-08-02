@@ -53,7 +53,6 @@ set(FILES
     Source/Assets/SSBehaviorTreeAsset.h
     Source/Assets/SSBehaviorTreeAsset.cpp
 
-    Source/Blackboard/SSBehaviorTreeBlackboard.h
     Source/Blackboard/SSBehaviorTreeBlackboard.cpp
     Source/Blackboard/SSBehaviorTreeBlackboardProperty.cpp
 
