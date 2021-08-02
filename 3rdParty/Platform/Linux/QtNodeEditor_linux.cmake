@@ -1,0 +1,5 @@
+if (CMAKE_BUILD_TYPE EQUAL "debug")
+    set(QTNODEEDITOR_LIBS ${BASE_PATH}/lib/linux/nodes_d.lib)
+else()
+    set(QTNODEEDITOR_LIBS ${BASE_PATH}/lib/linux/nodes.lib)
+endif()
