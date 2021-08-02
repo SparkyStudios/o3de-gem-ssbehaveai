@@ -53,56 +53,12 @@ namespace SparkyStudios::AI::BehaviorTree
 
     void SSBehaviorTreeSystemComponent::RegisterDefaultNodes()
     {
-        // Navigation
-        Nodes::Navigation::NavigationFindPathToEntityNode::RegisterNode(m_factory.GetRegistry());
-
-        // Animation
-        Nodes::Animation::AnimGraphGetNamedParameterBoolNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphGetNamedParameterFloatNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphGetNamedParameterRotationEulerNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphGetNamedParameterRotationNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphGetNamedParameterStringNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphGetNamedParameterVector2Node::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphGetNamedParameterVector3Node::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphSetNamedParameterBoolNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphSetNamedParameterFloatNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphSetNamedParameterRotationEulerNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphSetNamedParameterRotationNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphSetNamedParameterStringNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphSetNamedParameterVector2Node::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::AnimGraphSetNamedParameterVector3Node::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionGetBlendInTimeNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionGetBlendOutTimeNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionGetLoopMotionNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionGetMotionNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionGetPlaySpeedNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionGetPlayTimeNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionPlayNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetBlendInTimeNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetBlendOutTimeNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetLoopMotionNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetMirrorMotionNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetMotionNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetPlaySpeedNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetPlayTimeNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetRetargetMotionNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Animation::SimpleMotionSetReverseMotionNode::RegisterNode(m_factory.GetRegistry());
-
-        // Common
-        Nodes::Common::DebugMessageNode::RegisterNode(m_factory.GetRegistry());
-        Nodes::Common::WaitNode::RegisterNode(m_factory.GetRegistry());
+        Nodes::RegisterDefaultNodes(m_factory.GetRegistry());
     }
 
     void SSBehaviorTreeSystemComponent::RegisterDefaultProperties()
     {
-        // Register properties
-        m_factory.GetRegistry()->RegisterProperty<SSBehaviorTreeBlackboardPropertyNumber>("float");
-        m_factory.GetRegistry()->RegisterProperty<SSBehaviorTreeBlackboardPropertyNumber>("double");
-        m_factory.GetRegistry()->RegisterProperty<SSBehaviorTreeBlackboardPropertyNumber>("long");
-        m_factory.GetRegistry()->RegisterProperty<SSBehaviorTreeBlackboardPropertyNumber>("int");
-        m_factory.GetRegistry()->RegisterProperty<SSBehaviorTreeBlackboardPropertyString>("AZStd::string");
-        m_factory.GetRegistry()->RegisterProperty<SSBehaviorTreeBlackboardPropertyEntityRef>("AZ::EntityId");
-        m_factory.GetRegistry()->RegisterProperty<SSBehaviorTreeBlackboardPropertyVector2>("AZ::Vector2");
+        Nodes::RegisterDefaultProperties(m_factory.GetRegistry());
     }
 
     void SSBehaviorTreeSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
@@ -205,7 +161,7 @@ namespace SparkyStudios::AI::BehaviorTree
             return AZ::SettingsRegistryInterface::VisitResponse::Continue;
         };
 
-        // Collect the list of nodes to enable
+        // Collect the list of nodes to enable.
         settingsRegistry->Visit(availableNodesVisitor, "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes");
 
         // Enable all the available nodes.
