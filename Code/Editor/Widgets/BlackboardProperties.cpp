@@ -44,9 +44,15 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
 
         for (auto&& model : _blackboard_properties_model)
         {
+            const auto& ID = model.first;
+
             QIcon icon(model.second.isPrivate ? ":/icons/blackboard-property-private.png" : ":/icons/blackboard-property-public.png");
-            auto* item = new QListWidgetItem(icon, model.first);
+
+            auto* item = new QListWidgetItem(icon, ID);
             item->setToolTip(model.second.description);
+            item->setFlags(item->flags() ^ Qt::ItemIsSelectable);
+            item->setData(Qt::UserRole, ID);
+
             ui->propertiesList->addItem(item);
         }
     }
