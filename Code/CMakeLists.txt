@@ -99,6 +99,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
         NAME SSBehaviorTree.Editor GEM_MODULE
         NAMESPACE SparkyStudios::AI
         AUTOMOC
+        AUTORCC
         OUTPUT_NAME SparkyStudios.AI.BehaviorTree.Editor
         FILES_CMAKE
             ssbehaviortree_editor_shared_files.cmake
@@ -134,6 +135,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
         BUILD_DEPENDENCIES
             PRIVATE
                 SparkyStudios::AI::SSBehaviorTree.Editor.Static
+                3rdParty::QtNodeEditor
                 3rdParty::Qt::Core
                 3rdParty::Qt::Concurrent
                 3rdParty::Qt::Widgets

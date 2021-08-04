@@ -71,12 +71,17 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Application
         AZ_Assert(commandLine, "Failed to get command line");
 
         AZ::IO::FixedMaxPath projectPath;
+        AZ::IO::FixedMaxPath filePath;
         if (size_t projectSwitchCount = commandLine->GetNumSwitchValues("project-path"); projectSwitchCount > 0)
         {
             projectPath = commandLine->GetSwitchValue("project-path", projectSwitchCount - 1).c_str();
         }
+        if (size_t filePathCount = commandLine->GetNumMiscValues(); filePathCount > 0)
+        {
+            filePath = commandLine->GetMiscValue(0).c_str();
+        }
 
-        m_mainWindow.reset(new Windows::MainWindow(nullptr, projectPath));
+        m_mainWindow.reset(new Windows::MainWindow(nullptr, projectPath, filePath));
 
         return true;
     }
@@ -129,6 +134,8 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Application
         // Set up the Style Manager
         AzQtComponents::StyleManager styleManager(qApp);
         styleManager.initialize(qApp, GetEngineRoot());
+
+        qApp->setWindowIcon(QIcon(":/icons/application-icon.ico"));
 
         // the decoration wrapper is intended to remember window positioning and sizing
         auto wrapper = new AzQtComponents::WindowDecorationWrapper();

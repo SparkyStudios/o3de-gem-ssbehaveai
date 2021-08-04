@@ -29,7 +29,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         Q_OBJECT
 
     public:
-        explicit MainWindow(QWidget* parent, const AZ::IO::PathView& projectPath);
+        explicit MainWindow(QWidget* parent, const AZ::IO::PathView& projectPath, const AZ::IO::PathView& filePath);
 
         Widgets::GraphicContainer* CurrentTabInfo();
         Widgets::GraphicContainer* GetTabByName(const QString& name);
@@ -97,6 +97,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         void recursivelySaveNodeCanonically(QXmlStreamWriter& stream, const QDomNode& parent_node) const;
         QtNodes::Node* subTreeExpand(Widgets::GraphicContainer& container, QtNodes::Node& node, MainWindow::SubtreeExpandOption option);
         bool saveFile(bool overwrite);
+        bool openFile(const QString& filename);
         bool checkDirty(const QString& message);
 
         AzQtComponents::FancyDocking* m_fancyDocking;

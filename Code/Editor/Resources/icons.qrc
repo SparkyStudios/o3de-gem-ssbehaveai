@@ -2,11 +2,15 @@
   <qresource prefix="/icons">
     <file>blackboard-property-private.png</file>
     <file>blackboard-property-public.png</file>
+    <file>application-icon.ico</file>
     <file>add-blackboard-property.png</file>
     <file>green-circle.png</file>
     <file>red-circle.png</file>
     <file>icons.qrc</file>
     <file>green_star.png</file>
+  </qresource>
+  <qresource prefix="/Menu">
+    <file>ss_behaviortree_editor.svg</file>
   </qresource>
   <qresource prefix="/"/>
 </RCC>

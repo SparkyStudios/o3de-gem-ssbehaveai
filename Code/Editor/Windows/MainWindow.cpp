@@ -29,7 +29,7 @@
 
 namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
 {
-    MainWindow::MainWindow(QWidget* parent, const AZ::IO::PathView& projectPath)
+    MainWindow::MainWindow(QWidget* parent, const AZ::IO::PathView& projectPath, const AZ::IO::PathView& filePath)
         : AzQtComponents::DockMainWindow(parent)
         , _current_layout(QtNodes::PortLayout::Vertical)
     {
@@ -72,19 +72,24 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         m_statusBar = new Widgets::StatusBar(this);
         statusBar()->addWidget(m_statusBar);
 
-        if (!projectPath.empty())
-        {
-            _project_path = QString::fromUtf8(projectPath.Native().data(), aznumeric_cast<int>(projectPath.Native().size()));
-        }
-
         resize(800, 600);
         setCentralWidget(m_tabWidget);
 
         setupMenu();
 
-        createTab("UnsavedTree");
-        OnTabSetMainTree(0);
-        OnSceneChanged();
+        if (!projectPath.empty())
+        {
+            _project_path = QString::fromUtf8(projectPath.Native().data(), aznumeric_cast<int>(projectPath.Native().size()));
+        }
+
+        if (!filePath.empty())
+        {
+            openFile(QString::fromUtf8(filePath.Native().data(), aznumeric_cast<int>(filePath.Native().size())));
+        }
+        else
+        {
+            OnActionNewTrigerred();
+        }
 
         _current_state = saveCurrentState();
     }
@@ -373,7 +378,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
 
         _tab_info.clear();
         _opened_file.clear();
-        m_statusBar->SetOpenedFileName("No Open File");
+        m_statusBar->SetOpenedFileName("Unsaved File");
 
         m_tabWidget->clear();
         m_sidePanel->clear();
@@ -381,6 +386,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         if (createNew)
         {
             createTab("BehaviorTree");
+            OnTabSetMainTree(0);
             clearUndoStacks();
         }
     }
@@ -458,29 +464,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
             return;
         }
 
-        QFileInfo fileInfo(fileName);
-        QFile file(fileName);
-        if (!file.open(QIODevice::ReadOnly))
-        {
-            return;
-        }
-
-        directory_path = fileInfo.absolutePath();
-        settings.setValue("MainWindow.lastLoadDirectory", directory_path);
-        settings.sync();
-
-        QString xml_text;
-
-        QTextStream in(&file);
-        while (!in.atEnd())
-        {
-            xml_text += in.readLine();
-        }
-
-        createTab(fileInfo.baseName());
-        LoadFromXML(xml_text);
-        _opened_file = fileName;
-        m_statusBar->SetOpenedFileName(fileInfo.baseName());
+        openFile(fileName);
     }
 
     void MainWindow::OnActionQuitTriggered()
@@ -1162,6 +1146,36 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         m_statusBar->SetOpenedFileName(fileInfo.baseName());
 
         _dirty_file = false;
+
+        return true;
+    }
+
+    bool MainWindow::openFile(const QString& fileName)
+    {
+        QFileInfo fileInfo(fileName);
+        QFile file(fileName);
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            return false;
+        }
+
+        QSettings settings;
+        QString directory_path = fileInfo.absolutePath();
+        settings.setValue("MainWindow.lastLoadDirectory", directory_path);
+        settings.sync();
+
+        QString xml_text;
+
+        QTextStream in(&file);
+        while (!in.atEnd())
+        {
+            xml_text += in.readLine();
+        }
+
+        createTab(fileInfo.baseName());
+        LoadFromXML(xml_text);
+        _opened_file = fileName;
+        m_statusBar->SetOpenedFileName(fileInfo.baseName());
 
         return true;
     }
