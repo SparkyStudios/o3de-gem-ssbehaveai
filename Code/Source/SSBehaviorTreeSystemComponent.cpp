@@ -123,7 +123,7 @@ namespace SparkyStudios::AI::BehaviorTree
                             AZ::IO::FixedMaxPathString moduleFileStem =
                                 AZ::IO::PathView(moduleHandle->GetFilename()).Stem().FixedMaxPathString();
 
-                            return gemName == moduleFileStem;
+                            return moduleFileStem.starts_with(gemName);
                         };
 
                         if (auto gemFoundIt = AZStd::find_if(superchargedGems.begin(), superchargedGems.end(), FindGemName);
