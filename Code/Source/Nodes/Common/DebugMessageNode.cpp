@@ -88,7 +88,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
                     ->Value("Error", DebugMessageLevel::LEVEL_ERROR);
 
                 ec->Class<SSBehaviorTreeBlackboardPropertyDebugMessageLevel>(
-                      "SS Behavior Tree Blackboard Property (DebugMessageLevel)", "A blackboard property.")
+                      "SS BehaviorTree Blackboard Property (DebugMessageLevel)", "A blackboard property.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, &SSBehaviorTreeBlackboardProperty::m_visibility)
                     ->DataElement(
