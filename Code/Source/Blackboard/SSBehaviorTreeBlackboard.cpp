@@ -56,7 +56,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     {
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            sc->Class<SSBehaviorTreeBlackboardPropertyNil, SSBehaviorTreeBlackboardProperty>()->Version(1)->SerializeWithNoData();
+            sc->Class<SSBehaviorTreeBlackboardPropertyNil, SSBehaviorTreeBlackboardProperty>()->Version(0)->SerializeWithNoData();
         }
     }
 
@@ -114,7 +114,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     {
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            sc->Class<SSBehaviorTreeBlackboardPropertyBoolean, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyBoolean, SSBehaviorTreeBlackboardProperty>()->Version(0)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyBoolean::m_value);
         }
     }
@@ -177,7 +177,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     {
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            sc->Class<SSBehaviorTreeBlackboardPropertyNumber, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyNumber, SSBehaviorTreeBlackboardProperty>()->Version(0)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyNumber::m_value);
         }
     }
@@ -240,7 +240,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     {
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            sc->Class<SSBehaviorTreeBlackboardPropertyString, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyString, SSBehaviorTreeBlackboardProperty>()->Version(0)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyString::m_value);
         }
     }
@@ -303,7 +303,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     {
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            sc->Class<SSBehaviorTreeBlackboardPropertyEntityRef, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyEntityRef, SSBehaviorTreeBlackboardProperty>()->Version(0)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyEntityRef::m_value);
         }
     }
@@ -352,7 +352,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     {
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            sc->Class<SSBehaviorTreeBlackboardPropertyVector2, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
+            sc->Class<SSBehaviorTreeBlackboardPropertyVector2, SSBehaviorTreeBlackboardProperty>()->Version(0)->Field(
                 "value", &SSBehaviorTreeBlackboardPropertyVector2::m_value);
         }
     }

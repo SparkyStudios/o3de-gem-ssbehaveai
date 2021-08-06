@@ -165,7 +165,7 @@ namespace SparkyStudios::AI::BehaviorTree
             {
                 // Expose component fields
                 sc->Class<SSBehaviorTreeComponent, AZ::Component>()
-                    ->Version(1)
+                    ->Version(0)
                     ->Field("blackboard", &SSBehaviorTreeComponent::m_btBlackboard)
                     ->Field("behaviorTree", &SSBehaviorTreeComponent::m_behaviorTreeAsset);
 

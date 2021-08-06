@@ -16,7 +16,7 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
             sc->Class<SSBehaviorTreeBlackboardProperty>()
-                ->Version(1)
+                ->Version(0)
                 ->PersistentId(
                     [](const void* instance) -> AZ::u64
                     {
