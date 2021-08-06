@@ -88,7 +88,6 @@ namespace SparkyStudios::AI::BehaviorTree
     void SSBehaviorTreeSystemComponent::Activate()
     {
         SSBehaviorTreeRequestBus::Handler::BusConnect();
-        AZ::TickBus::Handler::BusConnect();
 
         AZStd::vector<AZStd::string> superchargedGems{ "EMotionFX", "LmbrCentral" };
 
@@ -170,12 +169,7 @@ namespace SparkyStudios::AI::BehaviorTree
 
     void SSBehaviorTreeSystemComponent::Deactivate()
     {
-        AZ::TickBus::Handler::BusDisconnect();
         SSBehaviorTreeRequestBus::Handler::BusDisconnect();
-    }
-
-    void SSBehaviorTreeSystemComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
-    {
     }
 
     const Core::SSBehaviorTreeFactory& SSBehaviorTreeSystemComponent::GetFactory() const

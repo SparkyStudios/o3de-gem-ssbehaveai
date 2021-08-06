@@ -10,7 +10,6 @@ namespace SparkyStudios::AI::BehaviorTree
     class SSBehaviorTreeSystemComponent
         : public AZ::Component
         , protected SSBehaviorTreeRequestBus::Handler
-        , public AZ::TickBus::Handler
     {
     public:
         AZ_COMPONENT(SSBehaviorTreeSystemComponent, "{4a9e985c-692e-47c3-9573-94dd1aa64dce}");
@@ -36,11 +35,6 @@ namespace SparkyStudios::AI::BehaviorTree
         void Init() override;
         void Activate() override;
         void Deactivate() override;
-        ////////////////////////////////////////////////////////////////////////
-
-        ////////////////////////////////////////////////////////////////////////
-        // AZTickBus interface implementation
-        void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
         ////////////////////////////////////////////////////////////////////////
 
     private:
