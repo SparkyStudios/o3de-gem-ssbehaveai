@@ -498,13 +498,15 @@ namespace SparkyStudios::AI::BehaviorTree
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
                 ec->Class<SSBehaviorTreeEditorComponent>(
-                      "SS BehaviorTree", "An implementation of behavior trees for Lumberyard. Using BehaviorTree.CPP.")
+                      "BehaviorTree", "An implementation of behavior trees for O3DE. Using BehaviorTree.CPP.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "Sparky Studios")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("Game", 0x232b318c))
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &SSBehaviorTreeEditorComponent::m_customName)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->Attribute(AZ::Edit::Attributes::PrimaryAssetType, AZ::AzTypeInfo<Assets::SSBehaviorTreeAsset>::Uuid())
+                    ->Attribute(AZ::Edit::Attributes::Icon, "Editor/Icons/Components/SSBehaviorTree.svg")
+                    ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Editor/Icons/Viewport/SSBehaviorTree.png")
                     ->DataElement(
                         "AssetRef", &SSBehaviorTreeEditorComponent::m_behaviorTreeAsset, "Behavior Tree", "The behavior tree to run.")
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &SSBehaviorTreeEditorComponent::BehaviorTreeHasChanged)
