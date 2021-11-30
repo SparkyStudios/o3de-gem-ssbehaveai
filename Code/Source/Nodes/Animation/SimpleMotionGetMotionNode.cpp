@@ -2,6 +2,8 @@
 
 #include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetMotionNode.h>
 
+#include <AzCore/Asset/AssetCommon.h>
+
 #include <Integration/SimpleMotionComponentBus.h>
 
 namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation

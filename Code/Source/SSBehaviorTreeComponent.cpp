@@ -5,6 +5,7 @@
 #include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
 #include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
 
+#include <AzCore/Asset/AssetSerializer.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 

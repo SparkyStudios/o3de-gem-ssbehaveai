@@ -2,6 +2,7 @@
 
 #include <SSBehaviorTreeComponent.h>
 
+#include <AzCore/Serialization/DynamicSerializableField.h>
 #include <AzCore/Serialization/EditContext.h>
 
 #include <AzFramework/Entity/EntityDebugDisplayBus.h>

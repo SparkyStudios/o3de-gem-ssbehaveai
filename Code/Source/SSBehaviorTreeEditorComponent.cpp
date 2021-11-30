@@ -1,11 +1,13 @@
 #include <StdAfx.h>
 
+#include <Assets/SSBehaviorTreeAssetHandler.h>
 #include <SSBehaviorTreeEditorComponent.h>
 
 #include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
 #include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
 
 #include <AzCore/Asset/AssetManager.h>
+#include <AzCore/Asset/AssetSerializer.h>
 #include <AzCore/Component/ComponentApplicationBus.h>
 #include <AzCore/XML/rapidxml.h>
 #include <AzCore/std/sort.h>
@@ -504,15 +506,16 @@ namespace SparkyStudios::AI::BehaviorTree
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("Game", 0x232b318c))
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &SSBehaviorTreeEditorComponent::m_customName)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->Attribute(AZ::Edit::Attributes::PrimaryAssetType, AZ::AzTypeInfo<Assets::SSBehaviorTreeAsset>::Uuid())
+                    ->Attribute(AZ::Edit::Attributes::PrimaryAssetType, Assets::SSBehaviorTreeAssetHandler::GetAssetTypeStatic())
                     ->Attribute(AZ::Edit::Attributes::Icon, "Editor/Icons/Components/SSBehaviorTree.svg")
                     ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Editor/Icons/Viewport/SSBehaviorTree.png")
                     ->DataElement(
-                        "AssetRef", &SSBehaviorTreeEditorComponent::m_behaviorTreeAsset, "Behavior Tree", "The behavior tree to run.")
+                        AZ::Edit::UIHandlers::Default, &SSBehaviorTreeEditorComponent::m_behaviorTreeAsset, "Behavior Tree",
+                        "The behavior tree to run.")
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &SSBehaviorTreeEditorComponent::BehaviorTreeHasChanged)
                     ->DataElement(
-                        "Properties", &SSBehaviorTreeEditorComponent::m_behaviorTreeComponent, "SS BehaviorTree properties",
-                        "The behavior tree")
+                        AZ::Edit::UIHandlers::Default, &SSBehaviorTreeEditorComponent::m_behaviorTreeComponent,
+                        "SS BehaviorTree properties", "The behavior tree")
                     ->SetDynamicEditDataProvider(&SSBehaviorTreeEditorComponent::GetScriptPropertyEditData)
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly);
 
