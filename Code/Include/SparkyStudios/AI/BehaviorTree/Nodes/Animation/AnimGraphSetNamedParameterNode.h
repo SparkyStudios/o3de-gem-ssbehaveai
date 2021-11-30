@@ -24,7 +24,7 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
         {
         }
 
-        static const AZ::u32 INVALID_PARAMETER_INDEX = 0xFFFFFFFF;
+        static constexpr AZ::u64 INVALID_PARAMETER_INDEX = 0xFFFFFFFFFFFFFFFF;
 
         static constexpr const char* NODE_PORT_PARAMETER_NAME = "parameter";
         static constexpr const char* NODE_PORT_PARAMETER_DESCRIPTION = "The name of the parameter";
@@ -90,6 +90,6 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
         /**
          * @brief The index of the paramter in the animation graph.
          */
-        AZ::u32 m_parameterIndex = INVALID_PARAMETER_INDEX;
+        AZ::u64 m_parameterIndex = INVALID_PARAMETER_INDEX;
     };
 } // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
