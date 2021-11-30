@@ -167,7 +167,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
 
     AbstractBehaviorTree BuildTreeFromScene(const QtNodes::FlowScene* scene, QtNodes::Node* root_node = nullptr);
 
-    std::pair<AbstractBehaviorTree, std::unordered_map<int, int>> BuildTreeFromFlatbuffers(const Serialization::BehaviorTree* bt);
+    std::pair<AbstractBehaviorTree, std::unordered_map<int, size_t>> BuildTreeFromFlatbuffers(const Serialization::BehaviorTree* bt);
 
     AbstractBehaviorTree BuildTreeFromXML(const QDomElement& bt_root, const NodeModels& models);
 

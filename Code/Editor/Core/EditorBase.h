@@ -103,7 +103,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
     struct AbstractBehaviorTreeNode
     {
         AbstractBehaviorTreeNode()
-            : index(-1)
+            : index(0)
             , status(NodeStatus::IDLE)
             , graphicNode(nullptr)
         {
@@ -135,11 +135,9 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
 
         typedef std::deque<AbstractBehaviorTreeNode> NodesVector;
 
-        AbstractBehaviorTree()
-        {
-        }
+        AbstractBehaviorTree() = default;
 
-        ~AbstractBehaviorTree();
+        virtual ~AbstractBehaviorTree();
 
         size_t NodesCount() const
         {

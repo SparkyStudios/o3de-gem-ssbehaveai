@@ -394,11 +394,11 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
         return tree;
     }
 
-    std::pair<AbstractBehaviorTree, std::unordered_map<int, int>> BuildTreeFromFlatbuffers(
+    std::pair<AbstractBehaviorTree, std::unordered_map<int, size_t>> BuildTreeFromFlatbuffers(
         const Serialization::BehaviorTree* fb_behavior_tree)
     {
         AbstractBehaviorTree tree;
-        std::unordered_map<int, int> uid_to_index;
+        std::unordered_map<int, size_t> uid_to_index;
 
         AbstractBehaviorTreeNode abs_root;
         abs_root.instanceName = "Root";
@@ -447,7 +447,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
             size_t index = tree.NodesCount();
             abs_node.index = index;
             tree.Nodes().push_back(std::move(abs_node));
-            uid_to_index.insert({ fb_node->uid(), int(index) });
+            uid_to_index.insert({ fb_node->uid(), index });
         }
 
         for (size_t index = 0; index < fb_behavior_tree->nodes()->size(); index++)
@@ -456,7 +456,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
             AbstractBehaviorTreeNode* abs_node = tree.Node(index + 1);
             for (const auto child_uid : *(fb_node->children_uid()))
             {
-                int child_index = uid_to_index[child_uid];
+                size_t child_index = uid_to_index[child_uid];
                 abs_node->childrenIndex.push_back(child_index);
             }
         }
