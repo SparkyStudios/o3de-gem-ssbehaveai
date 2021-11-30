@@ -300,12 +300,11 @@ namespace SparkyStudios::AI::BehaviorTree
             args = AZStd::string::format("\"%s\"", file);
         }
 
-        const char* engineRoot = nullptr;
-        AzFramework::ApplicationRequests::Bus::BroadcastResult(engineRoot, &AzFramework::ApplicationRequests::GetEngineRoot);
-        AZ_Assert(engineRoot != nullptr, "Unable to communicate to AzFramework::ApplicationRequests::Bus");
+        AZ::IO::FixedMaxPathString engineRoot(AZ::Utils::GetEnginePath());
+        AZ_Assert(!engineRoot.empty(), "Unable to get the engine root.");
 
-        AZStd::string_view exePath;
-        AZ::ComponentApplicationBus::BroadcastResult(exePath, &AZ::ComponentApplicationRequests::GetExecutableFolder);
+        AZ::IO::FixedMaxPathString exePath(AZ::Utils::GetExecutableDirectory());
+        AZ::IO::FixedMaxPathString projectPath(AZ::Utils::GetProjectPath());
 
         AZStd::string process = AZStd::string::format(
             "\"%.*s" AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING "SparkyStudios" AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING
@@ -316,13 +315,8 @@ namespace SparkyStudios::AI::BehaviorTree
             "\"",
             aznumeric_cast<int>(exePath.size()), exePath.data());
 
-        AZStd::string processArgs = AZStd::string::format("%s --engine-path \"%s\"", args.c_str(), engineRoot);
-
-        AZ::IO::FixedMaxPathString projectPath(AZ::Utils::GetProjectPath());
-        if (!projectPath.empty())
-        {
-            processArgs = AZStd::string::format("%s --project-path \"%s\"", processArgs.c_str(), projectPath.c_str());
-        }
+        AZStd::string processArgs =
+            AZStd::string::format("%s --engine-path \"%s\" --project-path \"%s\"", args.c_str(), engineRoot.c_str(), projectPath.c_str());
 
         StartProcessDetached(process.c_str(), processArgs.c_str());
     }
