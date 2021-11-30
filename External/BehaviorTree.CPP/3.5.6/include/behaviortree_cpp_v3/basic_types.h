@@ -1,4 +1,4 @@
- #ifndef BT_BASIC_TYPES_H
+#ifndef BT_BASIC_TYPES_H
 #define BT_BASIC_TYPES_H
 
 #include <iostream>
@@ -118,11 +118,13 @@ typedef std::unordered_map<const std::type_info*, StringConverter> StringConvert
 
 
 // helper function
+#pragma warning(disable : 4702)
 template <typename T> inline
 StringConverter GetAnyFromStringFunctor()
 {
     return [](StringView str){ return Any(convertFromString<T>(str)); };
 }
+#pragma warning(enable : 4702)
 
 template <> inline
 StringConverter GetAnyFromStringFunctor<void>()

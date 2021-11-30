@@ -1268,12 +1268,14 @@ public:
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
     }
 
+#pragma warning(disable : 4702)
     value_type & value() &
     {
         return has_value()
             ? ( contained.value() )
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
     }
+#pragma warning(enable : 4702)
 
     constexpr value_type const && value() const &&
     {
