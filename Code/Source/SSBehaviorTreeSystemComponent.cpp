@@ -112,8 +112,7 @@ namespace SparkyStudios::AI::BehaviorTree
             {
                 AZ::SettingsRegistryInterface::Specializations specializationTags;
 
-                auto GemEnumeratedCallback = [&gemInfoList, &settingsRegistry, &behaviorTreeGemRegistryPath, &superchargedGems,
-                                              &specializationTags](const AZ::ModuleData& moduleData) -> bool
+                auto GemEnumeratedCallback = [&superchargedGems, &specializationTags](const AZ::ModuleData& moduleData) -> bool
                 {
                     if (AZ::DynamicModuleHandle* moduleHandle = moduleData.GetDynamicModuleHandle(); moduleHandle != nullptr)
                     {
