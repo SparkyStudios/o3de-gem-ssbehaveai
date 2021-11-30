@@ -30,6 +30,8 @@ namespace SparkyStudios::AI::BehaviorTree::Core
         AZ_CLASS_ALLOCATOR(SSBehaviorTreeRegistry, AZ::SystemAllocator, 0);
         AZ_RTTI(SSBehaviorTreeRegistry, "{1a24e981-17fc-4d02-ac71-ff0e575b09ba}");
 
+        virtual ~SSBehaviorTreeRegistry() = default;
+
         /**
          * @brief Registers a new blackboard property in this registry, given its type.
          *
