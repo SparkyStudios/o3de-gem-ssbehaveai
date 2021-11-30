@@ -19,7 +19,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #---- project configuration ----
 option(BUILD_UNIT_TESTS "Build the unit tests" ON)
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 #---- Find other packages ----
 find_package(Threads)
@@ -64,7 +64,7 @@ elseif( CATKIN_DEVEL_PREFIX OR CATKIN_BUILD_BINARY_PACKAGE)
         INCLUDE_DIRS include # do not include "3rdparty" here
         LIBRARIES ${BEHAVIOR_TREE_LIBRARY}
         CATKIN_DEPENDS roslib
-        )
+    )
 
     list(APPEND BEHAVIOR_TREE_PUBLIC_LIBRARIES ${catkin_LIBRARIES})
     set(BUILD_TOOL_INCLUDE_DIRS ${catkin_INCLUDE_DIRS})
@@ -149,7 +149,7 @@ list(APPEND BT_SOURCE
     src/private/tinyxml2.cpp
 
     3rdparty/minitrace/minitrace.cpp
-    )
+)
 
 find_package(Curses QUIET)
 
@@ -176,17 +176,14 @@ endif()
 if (WIN32)
     set(CMAKE_DEBUG_POSTFIX "d")
     list(APPEND BT_SOURCE src/shared_library_WIN.cpp )
-    add_library(${BEHAVIOR_TREE_LIBRARY} STATIC ${BT_SOURCE} )
+    if (BUILD_SHARED_LIBS)
+        add_library(${BEHAVIOR_TREE_LIBRARY} SHARED ${BT_SOURCE} )
+    else()
+        add_library(${BEHAVIOR_TREE_LIBRARY} STATIC ${BT_SOURCE} )
+    endif()
 endif()
 
-target_link_libraries(${BEHAVIOR_TREE_LIBRARY} PUBLIC
-    ${BEHAVIOR_TREE_PUBLIC_LIBRARIES})
-
-#get_target_property(my_libs ${BEHAVIOR_TREE_LIBRARY} INTERFACE_LINK_LIBRARIES)
-#list(REMOVE_ITEM _libs X)
-#message("my_libs: ${my_libs}")
-
-#set_target_properties(${BEHAVIOR_TREE_LIBRARY} PROPERTIES INTERFACE_LINK_LIBRARIES "")
+target_link_libraries(${BEHAVIOR_TREE_LIBRARY} PUBLIC ${BEHAVIOR_TREE_PUBLIC_LIBRARIES})
 
 target_compile_definitions(${BEHAVIOR_TREE_LIBRARY} PRIVATE $<$<CONFIG:Debug>:TINYXML2_DEBUG>)
 
