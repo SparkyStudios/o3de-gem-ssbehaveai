@@ -151,12 +151,23 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 NODE_EDITOR_STATIC
     )
 
+    ly_set_gem_variant_to_load(TARGETS SSBehaviorTree.Editor.App VARIANTS Tools)
 
     # By default, we will specify that the above target SSBehaviorTree would be used by
     # Tool and Builder type targets when this gem is enabled.  If you don't want it
     # active in Tools or Builders by default, delete one of both of the following lines:
     ly_create_alias(NAME SSBehaviorTree.Tools    NAMESPACE Gem TARGETS SparkyStudios::AI::SSBehaviorTree.Editor)
     ly_create_alias(NAME SSBehaviorTree.Builders NAMESPACE Gem TARGETS SparkyStudios::AI::SSBehaviorTree.Editor)
+
+    # Add build dependency to Editor for the SSBehaviorTree Editor application since
+    # Editor opens up the BehaviorTree.Editor executable
+    ly_add_dependencies(Editor SparkyStudios::AI::SSBehaviorTree.Editor.App)
+
+    # Inject the project path into the SSBehaviorTree.Editor VS debugger command arguments if the build system being invoked
+    # in a project centric view
+    if(NOT PROJECT_NAME STREQUAL "O3DE")
+        set_property(TARGET SSBehaviorTree.Editor.App APPEND PROPERTY VS_DEBUGGER_COMMAND_ARGUMENTS "--project-path=\"${CMAKE_SOURCE_DIR}\"")
+    endif()
 endif()
 
 ################################################################################
