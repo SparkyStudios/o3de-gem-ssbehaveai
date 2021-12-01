@@ -119,7 +119,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
     )
 
     ly_add_target(
-        NAME SSBehaviorTree.Editor.App APPLICATION
+        NAME SSBehaviorTree.Editor.App EXECUTABLE
         OUTPUT_NAME BehaviorTree.Editor
         NAMESPACE SparkyStudios::AI
         AUTOMOC
@@ -150,6 +150,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 SSBEHAVIORTREE_EDITOR
                 NODE_EDITOR_STATIC
     )
+
+    add_definitions(-DSS_PROJECT_RUNTIME_OUTPUT_DIRECTORY="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
     ly_set_gem_variant_to_load(TARGETS SSBehaviorTree.Editor.App VARIANTS Tools)
 

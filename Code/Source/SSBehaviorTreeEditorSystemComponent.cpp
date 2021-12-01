@@ -303,12 +303,12 @@ namespace SparkyStudios::AI::BehaviorTree
         AZ::IO::FixedMaxPathString engineRoot(AZ::Utils::GetEnginePath());
         AZ_Assert(!engineRoot.empty(), "Unable to get the engine root.");
 
-        AZ::IO::FixedMaxPathString exePath(AZ::Utils::GetExecutableDirectory());
+        AZ::IO::FixedMaxPathString exePath(
+            SS_PROJECT_RUNTIME_OUTPUT_DIRECTORY AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING AZ_BUILD_CONFIGURATION_TYPE);
         AZ::IO::FixedMaxPathString projectPath(AZ::Utils::GetProjectPath());
 
         AZStd::string process = AZStd::string::format(
-            "\"%.*s" AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING "SparkyStudios" AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING
-            "AI" AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING "BehaviorTree.Editor"
+            "\"%.*s" AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING "BehaviorTree.Editor"
 #if defined(AZ_PLATFORM_WINDOWS)
             ".exe"
 #endif
