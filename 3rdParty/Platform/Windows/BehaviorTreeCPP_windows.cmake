@@ -1,5 +1,1 @@
-if (CMAKE_BUILD_TYPE EQUAL "debug")
-    set(BEHAVIORTREECPP_LIBS ${BASE_PATH}/lib/win/behaviortree_cpp_v3d.lib)
-else()
-    set(BEHAVIORTREECPP_LIBS ${BASE_PATH}/lib/win/behaviortree_cpp_v3.lib)
-endif()
+set(BEHAVIORTREECPP_LIBS $<IF:$<CONFIG:Debug>,${BASE_PATH}/lib/win/behaviortree_cpp_v3d.lib,${BASE_PATH}/lib/win/behaviortree_cpp_v3.lib>)

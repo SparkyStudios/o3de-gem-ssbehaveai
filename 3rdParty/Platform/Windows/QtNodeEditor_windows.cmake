@@ -1,5 +1,1 @@
-if (CMAKE_BUILD_TYPE EQUAL "debug")
-    set(QTNODEEDITOR_LIBS ${BASE_PATH}/lib/win/nodes_d.lib)
-else()
-    set(QTNODEEDITOR_LIBS ${BASE_PATH}/lib/win/nodes.lib)
-endif()
+set(QTNODEEDITOR_LIBS $<IF:$<CONFIG:Debug>,${BASE_PATH}/lib/win/nodes_d.lib,${BASE_PATH}/lib/win/nodes.lib>)
