@@ -1,10 +1,12 @@
 {
     "gem_name": "SSBehaviorTree",
-    "display_name": "Sparky Studios - Behavior Tree",
+    "display_name": "Behavior Tree",
     "license": "Apache-2.0",
-    "origin": "Sparky Studios - https://github.com/sparkystudios/o3de-gem-ssbehaviortree",
+    "license_url": "https://github.com/SparkyStudios/o3de-gem-ssbehaviortree/blob/main/LICENSE",
+    "origin": "Sparky Studios",
+    "origin_url": "https://github.com/sparkystudios/o3de-gem-ssbehaviortree",
     "type": "Code",
-    "summary": "A collection of components and assets to provide a solid Behavior Tree engine in 03DE projects.",
+    "summary": "A collection of components and assets to provide a solid Behavior Tree engine in O3DE projects.",
     "canonical_tags": [
         "Gem"
     ],
@@ -13,8 +15,10 @@
         "Gameplay",
         "Framework",
         "Code",
-        "BehaviorTree"
+        "BehaviorTree",
+        "Sparky Studios"
     ],
+    "dependencies": [],
     "icon_path": "preview.png",
     "requirements": ""
 }
