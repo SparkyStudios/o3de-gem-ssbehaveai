@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
-# version 3.4 is required as other do not work with C++14 and clang
+cmake_minimum_required(VERSION 3.8)
 
 project(NodeEditor CXX)
 
@@ -117,13 +116,17 @@ target_compile_options(nodes
   PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
-    $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
 
-target_compile_features(nodes
-  PUBLIC
-    cxx_generic_lambdas # Require C++14
-)
+if(NOT "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+  # Clang-Cl on MSVC identifies as "Clang" but behaves more like MSVC:
+  target_compile_options(nodes
+    PRIVATE
+      $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+  )
+endif()
+
+target_compile_features(nodes PUBLIC cxx_std_14)
 
 set_target_properties(nodes
   PROPERTIES

@@ -187,7 +187,7 @@ restoreConnection(QJsonObject const &connectionJson)
 
 void
 FlowScene::
-deleteConnection(Connection& connection)
+deleteConnection(Connection const& connection)
 {
   auto it = _connections.find(connection.id());
   if (it != _connections.end())
@@ -345,7 +345,7 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> const & vi
     {
       for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
       {
-        auto connections = node.nodeState().connections(PortType::In, i);
+        auto connections = node.nodeState().connections(PortType::In, static_cast<PortIndex>(i));
 
         for (auto& conn : connections)
         {
