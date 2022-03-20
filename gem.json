@@ -1,10 +1,10 @@
 {
-    "gem_name": "SSBehaviorTree",
-    "display_name": "Behavior Tree",
+    "gem_name": "SSBehaveAI",
+    "display_name": "Behave AI",
     "license": "Apache-2.0",
-    "license_url": "https://github.com/SparkyStudios/o3de-gem-ssbehaviortree/blob/main/LICENSE",
+    "license_url": "https://github.com/SparkyStudios/o3de-gem-ssbehave/blob/main/LICENSE",
     "origin": "Sparky Studios",
-    "origin_url": "https://github.com/sparkystudios/o3de-gem-ssbehaviortree",
+    "origin_url": "https://github.com/sparkystudios",
     "type": "Code",
     "summary": "A collection of components and assets to provide a solid Behavior Tree engine in O3DE projects.",
     "canonical_tags": [

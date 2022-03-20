@@ -32,7 +32,7 @@ namespace Ui
     class NodesSidePanel;
 }
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     using Core::NodeModel;
     using Core::NodeModels;
@@ -73,4 +73,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
         std::map<QString, QTreeWidgetItem*> _tree_view_category_items;
         std::map<std::pair<QString, QString>, QTreeWidgetItem*> _node_category_items;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets

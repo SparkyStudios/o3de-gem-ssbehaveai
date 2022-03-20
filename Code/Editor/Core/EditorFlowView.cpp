@@ -16,7 +16,7 @@
 
 #include <Editor/Core/EditorFlowView.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     EditorFlowView::EditorFlowView(EditorFlowScene* scene, QWidget* parent)
         : QtNodes::FlowView(scene, parent)
@@ -28,4 +28,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
         setAlignment(Qt::AlignTop | Qt::AlignLeft);
         setCacheMode(QGraphicsView::CacheBackground);
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core

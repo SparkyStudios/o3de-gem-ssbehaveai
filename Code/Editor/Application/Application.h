@@ -27,7 +27,7 @@ namespace AZ
     class Entity;
 }
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Application
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application
 {
     class Application : public AzFramework::Application
     {
@@ -47,4 +47,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Application
 
         AZ::Entity* m_entity = nullptr;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Application
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application

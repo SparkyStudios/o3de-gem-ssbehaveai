@@ -26,9 +26,9 @@
 #include <AzCore/std/containers/unordered_map.h>
 #include <AzCore/std/containers/vector.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeFactory.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     using BT::NodeStatus;
     using BT::NodeType;
@@ -204,4 +204,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
     };
 
     Q_DECLARE_METATYPE(AbstractBehaviorTree);
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core

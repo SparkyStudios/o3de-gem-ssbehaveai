@@ -16,7 +16,7 @@
 
 #include <Assets/SSBehaviorTreeAsset.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Assets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 {
     static constexpr const char* _default_content =
         "<root main_tree_to_execute=\"MainTree\">\n"
@@ -35,4 +35,4 @@ namespace SparkyStudios::AI::BehaviorTree::Assets
         , m_buffer(_default_content, _default_content + strlen(_default_content))
     {
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Assets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

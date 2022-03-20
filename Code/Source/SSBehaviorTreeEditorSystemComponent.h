@@ -33,7 +33,7 @@
 
 #include <Editor/Windows/MainWindow.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     /// System component for SSBehaviorTree editor
     class SSBehaviorTreeEditorSystemComponent
@@ -98,4 +98,4 @@ namespace SparkyStudios::AI::BehaviorTree
         Assets::SSBehaviorTreeAssetHandler* m_assetHandler;
         QAction* m_openEditorAction;
     };
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

@@ -20,7 +20,7 @@
 
 #include <Assets/SSBehaviorTreeAsset.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Assets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 {
     class SSBehaviorTreeAssetHandler
         : public AZ::Data::AssetHandler
@@ -66,4 +66,4 @@ namespace SparkyStudios::AI::BehaviorTree::Assets
     private:
         AZStd::string m_extension = ".ssbt";
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Assets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

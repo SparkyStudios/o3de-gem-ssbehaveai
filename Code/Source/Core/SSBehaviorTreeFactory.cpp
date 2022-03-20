@@ -14,11 +14,11 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeFactory.h>
 
 #include <AzCore/std/smart_ptr/make_shared.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Core
 {
     SSBehaviorTreeFactory::SSBehaviorTreeFactory(SSBehaviorTreeRegistry* registry)
     {
@@ -67,4 +67,4 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     {
         return m_registry->m_factory->createTreeFromText(text.c_str(), blackboard.m_blackboard);
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Core

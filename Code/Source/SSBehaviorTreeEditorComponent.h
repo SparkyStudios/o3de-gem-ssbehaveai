@@ -25,7 +25,7 @@
 #include <AzToolsFramework/ToolsComponents/EditorComponentBase.h>
 #include <AzToolsFramework/ToolsComponents/EditorVisibilityBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     class SSBehaviorTreeEditorComponentRequests
     {
@@ -143,7 +143,7 @@ namespace SparkyStudios::AI::BehaviorTree
         AZ::Data::Asset<Assets::SSBehaviorTreeAsset> m_behaviorTreeAsset;
         AZStd::string m_customName;
     };
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree
 
 namespace AZ
 {

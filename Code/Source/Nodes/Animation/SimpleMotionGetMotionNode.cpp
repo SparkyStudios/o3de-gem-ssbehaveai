@@ -14,13 +14,13 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetMotionNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/SimpleMotionGetMotionNode.h>
 
 #include <AzCore/Asset/AssetCommon.h>
 
 #include <Integration/SimpleMotionComponentBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     SimpleMotionGetMotionNode::SimpleMotionGetMotionNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
         : Core::SSBehaviorTreeNode(name, config)
@@ -56,4 +56,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 
         return Core::SSBehaviorTreeNodeStatus::SUCCESS;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

@@ -19,7 +19,7 @@
 #include <QPushButton>
 #endif
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models
 {
     class SubtreeNodeModel : public SSBehaviorTreeNodeDataModel
     {
@@ -74,4 +74,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
         QPushButton* _expand_button;
         bool _expanded;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models

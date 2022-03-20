@@ -28,7 +28,7 @@ namespace Ui
     class BlackboardProperties;
 }
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     class BlackboardProperties : public QWidget
     {
@@ -50,4 +50,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
 
         QWidget* _main_window;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets

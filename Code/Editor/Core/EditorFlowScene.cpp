@@ -29,7 +29,7 @@
 #include <Editor/Core/Models/SSBehaviorTreeNodeDataModel.h>
 #include <Editor/Windows/MainWindow.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     EditorFlowScene::EditorFlowScene(std::shared_ptr<QtNodes::DataModelRegistry> registry, QObject* parent)
         : QtNodes::FlowScene(registry, parent)
@@ -156,6 +156,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
 
         event->acceptProposedAction();
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 
 #include <Editor/Core/moc_EditorFlowScene.cpp>

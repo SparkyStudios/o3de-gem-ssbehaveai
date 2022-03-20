@@ -34,7 +34,7 @@
 #include <AzFramework/StringFunc/StringFunc.h>
 #include <AzToolsFramework/API/EditorAssetSystemAPI.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Assets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 {
     SSBehaviorTreeAssetHandler::SSBehaviorTreeAssetHandler()
     {
@@ -217,4 +217,4 @@ namespace SparkyStudios::AI::BehaviorTree::Assets
     {
         return azrtti_typeid<Assets::SSBehaviorTreeAsset>();
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Assets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

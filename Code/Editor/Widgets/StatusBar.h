@@ -25,7 +25,7 @@ namespace Ui
     class StatusBar;
 }
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     class StatusBar : public QWidget
     {
@@ -44,4 +44,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
     private:
         Ui::StatusBar* ui;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets

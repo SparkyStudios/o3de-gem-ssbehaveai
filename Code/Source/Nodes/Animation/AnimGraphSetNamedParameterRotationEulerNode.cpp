@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterRotationEulerNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/AnimGraphSetNamedParameterRotationEulerNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphSetNamedParameterRotationEulerNode::AnimGraphSetNamedParameterRotationEulerNode(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
@@ -50,4 +50,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
                 value.value());
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

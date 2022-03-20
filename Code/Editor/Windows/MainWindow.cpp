@@ -22,9 +22,9 @@
 #include <Editor/Core/Models/SubtreeNodeModel.h>
 #include <Editor/Windows/MainWindow.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
-#include <SparkyStudios/AI/BehaviorTree/Nodes.h>
-#include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/Nodes.h>
+#include <SparkyStudios/AI/Behave/SSBehaviorTreeBus.h>
 
 #include <QDir>
 #include <QDomDocument>
@@ -41,7 +41,7 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 {
     MainWindow::MainWindow(QWidget* parent, const AZ::IO::PathView& projectPath, const AZ::IO::PathView& filePath)
         : AzQtComponents::DockMainWindow(parent)
@@ -1215,6 +1215,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
 
         return true;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
 #include <Editor/Windows/moc_MainWindow.cpp>

@@ -33,7 +33,7 @@
 #include <AzToolsFramework/UI/PropertyEditor/GenericComboBoxCtrl.h>
 #include <AzToolsFramework/Viewport/ActionBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     namespace AssetHelpers
     {
@@ -457,4 +457,4 @@ namespace SparkyStudios::AI::BehaviorTree
             m_openEditorAction = nullptr;
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

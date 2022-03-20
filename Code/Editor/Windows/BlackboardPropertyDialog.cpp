@@ -24,7 +24,7 @@
 
 #include <Editor/Windows/MainWindow.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 {
     BlackboardPropertyDialog::BlackboardPropertyDialog(Core::BlackboardPropertyModel& model, QWidget* parent)
         : QDialog(parent)
@@ -47,17 +47,17 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
             ui->propertyTypeComboBox->addItem(property.c_str());
         }
 
-        ui->propertyNameLineEdit->setText(model.name);
-        ui->propertyTypeComboBox->setCurrentText(model.type);
-        ui->propertyDescriptionLineEdit->setText(model.description);
-        ui->propertySuffixLineEdit->setText(model.suffix);
-        ui->isPrivateCheckBox->setChecked(model.isPrivate);
-
         connect(ui->propertyNameLineEdit, &QLineEdit::textChanged, this, &BlackboardPropertyDialog::OnPropertyNameChanged);
         connect(ui->propertyTypeComboBox, &QComboBox::currentTextChanged, this, &BlackboardPropertyDialog::OnPropertyTypeChanged);
         connect(ui->propertyDescriptionLineEdit, &QLineEdit::textChanged, this, &BlackboardPropertyDialog::OnPropertyDescriptionChanged);
         connect(ui->propertySuffixLineEdit, &QLineEdit::textChanged, this, &BlackboardPropertyDialog::OnPropertySuffixChanged);
         connect(ui->isPrivateCheckBox, &QCheckBox::stateChanged, this, &BlackboardPropertyDialog::OnPropertyIsPrivateChanged);
+
+        ui->propertyNameLineEdit->setText(model.name);
+        ui->propertyTypeComboBox->setCurrentText(model.type.isEmpty() ? ui->propertyTypeComboBox->itemText(0) : model.type);
+        ui->propertyDescriptionLineEdit->setText(model.description);
+        ui->propertySuffixLineEdit->setText(model.suffix);
+        ui->isPrivateCheckBox->setChecked(model.isPrivate);
     }
 
     BlackboardPropertyDialog::~BlackboardPropertyDialog()
@@ -89,6 +89,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
     {
         _model.isPrivate = isPrivate == Qt::Checked;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
 #include <Editor/Windows/moc_BlackboardPropertyDialog.cpp>

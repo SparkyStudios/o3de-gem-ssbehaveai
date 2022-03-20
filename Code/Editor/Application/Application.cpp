@@ -30,7 +30,7 @@
 
 #include <SSBehaviorTreeSystemComponent.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Application
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application
 {
     Application::~Application()
     {
@@ -51,7 +51,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Application
         // Use the LogComponent for non-dev logging log
         RegisterComponentDescriptor(AzFramework::LogComponent::CreateDescriptor());
         // Use the BehaviorTree system component
-        RegisterComponentDescriptor(SparkyStudios::AI::BehaviorTree::SSBehaviorTreeSystemComponent::CreateDescriptor());
+        RegisterComponentDescriptor(SparkyStudios::AI::Behave::BehaviorTree::SSBehaviorTreeSystemComponent::CreateDescriptor());
 
         // Set the log alias to .o3de/Logs instead of the default user/logs
         AZ::IO::FixedMaxPath path = AZ::Utils::GetO3deLogsDirectory();
@@ -163,4 +163,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Application
         return qApp->exec();
     }
 
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Application
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application

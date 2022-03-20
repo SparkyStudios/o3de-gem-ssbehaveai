@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterBoolNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/AnimGraphSetNamedParameterBoolNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphSetNamedParameterBoolNode::AnimGraphSetNamedParameterBoolNode(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
@@ -49,4 +49,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
                 GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterBool, m_parameterIndex, value.value());
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

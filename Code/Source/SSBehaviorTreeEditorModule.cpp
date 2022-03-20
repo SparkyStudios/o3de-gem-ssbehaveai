@@ -19,7 +19,7 @@
 #include <SSBehaviorTreeEditorSystemComponent.h>
 #include <SSBehaviorTreeModuleInterface.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     class SSBehaviorTreeEditorModule : public SSBehaviorTreeModuleInterface
     {
@@ -49,6 +49,6 @@ namespace SparkyStudios::AI::BehaviorTree
             };
         }
     };
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree
 
-AZ_DECLARE_MODULE_CLASS(Gem_SSBehaviorTree, SparkyStudios::AI::BehaviorTree::SSBehaviorTreeEditorModule)
+AZ_DECLARE_MODULE_CLASS(Gem_SSBehaviorTree, SparkyStudios::AI::Behave::BehaviorTree::SSBehaviorTreeEditorModule)

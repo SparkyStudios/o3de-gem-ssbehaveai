@@ -20,10 +20,10 @@
 
 #include <AzCore/std/function/function_template.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeNode.h>
+#include <SparkyStudios/AI/Behave/SSBehaviorTreeBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     PortModel& PortModel::operator=(const BT::PortInfo& src)
     {
@@ -259,4 +259,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
 
         return true;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core

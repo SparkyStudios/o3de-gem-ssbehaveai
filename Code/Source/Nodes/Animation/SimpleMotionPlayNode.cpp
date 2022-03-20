@@ -14,11 +14,11 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionPlayNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/SimpleMotionPlayNode.h>
 
 #include <Integration/SimpleMotionComponentBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     SimpleMotionPlayNode::SimpleMotionPlayNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
         : Core::SSBehaviorTreeNode(name, config)
@@ -47,4 +47,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
         EBUS_EVENT_ID(GetEntityId(), EMotionFX::Integration::SimpleMotionComponentRequestBus, PlayMotion);
         return Core::SSBehaviorTreeNodeStatus::SUCCESS;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

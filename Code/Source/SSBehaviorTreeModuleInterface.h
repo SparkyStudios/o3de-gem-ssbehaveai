@@ -18,7 +18,7 @@
 #include <AzCore/Module/Module.h>
 #include <SSBehaviorTreeSystemComponent.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     class SSBehaviorTreeModuleInterface : public AZ::Module
     {
@@ -49,4 +49,4 @@ namespace SparkyStudios::AI::BehaviorTree
             };
         }
     };
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

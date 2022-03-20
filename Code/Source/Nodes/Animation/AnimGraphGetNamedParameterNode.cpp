@@ -1,8 +1,8 @@
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/AnimGraphGetNamedParameterNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     template<typename T>
     AnimGraphGetNamedParameterNode<T>::AnimGraphGetNamedParameterNode(
@@ -56,4 +56,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
             return Core::SSBehaviorTreeNodeStatus::SUCCESS;
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

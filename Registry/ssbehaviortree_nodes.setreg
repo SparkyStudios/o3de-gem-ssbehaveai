@@ -1,13 +1,8 @@
 {
   "SparkyStudios": {
-    "Gems": {
-      "AI": {
-        "BehaviorTree": {
-          "AvailableNodes": [
-            "DebugMessage",
-            "Wait"
-          ]
-        }
+    "AI": {
+      "Behave": {
+        "AvailableNodes": ["DebugMessage", "Wait"]
       }
     }
   }

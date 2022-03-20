@@ -17,8 +17,8 @@
 #include <Assets/SSBehaviorTreeAssetHandler.h>
 #include <SSBehaviorTreeEditorComponent.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
-#include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/Blackboard/SSBehaviorTreeBlackboard.h>
+#include <SparkyStudios/AI/Behave/SSBehaviorTreeBus.h>
 
 #include <AzCore/Asset/AssetManager.h>
 #include <AzCore/Asset/AssetSerializer.h>
@@ -33,10 +33,10 @@
 #include <AzToolsFramework/API/ViewPaneOptions.h>
 #include <AzToolsFramework/AssetBrowser/Entries/SourceAssetBrowserEntry.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
-    using namespace SparkyStudios::AI::BehaviorTree::Blackboard;
-    using namespace SparkyStudios::AI::BehaviorTree::Core;
+    using namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard;
+    using namespace SparkyStudios::AI::Behave::BehaviorTree::Core;
 
     //=========================================================================
     // ~SSBehaviorTreeEditorComponent
@@ -601,4 +601,4 @@ namespace SparkyStudios::AI::BehaviorTree
             }
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

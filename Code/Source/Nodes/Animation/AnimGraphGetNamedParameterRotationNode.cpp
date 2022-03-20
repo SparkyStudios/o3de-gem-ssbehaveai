@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterRotationNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/AnimGraphGetNamedParameterRotationNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphGetNamedParameterRotationNode::AnimGraphGetNamedParameterRotationNode(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
@@ -47,4 +47,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
             value, GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, GetParameterRotation, m_parameterIndex);
         SetOutputValue<AZ::Quaternion>(NODE_PORT_VALUE_NAME, value);
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

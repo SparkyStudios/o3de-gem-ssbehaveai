@@ -14,11 +14,11 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetPlayTimeNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/SimpleMotionSetPlayTimeNode.h>
 
 #include <Integration/SimpleMotionComponentBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     SimpleMotionSetPlayTimeNode::SimpleMotionSetPlayTimeNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
         : Core::SSBehaviorTreeNode(name, config)
@@ -58,4 +58,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 
         return Core::SSBehaviorTreeNodeStatus::SUCCESS;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

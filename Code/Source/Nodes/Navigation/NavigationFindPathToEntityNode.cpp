@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Navigation/NavigationFindPathToEntityNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
 {
     using SSBehaviorTreeBlackboardProperty = Blackboard::SSBehaviorTreeBlackboardProperty;
 
@@ -325,4 +325,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation
     }
 
 #pragma endregion
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Navigation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation

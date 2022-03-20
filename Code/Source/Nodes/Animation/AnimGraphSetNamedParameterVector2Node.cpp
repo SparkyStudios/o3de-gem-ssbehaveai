@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/AnimGraphSetNamedParameterVector2Node.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphSetNamedParameterVector2Node::AnimGraphSetNamedParameterVector2Node(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
@@ -49,4 +49,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
                 GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterVector2, m_parameterIndex, value.value());
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

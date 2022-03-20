@@ -26,7 +26,7 @@
 #include <Editor/Core/EditorUtils.h>
 #include <Editor/Core/Models/SSBehaviorTreeNodeDataModel.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     NodeProperties::NodeProperties(QWidget* parent)
         : QWidget(parent)
@@ -155,6 +155,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
             _currentNode = node;
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 
 #include <Editor/Widgets/moc_NodeProperties.cpp>

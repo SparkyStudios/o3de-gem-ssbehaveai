@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterVector3Node.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/AnimGraphGetNamedParameterVector3Node.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphGetNamedParameterVector3Node::AnimGraphGetNamedParameterVector3Node(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
@@ -47,4 +47,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
             value, GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, GetParameterVector3, m_parameterIndex);
         SetOutputValue<AZ::Vector3>(NODE_PORT_VALUE_NAME, value);
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

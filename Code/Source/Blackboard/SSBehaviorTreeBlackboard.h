@@ -1,7 +1,7 @@
 #pragma once
 
-#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/Blackboard/SSBehaviorTreeBlackboard.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeRegistry.h>
 
 #include <Assets/SSBehaviorTreeAsset.h>
 
@@ -67,7 +67,7 @@ namespace BT
     // ====================================================================================================
 } // namespace BT
 
-namespace SparkyStudios::AI::BehaviorTree::Blackboard
+namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
 {
     class SSBehaviorTreeBlackboardPropertyNil : public SSBehaviorTreeBlackboardProperty
     {
@@ -294,4 +294,4 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     protected:
         void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* scriptProperty) override;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Blackboard
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard

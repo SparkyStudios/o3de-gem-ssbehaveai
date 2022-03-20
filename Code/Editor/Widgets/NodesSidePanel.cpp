@@ -24,7 +24,7 @@
 #include <Editor/Widgets/NodesSidePanel.h>
 #include <Editor/Widgets/ui_NodesSidePanel.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     NodesSidePanel::NodesSidePanel(const std::shared_ptr<QtNodes::DataModelRegistry>& registry, NodeModels& models, QWidget* parent)
         : QWidget(parent)
@@ -44,7 +44,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
         table_header->setSectionResizeMode(2, QHeaderView::Stretch);
 
         QSettings settings;
-        table_header->restoreState(settings.value("SparkyStudios/AI/BehaviorTree/Editor/NodesSidePanel/header").toByteArray());
+        table_header->restoreState(settings.value("SparkyStudios/AI/Behave/Editor/NodesSidePanel/header").toByteArray());
 
         AzQtComponents::LineEdit::applySearchStyle(ui->nodesListFilter);
 
@@ -58,7 +58,7 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
     {
         QSettings settings;
         settings.setValue(
-            "SparkyStudios/AI/BehaviorTree/Editor/NodesSidePanel/header", ui->nodeParamsTableWidget->horizontalHeader()->saveState());
+            "SparkyStudios/AI/Behave/Editor/NodesSidePanel/header", ui->nodeParamsTableWidget->horizontalHeader()->saveState());
 
         delete ui;
     }
@@ -206,6 +206,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
 
         emit nodeModelEdited(old_name, new_model.registrationId);
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 
 #include <Editor/Widgets/moc_NodesSidePanel.cpp>

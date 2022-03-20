@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Common/WaitNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Common/WaitNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 {
     WaitNode::WaitNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
         : Core::SSBehaviorTreeNode(name, config)
@@ -81,4 +81,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
         Core::Optional<float> s = GetInputValue<float>(NODE_PORT_SECONDS_NAME);
         return s.has_value() ? s.value() : 0;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common

@@ -19,7 +19,7 @@
 #include <Editor/Core/EditorBase.h>
 #endif
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     class EditorFlowScene : public QtNodes::FlowScene
     {
@@ -55,4 +55,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
         bool _editor_locked;
         AbstractBehaviorTreeNode _clipboard_node;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core

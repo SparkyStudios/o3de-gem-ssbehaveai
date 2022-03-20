@@ -16,14 +16,14 @@
 
 #include <SSBehaviorTreeComponent.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeNode.h>
+#include <SparkyStudios/AI/Behave/SSBehaviorTreeBus.h>
 
 #include <AzCore/Asset/AssetSerializer.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     SSBehaviorTreeComponent::SSBehaviorTreeComponent()
         : m_behaviorTreeAsset(AZ::Data::AssetLoadBehavior::PreLoad)
@@ -201,4 +201,4 @@ namespace SparkyStudios::AI::BehaviorTree
             }
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

@@ -14,11 +14,11 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
+#include <SparkyStudios/AI/Behave/Blackboard/SSBehaviorTreeBlackboard.h>
 
 #include <AzCore/RTTI/BehaviorContext.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Blackboard
+namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
 {
 #pragma region SSBehaviorTreeBlackboard
 
@@ -408,4 +408,4 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
     }
 
 #pragma endregion
-} // namespace SparkyStudios::AI::BehaviorTree::Blackboard
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard

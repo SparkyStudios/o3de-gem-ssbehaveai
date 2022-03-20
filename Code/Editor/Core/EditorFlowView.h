@@ -20,7 +20,7 @@
 #include <Editor/Core/EditorFlowScene.h>
 #endif
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     class EditorFlowView : public QtNodes::FlowView
     {
@@ -33,4 +33,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
         EditorFlowView(EditorFlowScene* scene, QWidget* parent = Q_NULLPTR);
         virtual ~EditorFlowView() = default;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core

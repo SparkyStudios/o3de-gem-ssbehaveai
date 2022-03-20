@@ -24,7 +24,7 @@
 
 #include <Editor/Core/Models/SubtreeNodeModel.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     using QtNodes::DataModelRegistry;
     using QtNodes::FlowScene;
@@ -882,4 +882,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
         }
         return port_element;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core

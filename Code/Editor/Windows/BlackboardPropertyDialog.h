@@ -27,7 +27,7 @@ namespace Ui
     class BlackboardPropertyDialog;
 }
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 {
     class BlackboardPropertyDialog : public QDialog
     {
@@ -48,4 +48,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         Ui::BlackboardPropertyDialog* ui;
         Core::BlackboardPropertyModel& _model;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows

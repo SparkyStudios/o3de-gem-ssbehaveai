@@ -27,7 +27,7 @@
 #include <QLineEdit>
 #include <QSizePolicy>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models
 {
     static int GetUID()
     {
@@ -201,6 +201,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
         return _instance_name;
     }
 
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models
 
 #include <Editor/Core/Models/moc_SSBehaviorTreeNodeDataModel.cpp>

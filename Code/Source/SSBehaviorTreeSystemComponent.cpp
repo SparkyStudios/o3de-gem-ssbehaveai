@@ -14,7 +14,7 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes.h>
+#include <SparkyStudios/AI/Behave/Nodes.h>
 
 #include <SSBehaviorTreeSystemComponent.h>
 
@@ -27,9 +27,9 @@
 
 #include <AzFramework/Gem/GemInfo.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
-    using namespace SparkyStudios::AI::BehaviorTree::Blackboard;
+    using namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard;
 
     SSBehaviorTreeSystemComponent::SSBehaviorTreeSystemComponent()
     {
@@ -174,7 +174,7 @@ namespace SparkyStudios::AI::BehaviorTree
         };
 
         // Collect the list of nodes to enable.
-        settingsRegistry->Visit(availableNodesVisitor, "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes");
+        settingsRegistry->Visit(availableNodesVisitor, "/SparkyStudios/AI/Behave/AvailableNodes");
 
         // Enable all the available nodes.
         m_factory.GetRegistry()->EnableNodes(enabledNodes);
@@ -189,4 +189,4 @@ namespace SparkyStudios::AI::BehaviorTree
     {
         return m_factory;
     }
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

@@ -28,7 +28,7 @@
 #include <QMessageBox>
 #include <QSignalBlocker>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     using namespace QtNodes;
 
@@ -730,6 +730,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
         clearScene();
         scene()->loadFromMemory(data);
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 
 #include <Editor/Widgets/moc_GraphicContainer.cpp>

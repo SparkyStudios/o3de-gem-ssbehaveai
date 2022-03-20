@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Common/DebugMessageNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Common/DebugMessageNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 {
 #pragma region DebugMessageNode
 
@@ -168,4 +168,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
     }
 
 #pragma endregion
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Common
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common

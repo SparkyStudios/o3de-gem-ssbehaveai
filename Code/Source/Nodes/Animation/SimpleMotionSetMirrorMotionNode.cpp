@@ -14,11 +14,11 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionSetMirrorMotionNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/SimpleMotionSetMirrorMotionNode.h>
 
 #include <Integration/SimpleMotionComponentBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     SimpleMotionSetMirrorMotionNode::SimpleMotionSetMirrorMotionNode(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
@@ -59,4 +59,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 
         return Core::SSBehaviorTreeNodeStatus::SUCCESS;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

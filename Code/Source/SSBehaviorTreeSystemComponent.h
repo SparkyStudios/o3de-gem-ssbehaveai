@@ -17,9 +17,9 @@
 #include <AzCore/Component/Component.h>
 #include <AzCore/Component/TickBus.h>
 
-#include <SparkyStudios/AI/BehaviorTree/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/SSBehaviorTreeBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     class SSBehaviorTreeSystemComponent
         : public AZ::Component
@@ -58,4 +58,4 @@ namespace SparkyStudios::AI::BehaviorTree
         Core::SSBehaviorTreeFactory m_factory;
     };
 
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

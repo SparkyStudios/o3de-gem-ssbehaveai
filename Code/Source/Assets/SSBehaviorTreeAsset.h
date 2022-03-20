@@ -18,7 +18,7 @@
 #include <AzCore/IO/GenericStreams.h>
 #include <AzCore/std/containers/vector.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Assets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 {
     /**
      * @brief SS BehaviorTree Asset - contains the source code of a BehaviorTree XML file
@@ -61,4 +61,4 @@ namespace SparkyStudios::AI::BehaviorTree::Assets
 
         friend class SSBehaviorTreeAssetHandler;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Assets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

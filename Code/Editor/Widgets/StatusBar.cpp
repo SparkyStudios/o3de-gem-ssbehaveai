@@ -19,7 +19,7 @@
 #include <Editor/Widgets/ui_StatusBar.h>
 #include <Editor/Windows/MainWindow.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     StatusBar::StatusBar(QWidget* parent)
         : QWidget(parent)
@@ -61,6 +61,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
         ui->validityIcon->setPixmap(pix);
         ui->validityIcon->setScaledContents(true);
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 
 #include <Editor/Widgets/moc_StatusBar.cpp>

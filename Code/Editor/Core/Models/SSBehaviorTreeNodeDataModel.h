@@ -27,7 +27,7 @@
 #include <QSvgRenderer>
 #endif
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models
 {
     class SSBehaviorTreeNodeDataModel : public QtNodes::NodeDataModel
     {
@@ -133,4 +133,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
         QString modelValidationError = QStringLiteral("");
     };
 
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models

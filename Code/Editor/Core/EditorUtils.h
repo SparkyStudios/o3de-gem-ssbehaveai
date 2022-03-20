@@ -173,7 +173,7 @@ namespace BT
 
 } // namespace BT
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
     QtNodes::Node* findRoot(const QtNodes::FlowScene& scene);
 
@@ -216,4 +216,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core
     NodeModel buildTreeNodeModelFromXML(const QDomElement& node);
 
     QDomElement writePortModel(const QString& port_name, const PortModel& port, QDomDocument& doc);
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core

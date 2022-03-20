@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     // Call before using any Qt, or the app may not be able to locate Qt libs
     AzQtComponents::PrepareQtPaths();
 
-    SparkyStudios::AI::BehaviorTree::Editor::Application::Application application(&argc, &argv);
+    SparkyStudios::AI::Behave::BehaviorTree::Editor::Application::Application application(&argc, &argv);
     if (!application.Init())
     {
         AZ_Error("SSBehaviorTreeVisualEditor", false, "Failed to initialize");

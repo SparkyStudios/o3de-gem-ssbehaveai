@@ -1,152 +1,152 @@
 [
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphGetNamedParameterBool"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphGetNamedParameterFloat"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphGetNamedParameterRotationEuler"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphGetNamedParameterRotation"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphGetNamedParameterString"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphGetNamedParameterVector2"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphGetNamedParameterVector3"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterBool"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterFloat"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterRotationEuler"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterRotation"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterString"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterVector2"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "AnimGraphSetNamedParameterVector3"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionGetBlendInTime"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionGetBlendOutTime"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionGetLoopMotion"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionGetMotion"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionGetPlaySpeed"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionGetPlayTime"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionPlay"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetBlendInTime"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetBlendOutTime"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetLoopMotion"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetMirrorMotion"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetMotion"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetPlaySpeed"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetPlayTime"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetRetargetMotion"
   },
   {
     "op": "add",
-    "path": "/SparkyStudios/Gems/AI/BehaviorTree/AvailableNodes/-",
+    "path": "/SparkyStudios/AI/Behave/AvailableNodes/-",
     "value": "SimpleMotionSetReverse"
   }
 ]

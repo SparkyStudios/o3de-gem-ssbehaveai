@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
+#include <SparkyStudios/AI/Behave/Blackboard/SSBehaviorTreeBlackboard.h>
 
 #include <Assets/SSBehaviorTreeAsset.h>
 
@@ -23,7 +23,7 @@
 #include <AzCore/Component/TickBus.h>
 #include <AzCore/Memory/SystemAllocator.h>
 
-namespace SparkyStudios::AI::BehaviorTree
+namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     class SSBehaviorTreeComponent
         : public AZ::Component
@@ -80,4 +80,4 @@ namespace SparkyStudios::AI::BehaviorTree
 
         friend class SSBehaviorTreeEditorComponent;
     };
-} // namespace SparkyStudios::AI::BehaviorTree
+} // namespace SparkyStudios::AI::Behave::BehaviorTree

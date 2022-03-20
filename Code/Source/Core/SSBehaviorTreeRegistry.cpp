@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeRegistry.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Core
 {
     void SSBehaviorTreeRegistry::RegisterProperty(
         const AZStd::string& type, const AZ::Uuid& uuid, const SSBehaviorTreeBlackboardPropertyBuilder& builder)
@@ -128,4 +128,4 @@ namespace SparkyStudios::AI::BehaviorTree::Core
             }
         }
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Core

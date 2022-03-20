@@ -14,11 +14,11 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Nodes/Animation/SimpleMotionGetBlendInTimeNode.h>
+#include <SparkyStudios/AI/Behave/Nodes/Animation/SimpleMotionGetBlendInTimeNode.h>
 
 #include <Integration/SimpleMotionComponentBus.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     SimpleMotionGetBlendInTimeNode::SimpleMotionGetBlendInTimeNode(
         const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
@@ -55,4 +55,4 @@ namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
 
         return Core::SSBehaviorTreeNodeStatus::SUCCESS;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Nodes::Animation
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

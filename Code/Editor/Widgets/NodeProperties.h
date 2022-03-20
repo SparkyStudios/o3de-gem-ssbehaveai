@@ -25,7 +25,7 @@ namespace Ui
     class NodeProperties;
 }
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     class NodeProperties : public QWidget
     {
@@ -42,4 +42,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
 
         QtNodes::Node* _currentNode;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets

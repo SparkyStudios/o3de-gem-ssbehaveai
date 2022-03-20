@@ -28,7 +28,7 @@
 
 #include <Editor/Windows/BlackboardPropertyDialog.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     BlackboardProperties::BlackboardProperties(Core::BlackboardPropertyModels& models, QWidget* parent)
         : QWidget(parent)
@@ -113,6 +113,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
             }
         }
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 
 #include <Editor/Widgets/moc_BlackboardProperties.cpp>

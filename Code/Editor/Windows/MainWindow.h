@@ -23,7 +23,7 @@
 #include <AzQtComponents/Components/FancyDocking.h>
 #include <AzQtComponents/Components/StyledDockWidget.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeFactory.h>
 
 #include <QDomDocument>
 #include <QMainWindow>
@@ -36,7 +36,7 @@
 #include <Editor/Widgets/StatusBar.h>
 #endif
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 {
     class MainWindow : public AzQtComponents::DockMainWindow
     {
@@ -139,4 +139,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
         QString _project_path;
     };
 
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Windows
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows

@@ -26,7 +26,7 @@
 #include <Editor/Core/EditorFlowView.h>
 #endif
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 {
     using Core::AbstractBehaviorTree;
     using Core::AbstractBehaviorTreeNode;
@@ -123,4 +123,4 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
 
         bool _signal_was_blocked;
     };
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Widgets
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets

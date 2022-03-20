@@ -19,7 +19,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 
-namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models
 {
     SubtreeNodeModel::SubtreeNodeModel(const NodeModel& model)
         : SSBehaviorTreeNodeDataModel(model)
@@ -81,6 +81,6 @@ namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
         setInstanceName(alias);
         setExpanded(modelJson["expanded"].toBool());
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Editor::Core::Models
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core::Models
 
 #include <Editor/Core/Models/moc_SubtreeNodeModel.cpp>

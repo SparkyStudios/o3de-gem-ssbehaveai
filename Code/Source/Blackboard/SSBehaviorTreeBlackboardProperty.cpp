@@ -14,10 +14,10 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
-#include <SparkyStudios/AI/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
+#include <SparkyStudios/AI/Behave/Blackboard/SSBehaviorTreeBlackboard.h>
+#include <SparkyStudios/AI/Behave/Blackboard/SSBehaviorTreeBlackboardProperty.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Blackboard
+namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
 {
     SSBehaviorTreeBlackboardProperty::SSBehaviorTreeBlackboardProperty(const char* name)
         : m_id(AZ::Crc32(name))
@@ -79,4 +79,4 @@ namespace SparkyStudios::AI::BehaviorTree::Blackboard
         // TODO: Implement a SSBehaviorTreeBlackboardPropertyVector3
         return false;
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Blackboard
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard

@@ -14,9 +14,9 @@
 
 #include <StdAfx.h>
 
-#include <SparkyStudios/AI/BehaviorTree/Core/SSBehaviorTreeNode.h>
+#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeNode.h>
 
-namespace SparkyStudios::AI::BehaviorTree::Core
+namespace SparkyStudios::AI::Behave::BehaviorTree::Core
 {
     SSBehaviorTreeNode::SSBehaviorTreeNode(const std::string& name, const SSBehaviorTreeNodeConfiguration& config)
         : BT::StatefulActionNode(name, config)
@@ -119,4 +119,4 @@ namespace SparkyStudios::AI::BehaviorTree::Core
     {
         return std::string();
     }
-} // namespace SparkyStudios::AI::BehaviorTree::Core
+} // namespace SparkyStudios::AI::Behave::BehaviorTree::Core
