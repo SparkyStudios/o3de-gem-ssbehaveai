@@ -114,6 +114,17 @@ set(FILES
     Source/BehaviorTree/SSBehaviorTreeSystemComponent.cpp
     Source/BehaviorTree/SSBehaviorTreeSystemComponent.h
 
+    Source/Navigation/BehaveNavigationSystemComponent.h
+    Source/Navigation/BehaveNavigationSystemComponent.cpp
+    Source/Navigation/Components/DynamicNavigationMeshComponent.h
+    Source/Navigation/Components/DynamicNavigationMeshComponent.cpp
+    Source/Navigation/Components/WalkableComponent.h
+    Source/Navigation/Components/WalkableComponent.cpp
+    Source/Navigation/Utils/RecastVector3.h
+    Source/Navigation/Utils/RecastSmartPointer.h
+    Source/Navigation/Utils/RecastNavigationMesh.h
+    Source/Navigation/Utils/RecastNavigationMesh.cpp
+
     # Recast Navigation SDK
     # ==============================
     ../External/RecastNavigation/Recast/Include/RecastAlloc.h

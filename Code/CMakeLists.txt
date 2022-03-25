@@ -107,6 +107,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 SparkyStudios::AI::Behave.Core.Static
                 3rdParty::Qt::Widgets
                 3rdParty::QtNodeEditor
+                Gem::DebugDraw.Static
+                Gem::LmbrCentral.Static
         COMPILE_DEFINITIONS
             PRIVATE
                 SSBEHAVEAI_EDITOR

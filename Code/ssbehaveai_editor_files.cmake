@@ -24,6 +24,15 @@ set(FILES
     Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.cpp
     Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.h
 
+    Source/Navigation/BehaveNavigationEditorSystemComponent.h
+    Source/Navigation/BehaveNavigationEditorSystemComponent.cpp
+    Source/Navigation/Components/DynamicNavigationMeshEditorComponent.h
+    Source/Navigation/Components/DynamicNavigationMeshEditorComponent.cpp
+    Source/Navigation/Components/WalkableEditorComponent.h
+    Source/Navigation/Components/WalkableEditorComponent.cpp
+    Source/Navigation/Utils/RecastDebugDraw.h
+    Source/Navigation/Utils/RecastDebugDraw.cpp
+
     # Recast Navigation SDK
     # ==============================
     ../External/RecastNavigation/DebugUtils/Include/DebugDraw.h
