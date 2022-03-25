@@ -2,7 +2,7 @@
 .vs/
 .vscode/
 
-External/**/**/lib/
+External/**/lib/
 
 [Bb]uild/
 [Cc]ache/

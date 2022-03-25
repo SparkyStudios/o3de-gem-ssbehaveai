@@ -113,4 +113,61 @@ set(FILES
     Source/BehaviorTree/SSBehaviorTreeComponent.cpp
     Source/BehaviorTree/SSBehaviorTreeSystemComponent.cpp
     Source/BehaviorTree/SSBehaviorTreeSystemComponent.h
+
+    # Recast Navigation SDK
+    # ==============================
+    ../External/RecastNavigation/Recast/Include/RecastAlloc.h
+    ../External/RecastNavigation/Recast/Include/RecastAssert.h
+    ../External/RecastNavigation/Recast/Include/Recast.h
+    
+    ../External/RecastNavigation/Recast/Source/Recast.cpp
+    ../External/RecastNavigation/Recast/Source/RecastAlloc.cpp
+    ../External/RecastNavigation/Recast/Source/RecastArea.cpp
+    ../External/RecastNavigation/Recast/Source/RecastAssert.cpp
+    ../External/RecastNavigation/Recast/Source/RecastContour.cpp
+    ../External/RecastNavigation/Recast/Source/RecastFilter.cpp
+    ../External/RecastNavigation/Recast/Source/RecastLayers.cpp
+    ../External/RecastNavigation/Recast/Source/RecastMesh.cpp
+    ../External/RecastNavigation/Recast/Source/RecastMeshDetail.cpp
+    ../External/RecastNavigation/Recast/Source/RecastRasterization.cpp
+    ../External/RecastNavigation/Recast/Source/RecastRegion.cpp
+
+    ../External/RecastNavigation/Detour/Include/DetourAlloc.h
+    ../External/RecastNavigation/Detour/Include/DetourAssert.h
+    ../External/RecastNavigation/Detour/Include/DetourCommon.h
+    ../External/RecastNavigation/Detour/Include/DetourMath.h
+    ../External/RecastNavigation/Detour/Include/DetourNavMesh.h
+    ../External/RecastNavigation/Detour/Include/DetourNavMeshBuilder.h
+    ../External/RecastNavigation/Detour/Include/DetourNavMeshQuery.h
+    ../External/RecastNavigation/Detour/Include/DetourNode.h
+    ../External/RecastNavigation/Detour/Include/DetourStatus.h
+    
+    ../External/RecastNavigation/Detour/Source/DetourAlloc.cpp
+    ../External/RecastNavigation/Detour/Source/DetourAssert.cpp
+    ../External/RecastNavigation/Detour/Source/DetourCommon.cpp
+    ../External/RecastNavigation/Detour/Source/DetourNavMesh.cpp
+    ../External/RecastNavigation/Detour/Source/DetourNavMeshBuilder.cpp
+    ../External/RecastNavigation/Detour/Source/DetourNavMeshQuery.cpp
+    ../External/RecastNavigation/Detour/Source/DetourNode.cpp
+    
+    ../External/RecastNavigation/DetourCrowd/Include/DetourCrowd.h
+    ../External/RecastNavigation/DetourCrowd/Include/DetourLocalBoundary.h
+    ../External/RecastNavigation/DetourCrowd/Include/DetourObstacleAvoidance.h
+    ../External/RecastNavigation/DetourCrowd/Include/DetourPathCorridor.h
+    ../External/RecastNavigation/DetourCrowd/Include/DetourPathQueue.h
+    ../External/RecastNavigation/DetourCrowd/Include/DetourProximityGrid.h
+
+    ../External/RecastNavigation/DetourCrowd/Source/DetourCrowd.cpp
+    ../External/RecastNavigation/DetourCrowd/Source/DetourLocalBoundary.cpp
+    ../External/RecastNavigation/DetourCrowd/Source/DetourObstacleAvoidance.cpp
+    ../External/RecastNavigation/DetourCrowd/Source/DetourPathCorridor.cpp
+    ../External/RecastNavigation/DetourCrowd/Source/DetourPathQueue.cpp
+    ../External/RecastNavigation/DetourCrowd/Source/DetourProximityGrid.cpp
+
+    ../External/RecastNavigation/DetourTileCache/Include/DetourTileCache.h
+    ../External/RecastNavigation/DetourTileCache/Include/DetourTileCacheBuilder.h
+    
+    ../External/RecastNavigation/DetourTileCache/Source/DetourTileCache.cpp
+    ../External/RecastNavigation/DetourTileCache/Source/DetourTileCacheBuilder.cpp
+    # ==============================
 )

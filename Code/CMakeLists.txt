@@ -42,6 +42,10 @@ ly_add_target(
     INCLUDE_DIRECTORIES
         PUBLIC
             Include
+            ../External/RecastNavigation/Detour/Include
+            ../External/RecastNavigation/DetourCrowd/Include
+            ../External/RecastNavigation/DetourTileCache/Include
+            ../External/RecastNavigation/Recast/Include
         PRIVATE
             .
             Source
@@ -94,6 +98,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 Source
             PUBLIC
                 Include
+                ../External/RecastNavigation/DebugUtils/Include
         BUILD_DEPENDENCIES
             PUBLIC
                 AZ::AzToolsFramework

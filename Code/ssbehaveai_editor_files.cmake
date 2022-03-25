@@ -23,4 +23,17 @@ set(FILES
     Source/BehaviorTree/SSBehaviorTreeEditorComponent.h
     Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.cpp
     Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.h
+
+    # Recast Navigation SDK
+    # ==============================
+    ../External/RecastNavigation/DebugUtils/Include/DebugDraw.h
+    ../External/RecastNavigation/DebugUtils/Include/DetourDebugDraw.h
+    ../External/RecastNavigation/DebugUtils/Include/RecastDebugDraw.h
+    ../External/RecastNavigation/DebugUtils/Include/RecastDump.h
+
+    ../External/RecastNavigation/DebugUtils/Source/DebugDraw.cpp
+    ../External/RecastNavigation/DebugUtils/Source/DetourDebugDraw.cpp
+    ../External/RecastNavigation/DebugUtils/Source/RecastDebugDraw.cpp
+    ../External/RecastNavigation/DebugUtils/Source/RecastDump.cpp
+    # ==============================
 )
