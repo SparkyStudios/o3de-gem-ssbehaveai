@@ -23,7 +23,7 @@
 #include <AzQtComponents/Components/FancyDocking.h>
 #include <AzQtComponents/Components/StyledDockWidget.h>
 
-#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeFactory.h>
 
 #include <QDomDocument>
 #include <QMainWindow>

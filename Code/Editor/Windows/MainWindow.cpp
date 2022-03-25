@@ -22,9 +22,9 @@
 #include <Editor/Core/Models/SubtreeNodeModel.h>
 #include <Editor/Windows/MainWindow.h>
 
-#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeRegistry.h>
-#include <SparkyStudios/AI/Behave/Nodes.h>
-#include <SparkyStudios/AI/Behave/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Nodes.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/SSBehaviorTreeBus.h>
 
 #include <QDir>
 #include <QDomDocument>

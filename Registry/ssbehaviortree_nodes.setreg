@@ -2,7 +2,9 @@
   "SparkyStudios": {
     "AI": {
       "Behave": {
-        "AvailableNodes": ["DebugMessage", "Wait"]
+        "BehaviorTree": {
+          "AvailableNodes": [ "DebugMessage", "Wait" ]
+        }
       }
     }
   }

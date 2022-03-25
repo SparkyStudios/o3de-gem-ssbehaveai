@@ -26,7 +26,7 @@
 #include <AzCore/std/containers/unordered_map.h>
 #include <AzCore/std/containers/vector.h>
 
-#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeFactory.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {

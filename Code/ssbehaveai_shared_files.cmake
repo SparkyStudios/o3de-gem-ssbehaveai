@@ -13,5 +13,6 @@
 # limitations under the License.
 
 set(FILES
-    Source/SSBehaviorTreeModule.cpp
+    Source/BehaveAIModuleInterface.h
+    Source/BehaveAIModule.cpp
 )

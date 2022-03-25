@@ -44,7 +44,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
         table_header->setSectionResizeMode(2, QHeaderView::Stretch);
 
         QSettings settings;
-        table_header->restoreState(settings.value("SparkyStudios/AI/Behave/Editor/NodesSidePanel/header").toByteArray());
+        table_header->restoreState(settings.value("SparkyStudios/AI/Behave/BehaviorTree/Editor/NodesSidePanel/header").toByteArray());
 
         AzQtComponents::LineEdit::applySearchStyle(ui->nodesListFilter);
 
@@ -58,7 +58,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
     {
         QSettings settings;
         settings.setValue(
-            "SparkyStudios/AI/Behave/Editor/NodesSidePanel/header", ui->nodeParamsTableWidget->horizontalHeader()->saveState());
+            "SparkyStudios/AI/Behave/BehaviorTree/Editor/NodesSidePanel/header", ui->nodeParamsTableWidget->horizontalHeader()->saveState());
 
         delete ui;
     }

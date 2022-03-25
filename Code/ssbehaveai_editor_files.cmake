@@ -16,11 +16,11 @@ set(FILES
     Source/StdAfx.cpp
     Source/StdAfx.h
 
-    Source/Assets/SSBehaviorTreeAssetHandler.cpp
-    Source/Assets/SSBehaviorTreeAssetHandler.h
+    Source/BehaviorTree/Assets/SSBehaviorTreeAssetHandler.cpp
+    Source/BehaviorTree/Assets/SSBehaviorTreeAssetHandler.h
 
-    Source/SSBehaviorTreeEditorComponent.cpp
-    Source/SSBehaviorTreeEditorComponent.h
-    Source/SSBehaviorTreeEditorSystemComponent.cpp
-    Source/SSBehaviorTreeEditorSystemComponent.h
+    Source/BehaviorTree/SSBehaviorTreeEditorComponent.cpp
+    Source/BehaviorTree/SSBehaviorTreeEditorComponent.h
+    Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.cpp
+    Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.h
 )

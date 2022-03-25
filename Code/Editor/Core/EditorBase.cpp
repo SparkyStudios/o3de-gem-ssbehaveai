@@ -20,8 +20,8 @@
 
 #include <AzCore/std/function/function_template.h>
 
-#include <SparkyStudios/AI/Behave/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/Behave/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/SSBehaviorTreeBus.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {

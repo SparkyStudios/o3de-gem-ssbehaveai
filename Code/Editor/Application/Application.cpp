@@ -28,7 +28,7 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include <SSBehaviorTreeSystemComponent.h>
+#include <BehaviorTree/SSBehaviorTreeSystemComponent.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application
 {
@@ -162,5 +162,4 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application
         // Run the application
         return qApp->exec();
     }
-
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application
