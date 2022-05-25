@@ -16,16 +16,17 @@ set(FILES
     Source/StdAfx.cpp
     Source/StdAfx.h
 
-    Source/BehaviorTree/Assets/SSBehaviorTreeAssetHandler.cpp
-    Source/BehaviorTree/Assets/SSBehaviorTreeAssetHandler.h
+    Source/BehaviorTree/Assets/BehaviorTreeAssetHandler.cpp
+    Source/BehaviorTree/Assets/BehaviorTreeAssetHandler.h
 
-    Source/BehaviorTree/SSBehaviorTreeEditorComponent.cpp
-    Source/BehaviorTree/SSBehaviorTreeEditorComponent.h
-    Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.cpp
-    Source/BehaviorTree/SSBehaviorTreeEditorSystemComponent.h
+    Source/BehaviorTree/BehaviorTreeEditorComponent.cpp
+    Source/BehaviorTree/BehaviorTreeEditorComponent.h
+    Source/BehaviorTree/BehaviorTreeEditorSystemComponent.cpp
+    Source/BehaviorTree/BehaviorTreeEditorSystemComponent.h
 
     Source/Navigation/BehaveNavigationEditorSystemComponent.h
     Source/Navigation/BehaveNavigationEditorSystemComponent.cpp
+
     Source/Navigation/Components/DynamicNavigationMeshEditorComponent.h
     Source/Navigation/Components/DynamicNavigationMeshEditorComponent.cpp
     Source/Navigation/Components/WalkableEditorComponent.h

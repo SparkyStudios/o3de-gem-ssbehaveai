@@ -20,31 +20,31 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
-    SimpleMotionPlayNode::SimpleMotionPlayNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : Core::SSBehaviorTreeNode(name, config)
+    SimpleMotionPlayNode::SimpleMotionPlayNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+        : Node(name, config)
     {
     }
 
-    void SimpleMotionPlayNode::Reflect(AZ::ReflectContext* reflection)
+    void SimpleMotionPlayNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(reflection);
+        AZ_UNUSED(rc);
     }
 
-    void SimpleMotionPlayNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void SimpleMotionPlayNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         registry->DelayNodeRegistration<SimpleMotionPlayNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList SimpleMotionPlayNode::providedPorts()
+    Core::BehaviorTreePortsList SimpleMotionPlayNode::providedPorts()
     {
-        Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+        Core::BehaviorTreePortsList ports = Node::providedPorts();
 
         return ports;
     }
 
-    Core::SSBehaviorTreeNodeStatus SimpleMotionPlayNode::Tick()
+    Core::BehaviorTreeNodeStatus SimpleMotionPlayNode::Tick()
     {
         EBUS_EVENT_ID(GetEntityId(), EMotionFX::Integration::SimpleMotionComponentRequestBus, PlayMotion);
-        return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+        return Core::BehaviorTreeNodeStatus::SUCCESS;
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

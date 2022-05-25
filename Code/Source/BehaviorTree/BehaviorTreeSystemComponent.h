@@ -15,46 +15,41 @@
 #pragma once
 
 #include <AzCore/Component/Component.h>
-#include <AzCore/Component/TickBus.h>
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/BehaveBehaviorTreeBus.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree
 {
-    class SSBehaviorTreeSystemComponent
+    class BehaviorTreeSystemComponent
         : public AZ::Component
-        , protected SSBehaviorTreeRequestBus::Handler
+        , protected BehaveBehaviorTreeRequestBus::Handler
     {
     public:
-        AZ_COMPONENT(SSBehaviorTreeSystemComponent, "{4a9e985c-692e-47c3-9573-94dd1aa64dce}");
+        AZ_COMPONENT(BehaviorTreeSystemComponent, "{4A9E985C-692E-47C3-9573-94DD1AA64DCE}");
 
-        static void Reflect(AZ::ReflectContext* context);
+        static void Reflect(AZ::ReflectContext* rc);
 
         static void GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided);
         static void GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible);
         static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
-        SSBehaviorTreeSystemComponent();
-        ~SSBehaviorTreeSystemComponent();
+        BehaviorTreeSystemComponent();
+        ~BehaviorTreeSystemComponent() override;
 
     protected:
-        ////////////////////////////////////////////////////////////////////////
-        // SSBehaviorTreeRequestBus interface implementation
-        const Core::SSBehaviorTreeFactory& GetFactory() const override;
-        ////////////////////////////////////////////////////////////////////////
+        // BehaveBehaviorTreeRequestBus
+        const Core::Factory& GetFactory() const override;
 
-        ////////////////////////////////////////////////////////////////////////
-        // AZ::Component interface implementation
+        // AZ::Component
         void Init() override;
         void Activate() override;
         void Deactivate() override;
-        ////////////////////////////////////////////////////////////////////////
 
     private:
-        void RegisterDefaultProperties();
-        void RegisterDefaultNodes();
+        void RegisterDefaultProperties() const;
+        void RegisterDefaultNodes() const;
 
-        Core::SSBehaviorTreeFactory m_factory;
+        Core::Factory _factory;
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree

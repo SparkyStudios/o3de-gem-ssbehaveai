@@ -14,10 +14,8 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeFactory.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
-
-#include <AzCore/Component/TickBus.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Factory.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 {
@@ -28,13 +26,13 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
      * @par Node Ports
      * - seconds: The number of seconds to wait before to continue the execution.
      */
-    class WaitNode : public Core::SSBehaviorTreeNode
+    class WaitNode : public Core::Node
     {
     public:
         AZ_CLASS_ALLOCATOR(WaitNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(WaitNode, "{e7f66e3a-7b08-4da9-8fa2-a5f95355590a}", Core::SSBehaviorTreeNode);
+        AZ_RTTI(WaitNode, "{E7F66E3A-7B08-4DA9-8FA2-A5F95355590A}", Core::Node);
 
-        WaitNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
+        WaitNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config);
 
         /**
          * @brief The name of the node in the behavior tree file.
@@ -45,27 +43,27 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
         static constexpr const char* NODE_PORT_SECONDS_DESCRIPTION = "The number of seconds to wait before to continue the execution.";
 
         /**
-         * @brief Reflect this class in the given O3DE ReflectContext.
+         * @brief Reflect this class in the given ReflectContext.
          *
-         * @param reflection The O3DE ReflectContext.
+         * @param rc The ReflectContext.
          */
-        static void Reflect(AZ::ReflectContext* reflection);
+        static void Reflect(AZ::ReflectContext* rc);
 
         /**
          * @brief Register this node in the nodes registry.
          *
          * @param registry The registry to register this node in.
          */
-        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry);
 
         /**
          * @brief Returns the list of ports returned by this node.
          *
          * @return Core::SSBehaviorTreePortsList
          */
-        static Core::SSBehaviorTreePortsList providedPorts();
+        static Core::BehaviorTreePortsList providedPorts();
 
-        const std::string NodeCategory() const override
+        std::string NodeCategory() const override
         {
             return "Common";
         }
@@ -73,10 +71,10 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
     protected:
         void Start() override;
 
-        Core::SSBehaviorTreeNodeStatus Tick() override;
+        Core::BehaviorTreeNodeStatus Tick() override;
 
     private:
-        float m_countDown = 0;
+        float _countDown = 0;
 
         float GetSeconds() const;
     };

@@ -14,36 +14,36 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Registry.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
-    class SimpleMotionSetMirrorMotionNode : public Core::SSBehaviorTreeNode
+    class SimpleMotionSetMirrorMotionNode : public Core::Node
     {
     public:
         AZ_CLASS_ALLOCATOR(SimpleMotionSetMirrorMotionNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(SimpleMotionSetMirrorMotionNode, "{d1f12337-cd86-40f3-bd28-5dd51482aa85}", Core::SSBehaviorTreeNode);
+        AZ_RTTI(SimpleMotionSetMirrorMotionNode, "{d1f12337-cd86-40f3-bd28-5dd51482aa85}", Core::Node);
 
         static constexpr const char* NODE_NAME = "SimpleMotionSetMirrorMotion";
 
         static constexpr const char* NODE_PORT_VALUE_NAME = "value";
         static constexpr const char* NODE_PORT_VALUE_DESCRIPTION = "The mirror state to define to the simple motion.";
 
-        SimpleMotionSetMirrorMotionNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
+        SimpleMotionSetMirrorMotionNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config);
 
-        static void Reflect(AZ::ReflectContext* reflection);
+        static void Reflect(AZ::ReflectContext* rc);
 
-        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry);
 
-        static Core::SSBehaviorTreePortsList providedPorts();
+        static Core::BehaviorTreePortsList providedPorts();
 
-        const std::string NodeCategory() const override
+        std::string NodeCategory() const override
         {
             return "Animation";
         }
 
     protected:
-        Core::SSBehaviorTreeNodeStatus Tick();
+        Core::BehaviorTreeNodeStatus Tick() override;
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

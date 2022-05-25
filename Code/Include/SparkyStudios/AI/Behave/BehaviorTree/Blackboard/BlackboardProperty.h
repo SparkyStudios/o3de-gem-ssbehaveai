@@ -8,39 +8,38 @@
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 
-#include <AzFramework/StringFunc/StringFunc.h>
-
 namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
 {
-    struct SSBehaviorTreeBlackboard;
+    struct Blackboard;
 
     /**
      * @brief A wrapper around a value in the behavior tree blackboard.
      */
-    class SSBehaviorTreeBlackboardProperty
+    class BlackboardProperty
     {
     public:
-        AZ_RTTI(SSBehaviorTreeBlackboardProperty, "{bf33f432-5c02-4380-8ace-28eda6371afd}");
+        AZ_RTTI(BlackboardProperty, "{BF33F432-5C02-4380-8ACE-28EDA6371AFD}");
 
         /**
-         * @brief Construct a new SSBehaviorTreeBlackboardProperty. This is the default constructor,
+         * @brief Construct a new BlackboardProperty. This is the default constructor,
          * mainly used for RTTI purposes.
-         * @warning Doesn't use this constructor directly. Use the SSBehaviorTreeBlackboardProperty(const char* name)
+         *
+         * @warning Don't use this constructor directly. Use the BlackboardProperty(const char* name)
          * constructor instead.
          */
-        SSBehaviorTreeBlackboardProperty() = default;
+        BlackboardProperty() = default;
 
         /**
-         * @brief Construct a new SSBehaviorTreeBlackboardProperty with the given name.
+         * @brief Construct a new BlackboardProperty with the given name.
          *
          * @param name The property name in the blackboard.
          */
-        explicit SSBehaviorTreeBlackboardProperty(const char* name);
+        explicit BlackboardProperty(const char* name);
 
         /**
-         * @brief Destroy the SSBehaviorTreeBlackboardProperty.
+         * @brief Destroy the BlackboardProperty.
          */
-        virtual ~SSBehaviorTreeBlackboardProperty() = default;
+        virtual ~BlackboardProperty() = default;
 
         /**
          * @brief Reflect this class in the given O3DE ReflectContext.
@@ -56,7 +55,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps a null value.
          * @return false When this property does not wrap a null value.
          */
-        bool IsNil() const;
+        [[nodiscard]] bool IsNil() const;
 
         /**
          * @brief Check if this property wraps a boolean value.
@@ -64,7 +63,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps a boolean value.
          * @return false When this property does not wrap a boolean value.
          */
-        bool IsBoolean() const;
+        [[nodiscard]] bool IsBoolean() const;
 
         /**
          * @brief Check if this property wraps a number value.
@@ -72,7 +71,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps a number value.
          * @return false When this property does not wrap a number value.
          */
-        bool IsNumber() const;
+        [[nodiscard]] bool IsNumber() const;
 
         /**
          * @brief Check if this property wraps a string value.
@@ -80,7 +79,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps a string value.
          * @return false When this property does not wrap a string value.
          */
-        bool IsString() const;
+        [[nodiscard]] bool IsString() const;
 
         /**
          * @brief Check if this property wraps an entity ID value.
@@ -88,7 +87,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps an entity ID value.
          * @return false When this property does not wrap an entity ID value.
          */
-        bool IsEntity() const;
+        [[nodiscard]] bool IsEntity() const;
 
         /**
          * @brief Check if this property wraps a Vector2 value.
@@ -96,7 +95,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps a Vector2 value.
          * @return false When this property does not wrap a Vector2 value.
          */
-        bool IsVector2() const;
+        [[nodiscard]] bool IsVector2() const;
 
         /**
          * @brief Check if this property wraps a Vector3 value.
@@ -104,7 +103,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps a Vector3 value.
          * @return false When this property does not wrap a Vector3 value.
          */
-        bool IsVector3() const;
+        [[nodiscard]] bool IsVector3() const;
 
         /**
          * @brief Check if this property wraps an enumerated value.
@@ -112,7 +111,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When this property wraps an enumerated value.
          * @return false When this property does not wrap an enumerated value.
          */
-        virtual bool IsEnum() const
+        [[nodiscard]] virtual bool IsEnum() const
         {
             return false;
         }
@@ -124,7 +123,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          * @return true When the type of the wrapped value matches the given one.
          * @return false When the type of the wrapped value does not matches the given one.
          */
-        virtual bool DoesTypeMatch(const AZ::Uuid& type) const
+        [[nodiscard]] virtual bool DoesTypeMatch(const AZ::Uuid& type) const
         {
             return type == GetDataTypeUuid();
         }
@@ -134,29 +133,29 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          *
          * @return const void*
          */
-        virtual const void* GetDataAddress() const = 0;
+        [[nodiscard]] virtual const void* GetDataAddress() const = 0;
 
         /**
          * @brief Get the UUID of the wrapped value's type.
          *
          * @return const AZ::Uuid&
          */
-        virtual const AZ::Uuid& GetDataTypeUuid() const = 0;
+        [[nodiscard]] virtual const AZ::Uuid& GetDataTypeUuid() const = 0;
 
         /**
          * @brief Clone this instance to create a new one with a possibly new name.
          *
          * @param name The name of the copied instance. If empty, the same name is kept.
-         * @return SSBehaviorTreeBlackboardProperty*
+         * @return BlackboardProperty*
          */
-        virtual SSBehaviorTreeBlackboardProperty* Clone(const char* name = nullptr) const = 0;
+        virtual BlackboardProperty* Clone(const char* name = nullptr) const = 0;
 
         /**
          * @brief Add this property into the given blackboard.
          *
          * @param blackboard The blackboard in which add this property.
          */
-        virtual void AddBlackboardEntry(const SSBehaviorTreeBlackboard& blackboard) const = 0;
+        virtual void AddBlackboardEntry(const Blackboard& blackboard) const = 0;
 
         /**
          * @brief Try to convert the given string into a value supported by this property.
@@ -169,27 +168,32 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
         /**
          * @brief The unique ID of this property.
          */
-        AZ::u64 m_id;
+        AZ::u64 mId;
 
         /**
          * @brief The name of this property in the behavior tree's blackboard.
          */
-        AZStd::string m_name;
+        AZStd::string mName;
 
         /**
          * @brief The suffix to display in the editor for this property.
          */
-        AZStd::string m_suffix;
+        AZStd::string mSuffix;
 
         /**
          * @brief The property's description. Also used by the editor.
          */
-        AZStd::string m_description;
+        AZStd::string mDescription;
 
         /**
          * @brief Defines if this property is visible in the editor or not.
          */
-        AZ::Crc32 m_visibility;
+        AZ::Crc32 mVisibility;
+
+        /**
+         * @brief Defines the sort order of the property. Defaults to FLT_MAX.
+         */
+        float mOrder = FLT_MAX;
 
     protected:
         /**
@@ -197,6 +201,6 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard
          *
          * @param property The property to clone data from.
          */
-        virtual void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property) = 0;
+        virtual void CloneDataFrom(const BlackboardProperty* property) = 0;
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard

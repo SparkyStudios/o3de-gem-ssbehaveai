@@ -20,8 +20,8 @@
 
 #include <AzCore/std/function/function_template.h>
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/SSBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/BehaveBehaviorTreeBus.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
@@ -80,8 +80,8 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 
     bool BlackboardPropertyModel::operator==(const BlackboardPropertyModel& other) const
     {
-        return (name == other.name) && (suffix == other.suffix) && (type == other.type) && (description == other.description) &&
-            (isPrivate == other.isPrivate);
+        return (mName == other.mName) && (mSuffix == other.mSuffix) && (mType == other.mType) && (mDescription == other.mDescription) &&
+            (mIsPrivate == other.mIsPrivate);
     }
 
     GraphicMode GetGraphicModeFromString(const QString& str)
@@ -102,11 +102,11 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
         return nullptr;
     }
 
-    const NodeModels& BuiltInNodeModels(const BehaviorTree::Core::SSBehaviorTreeFactory& factory)
+    const NodeModels& BuiltInNodeModels(const BehaviorTree::Core::Factory& factory)
     {
         static NodeModels builtin_node_models = [&factory]() -> NodeModels
         {
-            const auto& btFactory = factory.GetRegistry()->GetBTFactory();
+            const auto& btFactory = factory.GetRegistry()->GetNativeFactory();
 
             btFactory->registerNodeType<BT::SubtreeNode>("Root");
 
@@ -127,7 +127,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
                 {
                     const auto* node = btFactory->instantiateTreeNode(model_name, model_name, {}).release();
 
-                    if (const auto* ss_node = dynamic_cast<const BehaviorTree::Core::SSBehaviorTreeNode*>(node))
+                    if (const auto* ss_node = dynamic_cast<const BehaviorTree::Core::Node*>(node))
                     {
                         ed_model.category = QString::fromStdString(ss_node->NodeCategory());
                     }

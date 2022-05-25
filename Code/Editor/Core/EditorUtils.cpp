@@ -555,7 +555,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
     }
 
     std::set<QString> GetModelsToRemove(
-        QWidget* parent, NodeModels& prev_models, const NodeModels& new_models, const BehaviorTree::Core::SSBehaviorTreeFactory& factory)
+        QWidget* parent, NodeModels& prev_models, const NodeModels& new_models, const BehaviorTree::Core::Factory& factory)
     {
         std::set<QString> prev_custom_models;
         const auto& models = BuiltInNodeModels(factory);
@@ -762,12 +762,13 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
             for (QDomElement node = blackboard_root.firstChildElement(); !node.isNull(); node = node.nextSiblingElement())
             {
                 BlackboardPropertyModel model;
-                model.name = node.attribute("name");
-                model.description = node.attribute("description");
-                model.type = node.attribute("type");
-                model.suffix = node.attribute("suffix");
-                model.isPrivate = node.attribute("private").isNull() ? false : node.attribute("private") == "true";
-                properties.insert({ model.name, model });
+                model.mName = node.attribute("name");
+                model.mDescription = node.attribute("description");
+                model.mType = node.attribute("type");
+                model.mSuffix = node.attribute("suffix");
+                model.mIsPrivate = node.attribute("private").isNull() ? false : node.attribute("private") == "true";
+                model.mOrder = node.attribute("order").isNull() ? FLT_MAX : node.attribute("order").toFloat();
+                properties.insert({ model.mName, model });
             }
         }
 
@@ -779,7 +780,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
         QDomDocument& doc,
         QDomElement& parent_element,
         const Node* node,
-        const BehaviorTree::Core::SSBehaviorTreeFactory& factory)
+        const BehaviorTree::Core::Factory& factory)
     {
         const QtNodes::NodeDataModel* node_model = node->nodeDataModel();
         const std::string model_name = node_model->name().toStdString();

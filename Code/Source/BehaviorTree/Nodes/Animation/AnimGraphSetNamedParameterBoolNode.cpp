@@ -19,31 +19,30 @@
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphSetNamedParameterBoolNode::AnimGraphSetNamedParameterBoolNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
         : AnimGraphSetNamedParameterNode<bool>(name, config)
     {
     }
 
-    void AnimGraphSetNamedParameterBoolNode::Reflect(AZ::ReflectContext* context)
+    void AnimGraphSetNamedParameterBoolNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(rc);
     }
 
-    void AnimGraphSetNamedParameterBoolNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void AnimGraphSetNamedParameterBoolNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register node
         registry->DelayNodeRegistration<AnimGraphSetNamedParameterBoolNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList AnimGraphSetNamedParameterBoolNode::providedPorts()
+    Core::BehaviorTreePortsList AnimGraphSetNamedParameterBoolNode::providedPorts()
     {
         return AnimGraphSetNamedParameterNode<bool>::providedPorts();
     }
 
     void AnimGraphSetNamedParameterBoolNode::SetParameter()
     {
-        Core::Optional<bool> value = GetInputValue<bool>(NODE_PORT_VALUE_NAME);
-        if (value.has_value())
+        if (Core::Optional<bool> value = GetInputValue<bool>(NODE_PORT_VALUE_NAME); value.has_value())
         {
             EBUS_EVENT_ID(
                 GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterBool, m_parameterIndex, value.value());

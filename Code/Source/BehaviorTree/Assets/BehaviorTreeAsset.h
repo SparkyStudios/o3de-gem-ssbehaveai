@@ -23,42 +23,42 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
     /**
      * @brief SS BehaviorTree Asset - contains the source code of a BehaviorTree XML file
      */
-    class SSBehaviorTreeAsset : public AZ::Data::AssetData
+    class BehaviorTreeAsset : public AZ::Data::AssetData
     {
     public:
-        AZ_CLASS_ALLOCATOR(SSBehaviorTreeAsset, AZ::SystemAllocator, 0);
-        AZ_RTTI(SSBehaviorTreeAsset, "{7f72ee8b-0b82-40ae-bd9b-cf34eaf35377}", AZ::Data::AssetData);
+        AZ_CLASS_ALLOCATOR(BehaviorTreeAsset, AZ::SystemAllocator, 0);
+        AZ_RTTI(BehaviorTreeAsset, "{7F72EE8B-0B82-40AE-BD9B-CF34EAF35377}", AZ::Data::AssetData);
 
-        SSBehaviorTreeAsset(const AZ::Data::AssetId& assetId = AZ::Data::AssetId());
-        ~SSBehaviorTreeAsset() override = default;
+        explicit BehaviorTreeAsset(const AZ::Data::AssetId& assetId = AZ::Data::AssetId());
+        ~BehaviorTreeAsset() override = default;
 
-        SSBehaviorTreeAsset(const SSBehaviorTreeAsset& rhs) = delete;
-        SSBehaviorTreeAsset& operator=(const SSBehaviorTreeAsset& rhs) = delete;
+        BehaviorTreeAsset(const BehaviorTreeAsset& rhs) = delete;
+        BehaviorTreeAsset& operator=(const BehaviorTreeAsset& rhs) = delete;
 
         char* GetDataPointer()
         {
-            return m_buffer.data();
+            return _buffer.data();
         }
 
         const AZStd::vector<char>& GetBuffer() const
         {
-            return m_buffer;
+            return _buffer;
         }
 
         AZ::IO::MemoryStream CreateMemoryStream() const
         {
-            return { m_buffer.data(), m_buffer.size() };
+            return { _buffer.data(), _buffer.size() };
         }
 
-        const char* GetDebugName()
+        [[nodiscard]] const char* GetDebugName() const
         {
-            return m_debugName.empty() ? nullptr : m_debugName.c_str();
+            return _debugName.empty() ? nullptr : _debugName.c_str();
         }
 
     private:
-        AZStd::vector<char> m_buffer;
-        AZStd::string m_debugName;
+        AZStd::vector<char> _buffer;
+        AZStd::string _debugName;
 
-        friend class SSBehaviorTreeAssetHandler;
+        friend class BehaviorTreeAssetHandler;
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

@@ -28,7 +28,7 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include <BehaviorTree/SSBehaviorTreeSystemComponent.h>
+#include <BehaviorTree/BehaviorTreeSystemComponent.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application
 {
@@ -51,7 +51,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Application
         // Use the LogComponent for non-dev logging log
         RegisterComponentDescriptor(AzFramework::LogComponent::CreateDescriptor());
         // Use the BehaviorTree system component
-        RegisterComponentDescriptor(SparkyStudios::AI::Behave::BehaviorTree::SSBehaviorTreeSystemComponent::CreateDescriptor());
+        RegisterComponentDescriptor(SparkyStudios::AI::Behave::BehaviorTree::BehaviorTreeSystemComponent::CreateDescriptor());
 
         // Set the log alias to .o3de/Logs instead of the default user/logs
         AZ::IO::FixedMaxPath path = AZ::Utils::GetO3deLogsDirectory();

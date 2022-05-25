@@ -2,10 +2,10 @@
   "Amazon": {
     "AssetProcessor": {
       "Settings": {
-        "RC Behave AI - BehaviorTree Asset": {
-          "pattern": ".*ssbt",
+        "RC Behave AI - Behavior Tree Asset": {
+          "pattern": ".*bhbtree",
           "params": "copy",
-          "productAssetType": "{7f72ee8b-0b82-40ae-bd9b-cf34eaf35377}"
+          "productAssetType": "{7F72EE8B-0B82-40AE-BD9B-CF34EAF35377}"
         }
       }
     }

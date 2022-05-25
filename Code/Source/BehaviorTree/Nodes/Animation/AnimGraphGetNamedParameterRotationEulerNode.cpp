@@ -19,23 +19,23 @@
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphGetNamedParameterRotationEulerNode::AnimGraphGetNamedParameterRotationEulerNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
         : AnimGraphGetNamedParameterNode<AZ::Vector3>(name, config)
     {
     }
 
-    void AnimGraphGetNamedParameterRotationEulerNode::Reflect(AZ::ReflectContext* context)
+    void AnimGraphGetNamedParameterRotationEulerNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(rc);
     }
 
-    void AnimGraphGetNamedParameterRotationEulerNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void AnimGraphGetNamedParameterRotationEulerNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register node
         registry->DelayNodeRegistration<AnimGraphGetNamedParameterRotationEulerNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList AnimGraphGetNamedParameterRotationEulerNode::providedPorts()
+    Core::BehaviorTreePortsList AnimGraphGetNamedParameterRotationEulerNode::providedPorts()
     {
         return AnimGraphGetNamedParameterNode<AZ::Vector3>::providedPorts();
     }

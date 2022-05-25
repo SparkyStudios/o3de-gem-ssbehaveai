@@ -21,42 +21,40 @@
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     SimpleMotionSetReverseMotionNode::SimpleMotionSetReverseMotionNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : Core::SSBehaviorTreeNode(name, config)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+        : Node(name, config)
     {
     }
 
-    void SimpleMotionSetReverseMotionNode::Reflect(AZ::ReflectContext* reflection)
+    void SimpleMotionSetReverseMotionNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(reflection);
+        AZ_UNUSED(rc);
     }
 
-    void SimpleMotionSetReverseMotionNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void SimpleMotionSetReverseMotionNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         registry->DelayNodeRegistration<SimpleMotionSetReverseMotionNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList SimpleMotionSetReverseMotionNode::providedPorts()
+    Core::BehaviorTreePortsList SimpleMotionSetReverseMotionNode::providedPorts()
     {
-        Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+        Core::BehaviorTreePortsList ports = Node::providedPorts();
 
-        ports.merge(Core::SSBehaviorTreePortsList({
+        ports.merge(Core::BehaviorTreePortsList({
             BT::InputPort<bool>(NODE_PORT_VALUE_NAME, NODE_PORT_VALUE_DESCRIPTION),
         }));
 
         return ports;
     }
 
-    Core::SSBehaviorTreeNodeStatus SimpleMotionSetReverseMotionNode::Tick()
+    Core::BehaviorTreeNodeStatus SimpleMotionSetReverseMotionNode::Tick()
     {
-        Core::Optional<bool> value = GetInputValue<bool>(NODE_PORT_VALUE_NAME);
-
-        if (value.has_value())
+        if (Core::Optional<bool> value = GetInputValue<bool>(NODE_PORT_VALUE_NAME); value.has_value())
         {
             EBUS_EVENT_ID(GetEntityId(), EMotionFX::Integration::SimpleMotionComponentRequestBus, ReverseMotion, value.value());
-            return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+            return Core::BehaviorTreeNodeStatus::SUCCESS;
         }
 
-        return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+        return Core::BehaviorTreeNodeStatus::SUCCESS;
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

@@ -23,7 +23,7 @@
 #include <AzQtComponents/Components/FancyDocking.h>
 #include <AzQtComponents/Components/StyledDockWidget.h>
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Factory.h>
 
 #include <QDomDocument>
 #include <QMainWindow>
@@ -47,11 +47,11 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
         Widgets::GraphicContainer* CurrentTabInfo();
         Widgets::GraphicContainer* GetTabByName(const QString& name);
-        void LockEditor(const bool locked);
+        void LockEditor(const bool locked) const;
         void LoadFromXML(const QString& xml);
         void SetCurrentNode(QtNodes::Node* node = nullptr);
 
-        BehaviorTree::Core::SSBehaviorTreeFactory m_factory;
+        BehaviorTree::Core::Factory m_factory;
 
     public slots:
         void OnAutoArrange();
@@ -62,15 +62,15 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         void OnTabCustomContextMenuRequested(const QPoint& pos);
         void OnActionClearTriggered(bool createMew);
         void OnPushUndo();
-        void OnCreateAbsBehaviorTree(const Core::AbstractBehaviorTree& tree, const QString& bt_name, bool secondary_tabs = true);
-        void OnActionNewTrigerred();
+        void OnCreateAbsBehaviorTree(const Core::AbstractBehaviorTree& tree, const QString& btName, bool secondaryTabs = true);
+        void OnActionNewTriggered();
         bool OnActionSaveTriggered();
         bool OnActionSaveAsTriggered();
         void OnActionLoadTriggered();
         void OnActionQuitTriggered();
         void OnAddToModelRegistry(const Core::NodeModel& model);
-        void OnTabRenameRequested(int tab_index, QString new_name = QString());
-        void OnTreeNodeEdited(QString prev_ID, QString new_ID);
+        void OnTabRenameRequested(int tabIndex, QString newName = QString());
+        void OnTreeNodeEdited(const QString& prevId, const QString& newId);
 
     signals:
         void ValidTree();
@@ -79,11 +79,12 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
     private:
         struct SavedState
         {
-            QString main_tree;
-            QString current_tab_name;
-            QTransform view_transform;
-            QRectF view_area;
-            std::map<QString, QByteArray> json_states;
+            QString mMainTree;
+            QString mCurrentTabName;
+            QTransform mViewTransform;
+            QRectF mViewArea;
+            std::map<QString, QByteArray> mJsonStates;
+
             bool operator==(const SavedState& other) const;
             bool operator!=(const SavedState& other) const
             {
@@ -99,44 +100,44 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
             SUBTREE_REFRESH
         };
 
-        void setupMenu();
-        Widgets::GraphicContainer* createTab(const QString& name, bool setActive = true);
-        std::shared_ptr<QtNodes::DataModelRegistry> createDataModelRegistry();
-        void loadSavedStateFromJson(SavedState state);
-        SavedState saveCurrentState();
-        void clearUndoStacks();
-        QString saveToXML() const;
-        QString xmlDocumentToString(const QDomDocument& document) const;
-        void streamElementAttributes(QXmlStreamWriter& stream, const QDomElement& element) const;
-        void recursivelySaveNodeCanonically(QXmlStreamWriter& stream, const QDomNode& parent_node) const;
-        QtNodes::Node* subTreeExpand(Widgets::GraphicContainer& container, QtNodes::Node& node, MainWindow::SubtreeExpandOption option);
-        bool saveFile(bool overwrite);
-        bool openFile(const QString& filename);
-        bool checkDirty(const QString& message);
+        void SetupMenu();
+        Widgets::GraphicContainer* CreateTab(const QString& name, bool setActive = true);
+        std::shared_ptr<QtNodes::DataModelRegistry> CreateDataModelRegistry();
+        void LoadSavedStateFromJson(SavedState state);
+        SavedState SaveCurrentState();
+        void ClearUndoStacks();
+        QString SaveToXml() const;
+        QString XmlDocumentToString(const QDomDocument& document) const;
+        void StreamElementAttributes(QXmlStreamWriter& stream, const QDomElement& element) const;
+        void RecursivelySaveNodeCanonically(QXmlStreamWriter& stream, const QDomNode& parentNode) const;
+        QtNodes::Node* SubTreeExpand(Widgets::GraphicContainer& container, QtNodes::Node& node, MainWindow::SubtreeExpandOption option);
+        bool SaveFile(bool overwrite);
+        bool OpenFile(const QString& filename);
+        bool CheckDirty(const QString& message);
 
-        AzQtComponents::FancyDocking* m_fancyDocking;
+        AzQtComponents::FancyDocking* _fancyDocking;
 
-        AzQtComponents::TabWidget* m_tabWidget;
-        Widgets::NodesSidePanel* m_sidePanel;
-        Widgets::StatusBar* m_statusBar;
-        Widgets::NodeProperties* m_nodeProperties;
-        Widgets::BlackboardProperties* m_blackboardProperties;
+        AzQtComponents::TabWidget* _tabWidget;
+        Widgets::NodesSidePanel* _sidePanel;
+        Widgets::StatusBar* _statusBar;
+        Widgets::NodeProperties* _nodeProperties;
+        Widgets::BlackboardProperties* _blackboardProperties;
 
-        std::deque<SavedState> _undo_stack;
-        std::deque<SavedState> _redo_stack;
-        SavedState _current_state;
+        std::deque<SavedState> _undoStack;
+        std::deque<SavedState> _redoStack;
+        SavedState _currentState;
 
-        std::shared_ptr<QtNodes::DataModelRegistry> _model_registry;
-        std::map<QString, Widgets::GraphicContainer*> _tab_info;
-        QtNodes::PortLayout _current_layout;
-        Core::NodeModels _treenode_models;
-        Core::BlackboardPropertyModels _blackboard_models;
-        QString _main_tree;
+        std::shared_ptr<QtNodes::DataModelRegistry> _modelRegistry;
+        std::map<QString, Widgets::GraphicContainer*> _tabInfo;
+        QtNodes::PortLayout _currentLayout;
+        Core::NodeModels _treeNodeModels;
+        Core::BlackboardPropertyModels _blackboardModels;
+        QString _mainTree;
 
-        QString _opened_file;
-        bool _dirty_file;
+        QString _openedFile;
+        bool _dirtyFile;
 
-        QString _project_path;
+        QString _projectPath;
     };
 
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows

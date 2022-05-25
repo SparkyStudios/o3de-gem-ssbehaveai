@@ -14,11 +14,11 @@
 
 #include <StdAfx.h>
 
-#include <BehaviorTree/Assets/SSBehaviorTreeAsset.h>
-#include <BehaviorTree/Assets/SSBehaviorTreeAssetHandler.h>
+#include <BehaviorTree/Assets/BehaviorTreeAsset.h>
+#include <BehaviorTree/Assets/BehaviorTreeAssetHandler.h>
 
-#include <BehaviorTree/SSBehaviorTreeComponent.h>
-#include <BehaviorTree/SSBehaviorTreeEditorComponent.h>
+#include <BehaviorTree/BehaviorTreeComponent.h>
+#include <BehaviorTree/BehaviorTreeEditorComponent.h>
 
 #include <AzCore/Component/Component.h>
 #include <AzCore/Component/ComponentApplicationBus.h>
@@ -36,23 +36,23 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 {
-    SSBehaviorTreeAssetHandler::SSBehaviorTreeAssetHandler()
+    BehaviorTreeAssetHandler::BehaviorTreeAssetHandler()
     {
         AZ::AssetTypeInfoBus::Handler::BusConnect(GetAssetTypeStatic());
     }
 
-    SSBehaviorTreeAssetHandler::~SSBehaviorTreeAssetHandler()
+    BehaviorTreeAssetHandler::~BehaviorTreeAssetHandler()
     {
         AZ::AssetTypeInfoBus::Handler::BusDisconnect();
     }
 
-    AZ::Data::AssetHandler::LoadResult SSBehaviorTreeAssetHandler::LoadAssetData(
+    AZ::Data::AssetHandler::LoadResult BehaviorTreeAssetHandler::LoadAssetData(
         [[maybe_unused]] const AZ::Data::Asset<AZ::Data::AssetData>& asset,
         [[maybe_unused]] AZStd::shared_ptr<AZ::Data::AssetDataStream> stream,
         [[maybe_unused]] const AZ::Data::AssetFilterCB& assetLoadFilterCB)
     {
-        auto* behaviorTreeAsset = asset.GetAs<SSBehaviorTreeAsset>();
-        AZ_Assert(behaviorTreeAsset, "This should be a .ssbt file, as this is the only type we process!");
+        auto* behaviorTreeAsset = asset.GetAs<BehaviorTreeAsset>();
+        AZ_Assert(behaviorTreeAsset, "This should be a .bhbtree file, as this is the only type we process!");
 
         if (behaviorTreeAsset)
         {
@@ -65,9 +65,9 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
                 return AZ::Data::AssetHandler::LoadResult::Error;
             }
 
-            behaviorTreeAsset->m_buffer.clear();
-            behaviorTreeAsset->m_buffer.resize(dataLength);
-            stream->Read(dataLength, behaviorTreeAsset->m_buffer.data());
+            behaviorTreeAsset->_buffer.clear();
+            behaviorTreeAsset->_buffer.resize(dataLength);
+            stream->Read(dataLength, behaviorTreeAsset->_buffer.data());
 
             return AZ::Data::AssetHandler::LoadResult::LoadComplete;
         }
@@ -76,7 +76,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
         return AZ::Data::AssetHandler::LoadResult::Error;
     }
 
-    AZ::Data::AssetHandler::LoadResult SSBehaviorTreeAssetHandler::LoadAssetData(
+    AZ::Data::AssetHandler::LoadResult BehaviorTreeAssetHandler::LoadAssetData(
         const AZ::Data::Asset<AZ::Data::AssetData>& asset, const char* assetPath, const AZ::Data::AssetFilterCB& assetLoadFilterCB)
     {
         // SSBT files are source assets and should be placed in a source asset directory
@@ -146,18 +146,18 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
         return AZ::Data::AssetHandler::LoadResult::Error;
     }
 
-    bool SSBehaviorTreeAssetHandler::SaveAssetData(const AZ::Data::Asset<AZ::Data::AssetData>& asset, AZ::IO::GenericStream* stream)
+    bool BehaviorTreeAssetHandler::SaveAssetData(const AZ::Data::Asset<AZ::Data::AssetData>& asset, AZ::IO::GenericStream* stream)
     {
-        return SaveAssetData(asset.GetAs<SSBehaviorTreeAsset>(), stream);
+        return SaveAssetData(asset.GetAs<BehaviorTreeAsset>(), stream);
     }
 
-    bool SSBehaviorTreeAssetHandler::SaveAssetData(const SSBehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream)
+    bool BehaviorTreeAssetHandler::SaveAssetData(const BehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream)
     {
         return SaveAssetData(assetData, stream, AZ::DataStream::ST_XML);
     }
 
-    bool SSBehaviorTreeAssetHandler::SaveAssetData(
-        const SSBehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream, AZ::DataStream::StreamType streamType)
+    bool BehaviorTreeAssetHandler::SaveAssetData(
+        const BehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream, AZ::DataStream::StreamType streamType)
     {
         AZ_UNUSED(streamType);
 
@@ -171,50 +171,50 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
         return false;
     }
 
-    AZ::Data::AssetPtr SSBehaviorTreeAssetHandler::CreateAsset(const AZ::Data::AssetId& id, const AZ::Data::AssetType& type)
+    AZ::Data::AssetPtr BehaviorTreeAssetHandler::CreateAsset(const AZ::Data::AssetId& id, const AZ::Data::AssetType& type)
     {
         AZ_UNUSED(type);
 
-        return aznew SSBehaviorTreeAsset(id);
+        return aznew BehaviorTreeAsset(id);
     }
 
-    void SSBehaviorTreeAssetHandler::DestroyAsset(AZ::Data::AssetPtr ptr)
+    void BehaviorTreeAssetHandler::DestroyAsset(AZ::Data::AssetPtr ptr)
     {
         delete ptr;
     }
 
-    void SSBehaviorTreeAssetHandler::GetHandledAssetTypes(AZStd::vector<AZ::Data::AssetType>& assetTypes)
+    void BehaviorTreeAssetHandler::GetHandledAssetTypes(AZStd::vector<AZ::Data::AssetType>& assetTypes)
     {
         assetTypes.push_back(GetAssetType());
     }
 
-    AZ::Data::AssetType SSBehaviorTreeAssetHandler::GetAssetType() const
+    AZ::Data::AssetType BehaviorTreeAssetHandler::GetAssetType() const
     {
-        return SSBehaviorTreeAssetHandler::GetAssetTypeStatic();
+        return BehaviorTreeAssetHandler::GetAssetTypeStatic();
     }
 
-    const char* SSBehaviorTreeAssetHandler::GetAssetTypeDisplayName() const
+    const char* BehaviorTreeAssetHandler::GetAssetTypeDisplayName() const
     {
         return "SS BehaviorTree";
     }
 
-    const char* SSBehaviorTreeAssetHandler::GetGroup() const
+    const char* BehaviorTreeAssetHandler::GetGroup() const
     {
         return "Sparky Studios";
     }
 
-    void SSBehaviorTreeAssetHandler::GetAssetTypeExtensions(AZStd::vector<AZStd::string>& extensions)
+    void BehaviorTreeAssetHandler::GetAssetTypeExtensions(AZStd::vector<AZStd::string>& extensions)
     {
-        extensions.push_back(m_extension);
+        extensions.push_back(_extension);
     }
 
-    AZ::Uuid SSBehaviorTreeAssetHandler::GetComponentTypeId() const
+    AZ::Uuid BehaviorTreeAssetHandler::GetComponentTypeId() const
     {
-        return azrtti_typeid<SSBehaviorTreeEditorComponent>();
+        return azrtti_typeid<BehaviorTreeEditorComponent>();
     }
 
-    AZ::Data::AssetType SSBehaviorTreeAssetHandler::GetAssetTypeStatic()
+    AZ::Data::AssetType BehaviorTreeAssetHandler::GetAssetTypeStatic()
     {
-        return azrtti_typeid<Assets::SSBehaviorTreeAsset>();
+        return azrtti_typeid<Assets::BehaviorTreeAsset>();
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

@@ -7,9 +7,9 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Core
 {
-    using SSBehaviorTreeNodeConfiguration = BT::NodeConfiguration;
-    using SSBehaviorTreeNodeStatus = BT::NodeStatus;
-    using SSBehaviorTreePortsList = BT::PortsList;
+    using BehaviorTreeNodeConfiguration = BT::NodeConfiguration;
+    using BehaviorTreeNodeStatus = BT::NodeStatus;
+    using BehaviorTreePortsList = BT::PortsList;
 
     template<typename T>
     using Optional = BT::Optional<T>;
@@ -18,22 +18,22 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
     /**
      * @brief The base class for all behavior tree nodes.
      */
-    class SSBehaviorTreeNode : public BT::StatefulActionNode
+    class Node : public BT::StatefulActionNode
     {
-        friend class SSBehaviorTreeFactory;
+        friend class Factory;
 
     public:
-        AZ_CLASS_ALLOCATOR(SSBehaviorTreeNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(SSBehaviorTreeNode, "{bdc7ef90-5955-4ee7-9118-46f0d069194f}");
+        AZ_CLASS_ALLOCATOR(Node, AZ::SystemAllocator, 0);
+        AZ_RTTI(Node, "{BDC7EF90-5955-4EE7-9118-46F0D069194F}");
 
-        SSBehaviorTreeNode(const std::string& name, const SSBehaviorTreeNodeConfiguration& config);
+        Node(const std::string& name, const BehaviorTreeNodeConfiguration& config);
 
-        virtual ~SSBehaviorTreeNode() = default;
+        ~Node() override = default;
 
         /**
          * @brief The name of the node in the behavior tree file.
          */
-        static constexpr const char* NODE_NAME = "SSBehaviorTreeNode";
+        static constexpr const char* NODE_NAME = "Node";
 
         /**
          * @brief Returns the list of ports provided by this node.
@@ -41,14 +41,14 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
          *
          * @return SSBehaviorTreePortsList
          */
-        static SSBehaviorTreePortsList providedPorts();
+        static BehaviorTreePortsList providedPorts();
 
         /**
          * @brief Gets the category in which this node will be represented in the editor.
          *
          * @return const std::string A string value representing the category of this node.
          */
-        virtual const std::string NodeCategory() const;
+        virtual std::string NodeCategory() const;
 
     protected:
         /**
@@ -59,7 +59,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
         /**
          * @brief Run on each node tick.
          */
-        virtual SSBehaviorTreeNodeStatus Tick();
+        virtual BehaviorTreeNodeStatus Tick();
 
         /**
          * @brief Run just before to leave the node after the last tick, to deinitialize the node.
@@ -71,6 +71,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
          *
          * @tparam T The type of the value to return.
          * @param id The Input port id.
+         *
          * @return Optional<T>
          */
         template<typename T>
@@ -81,7 +82,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
             if (!value)
             {
                 AZ_Error(
-                    "SSBehaviorTree", false, "[%s:%s] Missing required input {%s}: %s", registrationName().c_str(), name().c_str(),
+                    "BehaveAI [BehaviorTree]", false, "[%s:%s] Missing required input {%s}: %s", registrationName().c_str(), name().c_str(),
                     id.c_str(), value.error().c_str());
             }
 
@@ -91,9 +92,10 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
         /**
          * @brief Set the value of an output port with the given id.
          *
-         * @tparam The type of the value.
+         * @tparam T The type of the value.
          * @param  id The name of the output port for which define the value.
          * @param value The value to define into the output port.
+         *
          * @return Result
          */
         template<typename T>
@@ -108,10 +110,11 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
          *
          * @return AZ::EntityId
          */
-        AZ::EntityId GetEntityId();
+        AZ::EntityId GetEntityId() const;
 
         /**
-         * @brief Gets the blackbord instance of this node's behavior tree.
+         * @brief Gets the blackboard instance of this node's behavior tree.
+         *
          * @return BT::Blackboard::Ptr
          */
         const BT::Blackboard::Ptr& GetBlackboard() const;
@@ -134,27 +137,27 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
     private:
 #pragma region BT::StatefulActionNode
 
-        SSBehaviorTreeNodeStatus onStart() override final;
+        BehaviorTreeNodeStatus onStart() final;
 
-        SSBehaviorTreeNodeStatus onRunning() override final;
+        BehaviorTreeNodeStatus onRunning() final;
 
-        void onHalted() override final;
+        void onHalted() final;
 
 #pragma endregion
 
-        bool m_started;
+        bool _started;
     };
 
     /**
      * @brief Special node that returns success or failure based on the condition.
      */
-    class SSBehaviorTreeCondition : public BT::ConditionNode
+    class BehaviorTreeConditionNode : public BT::ConditionNode
     {
     public:
-        AZ_CLASS_ALLOCATOR(SSBehaviorTreeCondition, AZ::SystemAllocator, 0);
-        AZ_RTTI(SSBehaviorTreeCondition, "{b951e9d3-6908-4693-8fbf-9b876f74fc89}");
+        AZ_CLASS_ALLOCATOR(BehaviorTreeConditionNode, AZ::SystemAllocator, 0);
+        AZ_RTTI(BehaviorTreeConditionNode, "{B951E9D3-6908-4693-8FBF-9B876F74FC89}");
 
-        SSBehaviorTreeCondition(const std::string& name, const SSBehaviorTreeNodeConfiguration& config);
+        BehaviorTreeConditionNode(const std::string& name, const BehaviorTreeNodeConfiguration& config);
 
     protected:
         /**
@@ -167,7 +170,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Core
     private:
 #pragma region BT::ConditionNode
 
-        SSBehaviorTreeNodeStatus tick() override final;
+        BehaviorTreeNodeStatus tick() final;
 
 #pragma endregion
     };

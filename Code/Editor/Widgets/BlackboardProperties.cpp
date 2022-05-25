@@ -60,10 +60,10 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
         {
             const auto& ID = model.first;
 
-            QIcon icon(model.second.isPrivate ? ":/icons/blackboard-property-private.png" : ":/icons/blackboard-property-public.png");
+            QIcon icon(model.second.mIsPrivate ? ":/icons/blackboard-property-private.png" : ":/icons/blackboard-property-public.png");
 
             auto* item = new QListWidgetItem(icon, ID);
-            item->setToolTip(model.second.description);
+            item->setToolTip(model.second.mDescription);
             item->setFlags(item->flags() ^ Qt::ItemIsSelectable);
             item->setData(Qt::UserRole, ID);
 
@@ -80,19 +80,19 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 
         if (result == QDialog::Accepted)
         {
-            if (model.name.isEmpty())
+            if (model.mName.isEmpty())
             {
                 QMessageBox::critical(_main_window, "Error", "Cannot create a property with empty name.");
                 return;
             }
 
-            if (_blackboard_properties_model.count(model.name) != 0)
+            if (_blackboard_properties_model.count(model.mName) != 0)
             {
                 QMessageBox::critical(_main_window, "Error", "A property with that name already exists. Try again with a different name.");
                 return;
             }
 
-            _blackboard_properties_model.insert({ model.name, model });
+            _blackboard_properties_model.insert({ model.mName, model });
             UpdateProperties();
         }
     }
@@ -108,7 +108,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Widgets
 
             if (result == QDialog::Accepted)
             {
-                _blackboard_properties_model[model.name] = model;
+                _blackboard_properties_model[model.mName] = model;
                 UpdateProperties();
             }
         }

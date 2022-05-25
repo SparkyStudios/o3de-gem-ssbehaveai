@@ -17,14 +17,14 @@ set(FILES
     Source/StdAfx.h
 
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes.h
-    Include/SparkyStudios/AI/Behave/BehaviorTree/SSBehaviorTreeBus.h
+    Include/SparkyStudios/AI/Behave/BehaviorTree/BehaveBehaviorTreeBus.h
 
-    Include/SparkyStudios/AI/Behave/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h
-    Include/SparkyStudios/AI/Behave/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h
+    Include/SparkyStudios/AI/Behave/BehaviorTree/Blackboard/Blackboard.h
+    Include/SparkyStudios/AI/Behave/BehaviorTree/Blackboard/BlackboardProperty.h
 
-    Include/SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeFactory.h
-    Include/SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h
-    Include/SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h
+    Include/SparkyStudios/AI/Behave/BehaviorTree/Core/Factory.h
+    Include/SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h
+    Include/SparkyStudios/AI/Behave/BehaviorTree/Core/Registry.h
 
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterBoolNode.h
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterFloatNode.h
@@ -65,15 +65,15 @@ set(FILES
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h
 
-    Source/BehaviorTree/Assets/SSBehaviorTreeAsset.h
-    Source/BehaviorTree/Assets/SSBehaviorTreeAsset.cpp
+    Source/BehaviorTree/Assets/BehaviorTreeAsset.h
+    Source/BehaviorTree/Assets/BehaviorTreeAsset.cpp
 
-    Source/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.cpp
-    Source/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.cpp
+    Source/BehaviorTree/Blackboard/Blackboard.cpp
+    Source/BehaviorTree/Blackboard/BlackboardProperty.cpp
 
-    Source/BehaviorTree/Core/SSBehaviorTreeFactory.cpp
-    Source/BehaviorTree/Core/SSBehaviorTreeNode.cpp
-    Source/BehaviorTree/Core/SSBehaviorTreeRegistry.cpp
+    Source/BehaviorTree/Core/Factory.cpp
+    Source/BehaviorTree/Core/Node.cpp
+    Source/BehaviorTree/Core/Registry.cpp
 
     Source/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterBoolNode.cpp
     Source/BehaviorTree/Nodes/Animation/AnimGraphGetNamedParameterFloatNode.cpp
@@ -109,18 +109,19 @@ set(FILES
     Source/BehaviorTree/Nodes/Common/WaitNode.cpp
     Source/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.cpp
 
-    Source/BehaviorTree/SSBehaviorTreeComponent.h
-    Source/BehaviorTree/SSBehaviorTreeComponent.cpp
-    Source/BehaviorTree/SSBehaviorTreeSystemComponent.cpp
-    Source/BehaviorTree/SSBehaviorTreeSystemComponent.h
+    Source/BehaviorTree/BehaviorTreeComponent.h
+    Source/BehaviorTree/BehaviorTreeComponent.cpp
+    Source/BehaviorTree/BehaviorTreeSystemComponent.cpp
+    Source/BehaviorTree/BehaviorTreeSystemComponent.h
 
     Source/Navigation/BehaveNavigationSystemComponent.h
     Source/Navigation/BehaveNavigationSystemComponent.cpp
+
     Source/Navigation/Components/DynamicNavigationMeshComponent.h
     Source/Navigation/Components/DynamicNavigationMeshComponent.cpp
     Source/Navigation/Components/WalkableComponent.h
     Source/Navigation/Components/WalkableComponent.cpp
-    Source/Navigation/Utils/RecastVector3.h
+
     Source/Navigation/Utils/RecastSmartPointer.h
     Source/Navigation/Utils/RecastNavigationMesh.h
     Source/Navigation/Utils/RecastNavigationMesh.cpp
@@ -130,7 +131,7 @@ set(FILES
     ../External/RecastNavigation/Recast/Include/RecastAlloc.h
     ../External/RecastNavigation/Recast/Include/RecastAssert.h
     ../External/RecastNavigation/Recast/Include/Recast.h
-    
+
     ../External/RecastNavigation/Recast/Source/Recast.cpp
     ../External/RecastNavigation/Recast/Source/RecastAlloc.cpp
     ../External/RecastNavigation/Recast/Source/RecastArea.cpp
@@ -152,7 +153,7 @@ set(FILES
     ../External/RecastNavigation/Detour/Include/DetourNavMeshQuery.h
     ../External/RecastNavigation/Detour/Include/DetourNode.h
     ../External/RecastNavigation/Detour/Include/DetourStatus.h
-    
+
     ../External/RecastNavigation/Detour/Source/DetourAlloc.cpp
     ../External/RecastNavigation/Detour/Source/DetourAssert.cpp
     ../External/RecastNavigation/Detour/Source/DetourCommon.cpp
@@ -160,7 +161,7 @@ set(FILES
     ../External/RecastNavigation/Detour/Source/DetourNavMeshBuilder.cpp
     ../External/RecastNavigation/Detour/Source/DetourNavMeshQuery.cpp
     ../External/RecastNavigation/Detour/Source/DetourNode.cpp
-    
+
     ../External/RecastNavigation/DetourCrowd/Include/DetourCrowd.h
     ../External/RecastNavigation/DetourCrowd/Include/DetourLocalBoundary.h
     ../External/RecastNavigation/DetourCrowd/Include/DetourObstacleAvoidance.h
@@ -177,7 +178,7 @@ set(FILES
 
     ../External/RecastNavigation/DetourTileCache/Include/DetourTileCache.h
     ../External/RecastNavigation/DetourTileCache/Include/DetourTileCacheBuilder.h
-    
+
     ../External/RecastNavigation/DetourTileCache/Source/DetourTileCache.cpp
     ../External/RecastNavigation/DetourTileCache/Source/DetourTileCacheBuilder.cpp
     # ==============================

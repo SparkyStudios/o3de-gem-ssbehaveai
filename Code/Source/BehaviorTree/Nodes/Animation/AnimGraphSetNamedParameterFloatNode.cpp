@@ -19,31 +19,30 @@
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphSetNamedParameterFloatNode::AnimGraphSetNamedParameterFloatNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
         : AnimGraphSetNamedParameterNode<float>(name, config)
     {
     }
 
-    void AnimGraphSetNamedParameterFloatNode::Reflect(AZ::ReflectContext* context)
+    void AnimGraphSetNamedParameterFloatNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(rc);
     }
 
-    void AnimGraphSetNamedParameterFloatNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void AnimGraphSetNamedParameterFloatNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register node
         registry->DelayNodeRegistration<AnimGraphSetNamedParameterFloatNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList AnimGraphSetNamedParameterFloatNode::providedPorts()
+    Core::BehaviorTreePortsList AnimGraphSetNamedParameterFloatNode::providedPorts()
     {
         return AnimGraphSetNamedParameterNode<float>::providedPorts();
     }
 
     void AnimGraphSetNamedParameterFloatNode::SetParameter()
     {
-        Core::Optional<float> value = GetInputValue<float>(NODE_PORT_VALUE_NAME);
-        if (value.has_value())
+        if (Core::Optional<float> value = GetInputValue<float>(NODE_PORT_VALUE_NAME); value.has_value())
         {
             EBUS_EVENT_ID(
                 GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterFloat, m_parameterIndex, value.value());

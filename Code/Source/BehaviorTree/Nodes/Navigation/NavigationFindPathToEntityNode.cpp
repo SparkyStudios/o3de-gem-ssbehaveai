@@ -18,38 +18,38 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
 {
-    using SSBehaviorTreeBlackboardProperty = Blackboard::SSBehaviorTreeBlackboardProperty;
+    using SSBehaviorTreeBlackboardProperty = Blackboard::BlackboardProperty;
 
 #pragma region NavigationFindPathToEntityNode
 
     NavigationFindPathToEntityNode::NavigationFindPathToEntityNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : Core::SSBehaviorTreeNode(name, config)
-        , m_navigationState(NavigationState::STATE_IDLE)
-        , m_requestId(0)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+        : Node(name, config)
+        , _navigationState(NavigationState::Idle)
+        , _requestId(0)
     {
     }
 
-    void NavigationFindPathToEntityNode::Reflect(AZ::ReflectContext* context)
+    void NavigationFindPathToEntityNode::Reflect(AZ::ReflectContext* rc)
     {
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::Reflect(context);
+        BlackboardPropertyNavigationFindPathToEntityNavigationState::Reflect(rc);
     }
 
-    void NavigationFindPathToEntityNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void NavigationFindPathToEntityNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register properties
-        registry->RegisterProperty<SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState>(
+        registry->RegisterProperty<BlackboardPropertyNavigationFindPathToEntityNavigationState>(
             "NavigationFindPathToEntityNode::NavigationState");
 
         // 2 - Register node
         registry->DelayNodeRegistration<NavigationFindPathToEntityNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList NavigationFindPathToEntityNode::providedPorts()
+    Core::BehaviorTreePortsList NavigationFindPathToEntityNode::providedPorts()
     {
-        Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+        Core::BehaviorTreePortsList ports = Node::providedPorts();
 
-        ports.merge(Core::SSBehaviorTreePortsList({
+        ports.merge(Core::BehaviorTreePortsList({
             BT::InputPort<AZ::EntityId>(NODE_PORT_TARGET_NAME, NODE_PORT_TARGET_DESCRIPTION),
             BT::OutputPort<NavigationState>(NODE_PORT_STATE_NAME, NODE_PORT_STATE_DESCRIPTION),
         }));
@@ -59,9 +59,9 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
 
     void NavigationFindPathToEntityNode::OnTraversalStarted(LmbrCentral::PathfindRequest::NavigationRequestId requestId)
     {
-        if (requestId == m_requestId)
+        if (requestId == _requestId)
         {
-            SetNavigationState(NavigationState::STATE_NAVIGATING);
+            SetNavigationState(NavigationState::Navigating);
             TraversalStarted();
         }
     }
@@ -71,9 +71,9 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
         const AZ::Vector3& nextPathPosition,
         const AZ::Vector3& inflectionPosition)
     {
-        if (requestId == m_requestId)
+        if (requestId == _requestId)
         {
-            SetNavigationState(NavigationState::STATE_NAVIGATING);
+            SetNavigationState(NavigationState::Navigating);
             TraversalPathUpdate(nextPathPosition, inflectionPosition);
         }
     }
@@ -81,73 +81,71 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
     void NavigationFindPathToEntityNode::OnTraversalInProgress(
         LmbrCentral::PathfindRequest::NavigationRequestId requestId, float distanceRemaining)
     {
-        if (requestId == m_requestId)
+        if (requestId == _requestId)
         {
-            SetNavigationState(NavigationState::STATE_NAVIGATING);
+            SetNavigationState(NavigationState::Navigating);
             TraversalInProgress(distanceRemaining);
         }
     }
 
     void NavigationFindPathToEntityNode::OnTraversalComplete(LmbrCentral::PathfindRequest::NavigationRequestId requestId)
     {
-        if (requestId == m_requestId)
+        if (requestId == _requestId)
         {
-            SetNavigationState(NavigationState::STATE_COMPLETE);
+            SetNavigationState(NavigationState::Complete);
             TraversalComplete();
         }
     }
 
     void NavigationFindPathToEntityNode::OnTraversalCancelled(LmbrCentral::PathfindRequest::NavigationRequestId requestId)
     {
-        if (requestId == m_requestId)
+        if (requestId == _requestId)
         {
-            SetNavigationState(NavigationState::STATE_IDLE);
+            SetNavigationState(NavigationState::Idle);
             TraversalCancelled();
         }
     }
 
     void NavigationFindPathToEntityNode::Start()
     {
-        const AZ::EntityId& target = GetTarget();
-
-        if (target.IsValid())
+        if (const AZ::EntityId& target = GetTarget(); target.IsValid())
         {
-            if (!m_requestId && target != m_lastTarget)
+            if (!_requestId && target != _lastTarget)
             {
-                m_lastTarget = target;
+                _lastTarget = target;
                 RestartNavigation();
                 ReconnectBus();
             }
-            else if (m_requestId && m_navigationState == NavigationState::STATE_COMPLETE)
+            else if (_requestId && _navigationState == NavigationState::Complete)
             {
-                SetNavigationState(NavigationState::STATE_IDLE);
+                SetNavigationState(NavigationState::Idle);
                 RestartNavigation();
             }
         }
         else if (!target.IsValid())
         {
-            AZ_Warning("SSBehaviorTree", false, "[%s:%s]: No target attribute was supplied.", RegisteredNodeName(), NodeName());
+            AZ_Warning("BehaveAI [BehaviorTree]", false, "[%s:%s]: No target attribute was supplied.", RegisteredNodeName(), NodeName());
         }
     }
 
-    Core::SSBehaviorTreeNodeStatus NavigationFindPathToEntityNode::Tick()
+    Core::BehaviorTreeNodeStatus NavigationFindPathToEntityNode::Tick()
     {
-        if (m_lastTarget.IsValid() && m_requestId)
+        if (_lastTarget.IsValid() && _requestId)
         {
-            switch (m_navigationState)
+            switch (_navigationState)
             {
-            case NavigationState::STATE_NAVIGATING:
-                return Core::SSBehaviorTreeNodeStatus::RUNNING;
+            case NavigationState::Navigating:
+                return Core::BehaviorTreeNodeStatus::RUNNING;
 
-            case NavigationState::STATE_COMPLETE:
-                return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+            case NavigationState::Complete:
+                return Core::BehaviorTreeNodeStatus::SUCCESS;
 
             default:
-                return Core::SSBehaviorTreeNodeStatus::FAILURE;
+                return Core::BehaviorTreeNodeStatus::FAILURE;
             }
         }
 
-        return Core::SSBehaviorTreeNodeStatus::FAILURE;
+        return Core::BehaviorTreeNodeStatus::FAILURE;
     }
 
     void NavigationFindPathToEntityNode::TraversalStarted()
@@ -171,17 +169,17 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
     {
     }
 
-    void NavigationFindPathToEntityNode::SetNavigationState(NavigationState state)
+    void NavigationFindPathToEntityNode::SetNavigationState(const NavigationState& state)
     {
-        m_navigationState = state;
-        Core::SSBehaviorTreeNode::SetOutputValue(NODE_PORT_STATE_NAME, m_navigationState);
+        _navigationState = state;
+        SetOutputValue(NODE_PORT_STATE_NAME, _navigationState);
     }
 
     const AZ::EntityId& NavigationFindPathToEntityNode::GetTarget() const
     {
-        static const AZ::EntityId invalidEntityId = AZ::EntityId();
+        static const auto invalidEntityId = AZ::EntityId();
 
-        Core::Optional<AZ::EntityId> id = Core::SSBehaviorTreeNode::GetInputValue<AZ::EntityId>(NODE_PORT_TARGET_NAME);
+        Core::Optional<AZ::EntityId> id = GetInputValue<AZ::EntityId>(NODE_PORT_TARGET_NAME);
         return id.has_value() ? id.value() : invalidEntityId;
     }
 
@@ -203,18 +201,18 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
 
     void NavigationFindPathToEntityNode::StartNavigation()
     {
-        if (!m_requestId)
+        if (!_requestId)
         {
-            EBUS_EVENT_ID_RESULT(m_requestId, GetEntityId(), LmbrCentral::NavigationComponentRequestBus, FindPathToEntity, m_lastTarget);
+            EBUS_EVENT_ID_RESULT(_requestId, GetEntityId(), LmbrCentral::NavigationComponentRequestBus, FindPathToEntity, _lastTarget);
         }
     }
 
     void NavigationFindPathToEntityNode::StopNavigation()
     {
-        if (m_requestId)
+        if (_requestId)
         {
-            EBUS_EVENT_ID(GetEntityId(), LmbrCentral::NavigationComponentRequestBus, Stop, m_requestId);
-            m_requestId = 0;
+            EBUS_EVENT_ID(GetEntityId(), LmbrCentral::NavigationComponentRequestBus, Stop, _requestId);
+            _requestId = 0;
         }
     }
 
@@ -226,97 +224,92 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
 
 #pragma endregion
 
-#pragma region SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState
+#pragma region BlackboardPropertyNavigationFindPathToEntityNavigationState
 
-    SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState()
-        : SSBehaviorTreeBlackboardProperty()
+    BlackboardPropertyNavigationFindPathToEntityNavigationState::BlackboardPropertyNavigationFindPathToEntityNavigationState()
+        : BlackboardProperty()
     {
     }
 
-    SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState(const char* name)
-        : SSBehaviorTreeBlackboardProperty(name)
+    BlackboardPropertyNavigationFindPathToEntityNavigationState::BlackboardPropertyNavigationFindPathToEntityNavigationState(
+        const char* name)
+        : BlackboardProperty(name)
     {
     }
 
-    SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState(const char* name, const NavigationState& value)
-        : SSBehaviorTreeBlackboardProperty(name)
+    BlackboardPropertyNavigationFindPathToEntityNavigationState::BlackboardPropertyNavigationFindPathToEntityNavigationState(
+        const char* name, const NavigationState& value)
+        : BlackboardProperty(name)
         , m_value(value)
     {
     }
 
-    void SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::Reflect(AZ::ReflectContext* context)
+    void BlackboardPropertyNavigationFindPathToEntityNavigationState::Reflect(AZ::ReflectContext* rc)
     {
-        if (AZ::SerializeContext* rc = azrtti_cast<AZ::SerializeContext*>(context))
+        if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            rc->Enum<NavigationState>()
-                ->Version(1)
-                ->Value("idle", NavigationState::STATE_IDLE)
-                ->Value("navigating", NavigationState::STATE_NAVIGATING)
-                ->Value("complete", NavigationState::STATE_COMPLETE);
+            sc->Enum<NavigationState>()
+                ->Version(0)
+                ->Value("Idle", NavigationState::Idle)
+                ->Value("Navigating", NavigationState::Navigating)
+                ->Value("Complete", NavigationState::Complete);
 
-            rc->Class<SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState, SSBehaviorTreeBlackboardProperty>()
-                ->Version(1)
-                ->Field("value", &SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::m_value);
+            sc->Class<BlackboardPropertyNavigationFindPathToEntityNavigationState, BlackboardProperty>()->Version(0)->Field(
+                "Value", &BlackboardPropertyNavigationFindPathToEntityNavigationState::m_value);
 
-            if (AZ::EditContext* ec = rc->GetEditContext())
+            if (AZ::EditContext* ec = sc->GetEditContext())
             {
                 ec->Enum<NavigationState>(
                       "[NavigationFindPathToEntityNode] Navigation State",
                       "The navigation state of the NavigationFindPathToEntityNode node.")
-                    ->Value("Idle", NavigationState::STATE_IDLE)
-                    ->Value("Navigating", NavigationState::STATE_NAVIGATING)
-                    ->Value("Complete", NavigationState::STATE_COMPLETE);
+                    ->Value("Idle", NavigationState::Idle)
+                    ->Value("Navigating", NavigationState::Navigating)
+                    ->Value("Complete", NavigationState::Complete);
 
-                ec->Class<SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState>(
-                      "SS Behavior Tree Blackboard Property (NavigationState)", "A blackboard property.")
+                ec->Class<BlackboardPropertyNavigationFindPathToEntityNavigationState>(
+                      "[BehaveAI] Behavior Tree Blackboard Property (NavigationState)", "A blackboard property.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Visibility, &SSBehaviorTreeBlackboardProperty::m_visibility)
+                    ->Attribute(AZ::Edit::Attributes::Visibility, &BlackboardProperty::mVisibility)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::ComboBox, &SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::m_value,
-                        "value", "A navigation state.")
-                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &SSBehaviorTreeBlackboardProperty::m_name)
-                    ->Attribute(AZ::Edit::Attributes::Suffix, &SSBehaviorTreeBlackboardProperty::m_suffix)
-                    ->Attribute(AZ::Edit::Attributes::DescriptionTextOverride, &SSBehaviorTreeBlackboardProperty::m_description);
+                        AZ::Edit::UIHandlers::ComboBox, &BlackboardPropertyNavigationFindPathToEntityNavigationState::m_value, "Value",
+                        "A navigation state.")
+                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &BlackboardProperty::mName)
+                    ->Attribute(AZ::Edit::Attributes::Suffix, &BlackboardProperty::mSuffix)
+                    ->Attribute(AZ::Edit::Attributes::DescriptionTextOverride, &BlackboardProperty::mDescription);
             }
         }
     }
 
-    const void* SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::GetDataAddress() const
+    const void* BlackboardPropertyNavigationFindPathToEntityNavigationState::GetDataAddress() const
     {
         return &m_value;
     }
 
-    const AZ::Uuid& SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::GetDataTypeUuid() const
+    const AZ::Uuid& BlackboardPropertyNavigationFindPathToEntityNavigationState::GetDataTypeUuid() const
     {
         return azrtti_typeid<NavigationState>();
     }
 
-    SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState*
-    SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::Clone(const char* name) const
+    BlackboardPropertyNavigationFindPathToEntityNavigationState* BlackboardPropertyNavigationFindPathToEntityNavigationState::Clone(
+        const char* name) const
     {
-        return aznew SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState(name ? name : m_name.c_str(), m_value);
+        return aznew BlackboardPropertyNavigationFindPathToEntityNavigationState(name ? name : mName.c_str(), m_value);
     }
 
-    void SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::AddBlackboardEntry(
-        const Blackboard::SSBehaviorTreeBlackboard& blackboard) const
+    void BlackboardPropertyNavigationFindPathToEntityNavigationState::AddBlackboardEntry(const Blackboard::Blackboard& blackboard) const
     {
-        blackboard.m_blackboard->set<NavigationState>(m_name.c_str(), m_value);
+        blackboard.mBlackboard->set<NavigationState>(mName.c_str(), m_value);
     }
 
-    void SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::SetValueFromString(const char* value)
+    void BlackboardPropertyNavigationFindPathToEntityNavigationState::SetValueFromString(const char* value)
     {
         m_value = BT::convertFromString<NavigationState>(value);
     }
 
-    void SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState::CloneDataFrom(
-        const SSBehaviorTreeBlackboardProperty* property)
+    void BlackboardPropertyNavigationFindPathToEntityNavigationState::CloneDataFrom(const BlackboardProperty* property)
     {
-        const SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState* p =
-            azrtti_cast<const SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState*>(property);
-        AZ_Error("SSBehaviorTree", p, "Invalid call to CloneData. Types must match before clone attempt is made.\n");
+        const auto* p = azrtti_cast<const BlackboardPropertyNavigationFindPathToEntityNavigationState*>(property);
+        AZ_Error("BehaveAI [BehaviorTree]", p, "Invalid call to CloneData. Types must match before clone attempt is made.\n");
 
         if (p)
         {

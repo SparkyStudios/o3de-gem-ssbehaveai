@@ -20,43 +20,40 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
-    SimpleMotionSetLoopMotionNode::SimpleMotionSetLoopMotionNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : Core::SSBehaviorTreeNode(name, config)
+    SimpleMotionSetLoopMotionNode::SimpleMotionSetLoopMotionNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+        : Node(name, config)
     {
     }
 
-    void SimpleMotionSetLoopMotionNode::Reflect(AZ::ReflectContext* reflection)
+    void SimpleMotionSetLoopMotionNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(reflection);
+        AZ_UNUSED(rc);
     }
 
-    void SimpleMotionSetLoopMotionNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void SimpleMotionSetLoopMotionNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         registry->DelayNodeRegistration<SimpleMotionSetLoopMotionNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList SimpleMotionSetLoopMotionNode::providedPorts()
+    Core::BehaviorTreePortsList SimpleMotionSetLoopMotionNode::providedPorts()
     {
-        Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+        Core::BehaviorTreePortsList ports = Node::providedPorts();
 
-        ports.merge(Core::SSBehaviorTreePortsList({
+        ports.merge(Core::BehaviorTreePortsList({
             BT::InputPort<bool>(NODE_PORT_VALUE_NAME, NODE_PORT_VALUE_DESCRIPTION),
         }));
 
         return ports;
     }
 
-    Core::SSBehaviorTreeNodeStatus SimpleMotionSetLoopMotionNode::Tick()
+    Core::BehaviorTreeNodeStatus SimpleMotionSetLoopMotionNode::Tick()
     {
-        Core::Optional<bool> value = GetInputValue<bool>(NODE_PORT_VALUE_NAME);
-
-        if (value.has_value())
+        if (Core::Optional<bool> value = GetInputValue<bool>(NODE_PORT_VALUE_NAME); value.has_value())
         {
             EBUS_EVENT_ID(GetEntityId(), EMotionFX::Integration::SimpleMotionComponentRequestBus, LoopMotion, value.value());
-            return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+            return Core::BehaviorTreeNodeStatus::SUCCESS;
         }
 
-        return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+        return Core::BehaviorTreeNodeStatus::SUCCESS;
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

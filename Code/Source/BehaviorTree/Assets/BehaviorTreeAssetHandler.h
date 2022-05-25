@@ -18,36 +18,36 @@
 #include <AzCore/Asset/AssetTypeInfoBus.h>
 #include <AzCore/Serialization/ObjectStream.h>
 
-#include <BehaviorTree/Assets/SSBehaviorTreeAsset.h>
+#include <BehaviorTree/Assets/BehaviorTreeAsset.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 {
-    class SSBehaviorTreeAssetHandler
+    class BehaviorTreeAssetHandler
         : public AZ::Data::AssetHandler
         , protected AZ::AssetTypeInfoBus::Handler
     {
     public:
-        AZ_CLASS_ALLOCATOR(SSBehaviorTreeAssetHandler, AZ::SystemAllocator, 0);
-        AZ_RTTI(SSBehaviorTreeAssetHandler, "{60d37814-1307-4b69-a802-c26aa4b642a1}", AZ::Data::AssetHandler);
+        AZ_CLASS_ALLOCATOR(BehaviorTreeAssetHandler, AZ::SystemAllocator, 0);
+        AZ_RTTI(BehaviorTreeAssetHandler, "{60D37814-1307-4B69-A802-C26AA4B642A1}", AZ::Data::AssetHandler);
 
-        SSBehaviorTreeAssetHandler();
-        ~SSBehaviorTreeAssetHandler() override;
+        BehaviorTreeAssetHandler();
+        ~BehaviorTreeAssetHandler() override;
 
-        // Inherited via AZ::Data::AssetHandler
-        AZ::Data::AssetHandler::LoadResult LoadAssetData(
+        // AZ::Data::AssetHandler
+        LoadResult LoadAssetData(
             const AZ::Data::Asset<AZ::Data::AssetData>& asset, const char* assetPath, const AZ::Data::AssetFilterCB& assetLoadFilterCB);
-        AZ::Data::AssetHandler::LoadResult LoadAssetData(
+        LoadResult LoadAssetData(
             const AZ::Data::Asset<AZ::Data::AssetData>& asset,
             AZStd::shared_ptr<AZ::Data::AssetDataStream> stream,
             const AZ::Data::AssetFilterCB& assetLoadFilterCB) override;
         bool SaveAssetData(const AZ::Data::Asset<AZ::Data::AssetData>& asset, AZ::IO::GenericStream* stream) override;
-        bool SaveAssetData(const SSBehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream);
-        bool SaveAssetData(const SSBehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream, AZ::DataStream::StreamType streamType);
+        bool SaveAssetData(const BehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream);
+        bool SaveAssetData(const BehaviorTreeAsset* assetData, AZ::IO::GenericStream* stream, AZ::DataStream::StreamType streamType);
         AZ::Data::AssetPtr CreateAsset(const AZ::Data::AssetId& id, const AZ::Data::AssetType& type) override;
         void DestroyAsset(AZ::Data::AssetPtr ptr) override;
         void GetHandledAssetTypes(AZStd::vector<AZ::Data::AssetType>& assetTypes) override;
 
-        // Inherited from AZ::AssetTypeInfoBus::Handler
+        // AZ::AssetTypeInfoBus::Handler
         AZ::Data::AssetType GetAssetType() const override;
         const char* GetAssetTypeDisplayName() const override;
         const char* GetGroup() const override;
@@ -55,15 +55,15 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
         void GetAssetTypeExtensions(AZStd::vector<AZStd::string>& extensions) override;
 
         // Public Methods
-        AZStd::string GetExtension() const
+        [[nodiscard]] const AZStd::string& GetExtension() const
         {
-            return m_extension;
+            return _extension;
         }
 
         // Static Methods
         static AZ::Data::AssetType GetAssetTypeStatic();
 
     private:
-        AZStd::string m_extension = ".ssbt";
+        AZStd::string _extension = ".bhbtree";
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

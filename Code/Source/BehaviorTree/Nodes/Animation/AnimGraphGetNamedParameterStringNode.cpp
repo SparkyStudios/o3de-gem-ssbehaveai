@@ -19,23 +19,23 @@
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphGetNamedParameterStringNode::AnimGraphGetNamedParameterStringNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
         : AnimGraphGetNamedParameterNode<AZStd::string>(name, config)
     {
     }
 
-    void AnimGraphGetNamedParameterStringNode::Reflect(AZ::ReflectContext* context)
+    void AnimGraphGetNamedParameterStringNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(rc);
     }
 
-    void AnimGraphGetNamedParameterStringNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void AnimGraphGetNamedParameterStringNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register node
         registry->DelayNodeRegistration<AnimGraphGetNamedParameterStringNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList AnimGraphGetNamedParameterStringNode::providedPorts()
+    Core::BehaviorTreePortsList AnimGraphGetNamedParameterStringNode::providedPorts()
     {
         return AnimGraphGetNamedParameterNode<AZStd::string>::providedPorts();
     }

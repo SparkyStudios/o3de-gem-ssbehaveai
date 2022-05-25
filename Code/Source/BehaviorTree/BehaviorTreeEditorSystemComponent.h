@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <BehaviorTree/SSBehaviorTreeSystemComponent.h>
+#include <BehaviorTree/BehaviorTreeSystemComponent.h>
 
 #include <QAction>
 
@@ -29,31 +29,31 @@
 #include <AzToolsFramework/ToolsComponents/EditorVisibilityBus.h>
 #include <AzToolsFramework/Viewport/ActionBus.h>
 
-#include <BehaviorTree/Assets/SSBehaviorTreeAssetHandler.h>
+#include <BehaviorTree/Assets/BehaviorTreeAssetHandler.h>
 
 #include <Editor/Windows/MainWindow.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree
 {
     /// System component for SSBehaviorTree editor
-    class SSBehaviorTreeEditorSystemComponent
-        : public SSBehaviorTreeSystemComponent
+    class BehaviorTreeEditorSystemComponent
+        : public BehaviorTreeSystemComponent
+        , public AzToolsFramework::EditorMenuNotificationBus::Handler
         , private AzToolsFramework::EditorEvents::Bus::Handler
         , private AzToolsFramework::AssetBrowser::AssetBrowserInteractionNotificationBus::Handler
         , private AzFramework::ApplicationLifecycleEvents::Bus::Handler
-        , public AzToolsFramework::EditorMenuNotificationBus::Handler
     {
-        using BaseSystemComponent = SSBehaviorTreeSystemComponent;
+        using BaseSystemComponent = BehaviorTreeSystemComponent;
 
     public:
-        AZ_COMPONENT(SSBehaviorTreeEditorSystemComponent, "{c6d81d4a-51ca-4c74-9d0d-96f813233c74}", BaseSystemComponent);
-        static void Reflect(AZ::ReflectContext* context);
+        AZ_COMPONENT(BehaviorTreeEditorSystemComponent, "{C6D81D4A-51CA-4C74-9D0D-96F813233C74}", BaseSystemComponent);
+        static void Reflect(AZ::ReflectContext* rc);
 
         // The name of the view pane displaying the BehaviorTree Editor.
         static constexpr const char* const ViewPaneName = "BehaviorTree Editor";
 
-        SSBehaviorTreeEditorSystemComponent();
-        ~SSBehaviorTreeEditorSystemComponent();
+        BehaviorTreeEditorSystemComponent();
+        ~BehaviorTreeEditorSystemComponent();
 
     protected:
         void PopulateEditorGlobalContextMenu_SliceSection(QMenu* menu, const AZ::Vector2& point, int flags) override;
@@ -71,16 +71,14 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
 
         const AzToolsFramework::AssetBrowser::ProductAssetBrowserEntry* GetProductFromBrowserEntry(
             AzToolsFramework::AssetBrowser::AssetBrowserEntry* entry) const;
-        bool IsSSBTAssetType(const AZ::Data::AssetType& type) const;
+        bool IsBehaviorTreeAssetType(const AZ::Data::AssetType& type) const;
         void FilterForBehaviorTreeEnabledEntities(AzToolsFramework::EntityIdList& sourceList, AzToolsFramework::EntityIdList& targetList);
 
-        ////////////////////////////////////////////////////////////////////////
         // AzToolsFramework::AssetBrowser::AssetBrowserInteractionNotificationBus::Handler
         void AddSourceFileOpeners(
             const char* fullSourceFileName,
             const AZ::Uuid& sourceUUID,
             AzToolsFramework::AssetBrowser::SourceFileOpenerList& openers) override;
-        ////////////////////////////////////////////////////////////////////////
 
         void StartProcessDetached(const char* process, const char* args);
 
@@ -95,7 +93,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         void Activate() override;
         void Deactivate() override;
 
-        Assets::SSBehaviorTreeAssetHandler* m_assetHandler;
-        QAction* m_openEditorAction;
+        Assets::BehaviorTreeAssetHandler* _assetHandler;
+        QAction* _openEditorAction;
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree

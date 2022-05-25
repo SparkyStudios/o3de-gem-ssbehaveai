@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Registry.h>
 
 #include <Integration/AnimGraphComponentBus.h>
 
@@ -27,14 +27,14 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
      * @tparam T The type of the value the child class should set.
      */
     template<typename T>
-    class AnimGraphSetNamedParameterNode : public Core::SSBehaviorTreeNode
+    class AnimGraphSetNamedParameterNode : public Core::Node
     {
     public:
         AZ_CLASS_ALLOCATOR(AnimGraphSetNamedParameterNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(((AnimGraphSetNamedParameterNode<T>), "{8d202ec2-61ef-48ee-a083-a9ffc4362a97}", T), Core::SSBehaviorTreeNode);
+        AZ_RTTI(((AnimGraphSetNamedParameterNode<T>), "{8d202ec2-61ef-48ee-a083-a9ffc4362a97}", T), Core::Node);
 
-        AnimGraphSetNamedParameterNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-            : Core::SSBehaviorTreeNode(name, config)
+        AnimGraphSetNamedParameterNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+            : Node(name, config)
         {
         }
 
@@ -46,11 +46,11 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
         static constexpr const char* NODE_PORT_VALUE_NAME = "value";
         static constexpr const char* NODE_PORT_VALUE_DESCRIPTION = "The value to set to the parameter.";
 
-        static Core::SSBehaviorTreePortsList providedPorts()
+        static Core::BehaviorTreePortsList providedPorts()
         {
-            Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+            Core::BehaviorTreePortsList ports = Core::Node::providedPorts();
 
-            ports.merge(Core::SSBehaviorTreePortsList({
+            ports.merge(Core::BehaviorTreePortsList({
                 BT::InputPort<AZStd::string>(NODE_PORT_PARAMETER_NAME, NODE_PORT_PARAMETER_DESCRIPTION),
                 BT::InputPort<T>(NODE_PORT_VALUE_NAME, NODE_PORT_VALUE_DESCRIPTION),
             }));
@@ -58,7 +58,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
             return ports;
         }
 
-        const std::string NodeCategory() const override
+        std::string NodeCategory() const override
         {
             return "Animation";
         }
@@ -82,17 +82,15 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
             }
         }
 
-        Core::SSBehaviorTreeNodeStatus Tick() override
+        Core::BehaviorTreeNodeStatus Tick() override
         {
             if (m_parameterIndex == INVALID_PARAMETER_INDEX)
             {
-                return Core::SSBehaviorTreeNodeStatus::FAILURE;
+                return Core::BehaviorTreeNodeStatus::FAILURE;
             }
-            else
-            {
-                SetParameter();
-                return Core::SSBehaviorTreeNodeStatus::SUCCESS;
-            }
+
+            SetParameter();
+            return Core::BehaviorTreeNodeStatus::SUCCESS;
         }
 
         /**

@@ -19,31 +19,30 @@
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphSetNamedParameterVector2Node::AnimGraphSetNamedParameterVector2Node(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
         : AnimGraphSetNamedParameterNode<AZ::Vector2>(name, config)
     {
     }
 
-    void AnimGraphSetNamedParameterVector2Node::Reflect(AZ::ReflectContext* context)
+    void AnimGraphSetNamedParameterVector2Node::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(rc);
     }
 
-    void AnimGraphSetNamedParameterVector2Node::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void AnimGraphSetNamedParameterVector2Node::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register node
         registry->DelayNodeRegistration<AnimGraphSetNamedParameterVector2Node>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList AnimGraphSetNamedParameterVector2Node::providedPorts()
+    Core::BehaviorTreePortsList AnimGraphSetNamedParameterVector2Node::providedPorts()
     {
         return AnimGraphSetNamedParameterNode<AZ::Vector2>::providedPorts();
     }
 
     void AnimGraphSetNamedParameterVector2Node::SetParameter()
     {
-        Core::Optional<AZ::Vector2> value = GetInputValue<AZ::Vector2>(NODE_PORT_VALUE_NAME);
-        if (value.has_value())
+        if (Core::Optional<AZ::Vector2> value = GetInputValue<AZ::Vector2>(NODE_PORT_VALUE_NAME); value.has_value())
         {
             EBUS_EVENT_ID(
                 GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterVector2, m_parameterIndex, value.value());

@@ -14,20 +14,27 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/Blackboard.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/BlackboardProperty.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Registry.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 {
 #pragma region DebugMessageNode
 
-    class DebugMessageNode : public Core::SSBehaviorTreeNode
+    /**
+     * @brief Display a debug message in the O3DE console.
+     *
+     * @par Node Ports
+     * - message: The message to display in the debug console.
+     * - level: The level of the debug message. Allowed values are "info", "warning", and "error".
+     */
+    class DebugMessageNode : public Core::Node
     {
     public:
         AZ_CLASS_ALLOCATOR(DebugMessageNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(DebugMessageNode, "{a0059957-67f9-43cb-ae02-1576835b0c73}", Core::SSBehaviorTreeNode);
+        AZ_RTTI(DebugMessageNode, "{A0059957-67F9-43CB-AE02-1576835B0C73}", Core::Node);
 
         static constexpr const char* NODE_NAME = "DebugMessage";
 
@@ -36,70 +43,63 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 
         static constexpr const char* NODE_PORT_LEVEL_NAME = "level";
         static constexpr const char* NODE_PORT_LEVEL_DESCRIPTION =
-            "The level of the debug message. Allowed values are \"info\", \"warning\", and \"error\".";
+            R"(The level of the debug message. Allowed values are "info", "warning", and "error".)";
 
         static void Reflect(AZ::ReflectContext* context);
 
-        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry);
 
         enum class DebugMessageLevel
         {
-            LEVEL_ERROR = 0,
-            LEVEL_WARNING,
-            LEVEL_INFO,
-            LEVEL_SILENT,
+            Error = 0,
+            Warning,
+            Info,
+            Silent,
         };
 
-        DebugMessageNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
+        DebugMessageNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config);
 
-        static Core::SSBehaviorTreePortsList providedPorts();
+        static Core::BehaviorTreePortsList providedPorts();
 
-        const std::string NodeCategory() const override
+        std::string NodeCategory() const override
         {
             return "Common";
         }
 
     protected:
-        Core::SSBehaviorTreeNodeStatus Tick() override;
+        Core::BehaviorTreeNodeStatus Tick() override;
     };
 
 #pragma endregion
 
 #pragma region SSBehaviorTreeBlackboardPropertyDebugMessageLevel
 
-    class SSBehaviorTreeBlackboardPropertyDebugMessageLevel : public Blackboard::SSBehaviorTreeBlackboardProperty
+    class BlackboardPropertyDebugMessageLevel : public Blackboard::BlackboardProperty
     {
     public:
-        AZ_CLASS_ALLOCATOR(SSBehaviorTreeBlackboardPropertyDebugMessageLevel, AZ::SystemAllocator, 0);
-        AZ_RTTI(
-            SSBehaviorTreeBlackboardPropertyDebugMessageLevel,
-            "{09ef7645-63e9-40ac-88f2-2e489caf101d}",
-            Blackboard::SSBehaviorTreeBlackboardProperty);
+        AZ_CLASS_ALLOCATOR(BlackboardPropertyDebugMessageLevel, AZ::SystemAllocator, 0);
+        AZ_RTTI(BlackboardPropertyDebugMessageLevel, "{09EF7645-63E9-40AC-88F2-2E489CAF101D}", Blackboard::BlackboardProperty);
 
         using DebugMessageLevel = DebugMessageNode::DebugMessageLevel;
 
         static void Reflect(AZ::ReflectContext* context);
 
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel();
+        BlackboardPropertyDebugMessageLevel();
+        explicit BlackboardPropertyDebugMessageLevel(const char* name);
+        BlackboardPropertyDebugMessageLevel(const char* name, const DebugMessageLevel& value);
 
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel(const char* name);
+        [[nodiscard]] const void* GetDataAddress() const override;
+        [[nodiscard]] const AZ::Uuid& GetDataTypeUuid() const override;
 
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel(const char* name, const DebugMessageLevel& value);
+        BlackboardPropertyDebugMessageLevel* Clone(const char* name = nullptr) const override;
 
-        const void* GetDataAddress() const override;
+        void AddBlackboardEntry(const Blackboard::Blackboard& blackboard) const override;
+        void SetValueFromString(const char* value) override;
 
-        const AZ::Uuid& GetDataTypeUuid() const override;
-
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel* Clone(const char* name = nullptr) const override;
-
-        void AddBlackboardEntry(const Blackboard::SSBehaviorTreeBlackboard& blackboard) const override;
-
-        void SetValueFromString(const char* value);
-
-        DebugMessageLevel m_value = DebugMessageLevel::LEVEL_INFO;
+        DebugMessageLevel mValue = DebugMessageLevel::Info;
 
     protected:
-        void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property) override;
+        void CloneDataFrom(const BlackboardProperty* property) override;
     };
 
 #pragma endregion
@@ -108,50 +108,54 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 namespace AZ
 {
     AZ_TYPE_INFO_SPECIALIZE(
-        SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel, "{57840eec-7a59-4b6e-9c24-66f947280ca8}");
+        SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel,
+        "{57840eec-7a59-4b6e-9c24-66f947280ca8}");
 } // namespace AZ
 
 namespace BT
 {
+    using namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common;
+
     template<>
-    inline std::string toStr<SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel>(
-        SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel value)
+    inline std::string toStr<DebugMessageNode::DebugMessageLevel>(DebugMessageNode::DebugMessageLevel value)
     {
         switch (value)
         {
-        case SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_ERROR:
+        case DebugMessageNode::DebugMessageLevel::Error:
             return "error";
-        case SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_WARNING:
+        case DebugMessageNode::DebugMessageLevel::Warning:
             return "warning";
-        case SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO:
-            return "info";
-        case SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_SILENT:
-            return "silent";
         default:
+        case DebugMessageNode::DebugMessageLevel::Info:
             return "info";
+        case DebugMessageNode::DebugMessageLevel::Silent:
+            return "silent";
         }
     }
 
     template<>
-    inline SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel convertFromString(StringView str)
+    inline DebugMessageNode::DebugMessageLevel convertFromString(StringView str)
     {
         if (str.compare("error") == 0)
         {
-            return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_ERROR;
-        }
-        else if (str.compare("warning") == 0)
-        {
-            return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_WARNING;
-        }
-        else if (str.compare("info") == 0)
-        {
-            return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO;
-        }
-        else if (str.compare("silent") == 0)
-        {
-            return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_SILENT;
+            return DebugMessageNode::DebugMessageLevel::Error;
         }
 
-        return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common::DebugMessageNode::DebugMessageLevel::LEVEL_INFO;
+        if (str.compare("warning") == 0)
+        {
+            return DebugMessageNode::DebugMessageLevel::Warning;
+        }
+
+        if (str.compare("info") == 0)
+        {
+            return DebugMessageNode::DebugMessageLevel::Info;
+        }
+
+        if (str.compare("silent") == 0)
+        {
+            return DebugMessageNode::DebugMessageLevel::Silent;
+        }
+
+        return DebugMessageNode::DebugMessageLevel::Info;
     }
 } // namespace BT

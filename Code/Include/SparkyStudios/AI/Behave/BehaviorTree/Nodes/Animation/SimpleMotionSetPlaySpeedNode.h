@@ -14,36 +14,36 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Registry.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
-    class SimpleMotionSetPlaySpeedNode : public Core::SSBehaviorTreeNode
+    class SimpleMotionSetPlaySpeedNode : public Core::Node
     {
     public:
         AZ_CLASS_ALLOCATOR(SimpleMotionSetPlaySpeedNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(SimpleMotionSetPlaySpeedNode, "{10c22740-f97f-413a-bb8f-1b96fdf1f745}", Core::SSBehaviorTreeNode);
+        AZ_RTTI(SimpleMotionSetPlaySpeedNode, "{10c22740-f97f-413a-bb8f-1b96fdf1f745}", Core::Node);
 
         static constexpr const char* NODE_NAME = "SimpleMotionSetPlaySpeed";
 
         static constexpr const char* NODE_PORT_VALUE_NAME = "value";
         static constexpr const char* NODE_PORT_VALUE_DESCRIPTION = "The play speed value to define to the simple motion.";
 
-        SimpleMotionSetPlaySpeedNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
+        SimpleMotionSetPlaySpeedNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config);
 
-        static void Reflect(AZ::ReflectContext* reflection);
+        static void Reflect(AZ::ReflectContext* rc);
 
-        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry);
 
-        static Core::SSBehaviorTreePortsList providedPorts();
+        static Core::BehaviorTreePortsList providedPorts();
 
-        const std::string NodeCategory() const override
+        std::string NodeCategory() const override
         {
             return "Animation";
         }
 
     protected:
-        Core::SSBehaviorTreeNodeStatus Tick();
+        Core::BehaviorTreeNodeStatus Tick() override;
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

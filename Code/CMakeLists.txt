@@ -30,11 +30,11 @@ if(NOT PAL_TRAIT_SSBEHAVEAI_SUPPORTED)
     return()
 endif()
 
-# Add the Behave.Core.Static target
+# Add the Behave.Static target
 # Note: We include the common files and the platform specific files which are set in ssbehaveai_files.cmake
 # and in ${pal_dir}/ssbehaveai_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
 ly_add_target(
-    NAME Behave.Core.Static STATIC
+    NAME Behave.Static STATIC
     NAMESPACE SparkyStudios::AI
     OUTPUT_NAME SparkyStudios.AI.Behave.Static
     FILES_CMAKE
@@ -51,17 +51,17 @@ ly_add_target(
             Source
     BUILD_DEPENDENCIES
         PRIVATE
-            Gem::LmbrCentral.Static
             Gem::EMotionFX.Static
         PUBLIC
             AZ::AzCore
             AZ::AzFramework
+            Gem::LmbrCentral.Static
             3rdParty::BehaviorTreeCPP
 )
 
-# Here add Behave.Core target, it depends on the Behave.Core.Static
+# Here add Behave target, it depends on the Behave.Static
 ly_add_target(
-    NAME Behave.Core ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
+    NAME Behave ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
     NAMESPACE SparkyStudios::AI
     OUTPUT_NAME SparkyStudios.AI.Behave
     FILES_CMAKE
@@ -74,17 +74,17 @@ ly_add_target(
             Source
     BUILD_DEPENDENCIES
         PRIVATE
-            SparkyStudios::AI::Behave.Core.Static
+            SparkyStudios::AI::Behave.Static
 )
 
 # By default, we will specify that the above target SSBehaveAI would be used by
 # Client and Server type targets when this gem is enabled.  If you don't want it
 # active in Clients or Servers by default, delete one of both of the following lines:
-ly_create_alias(NAME SSBehaveAI.Clients NAMESPACE Gem TARGETS SparkyStudios::AI::Behave.Core)
-ly_create_alias(NAME SSBehaveAI.Servers NAMESPACE Gem TARGETS SparkyStudios::AI::Behave.Core)
+ly_create_alias(NAME SSBehaveAI.Clients NAMESPACE Gem TARGETS SparkyStudios::AI::Behave)
+ly_create_alias(NAME SSBehaveAI.Servers NAMESPACE Gem TARGETS SparkyStudios::AI::Behave)
 
 # If we are on a host platform, we want to add the host tools targets like the Behave.Editor target which
-# will also depend on Behave.Core.Static
+# will also depend on Behave.Static
 if(PAL_TRAIT_BUILD_HOST_TOOLS)
     ly_add_target(
         NAME Behave.Editor.Static STATIC
@@ -104,7 +104,7 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 AZ::AzToolsFramework
                 AZ::AzFramework
                 AZ::AzQtComponents
-                SparkyStudios::AI::Behave.Core.Static
+                SparkyStudios::AI::Behave.Static
                 3rdParty::Qt::Widgets
                 3rdParty::QtNodeEditor
                 Gem::DebugDraw.Static
@@ -197,9 +197,9 @@ endif()
 ################################################################################
 # See if globally, tests are supported
 if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
-    # We globally support tests, see if we support tests on this platform for Behave.Core.Static
+    # We globally support tests, see if we support tests on this platform for Behave.Static
     if(PAL_TRAIT_SSBEHAVEAI_TEST_SUPPORTED)
-        # We support Behaviore.Tests on this platform, add Behave.Tests target which depends on Behave.Core.Static
+        # We support Behaviore.Tests on this platform, add Behave.Tests target which depends on Behave.Static
         ly_add_target(
             NAME Behave.Tests ${PAL_TRAIT_TEST_TARGET_TYPE}
             NAMESPACE SparkyStudios::AI
@@ -218,7 +218,7 @@ if(PAL_TRAIT_BUILD_TESTS_SUPPORTED)
                     AZ::AzFramework
                     Gem::LmbrCentral.Static
                     Gem::EMotionFX.Static
-                    SparkyStudios::AI::Behave.Core.Static
+                    SparkyStudios::AI::Behave.Static
         )
 
         # Add Behave.Tests to googletest

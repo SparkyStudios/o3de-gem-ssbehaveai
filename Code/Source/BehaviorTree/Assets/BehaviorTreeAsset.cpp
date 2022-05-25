@@ -14,7 +14,7 @@
 
 #include <StdAfx.h>
 
-#include <BehaviorTree/Assets/SSBehaviorTreeAsset.h>
+#include <BehaviorTree/Assets/BehaviorTreeAsset.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 {
@@ -26,13 +26,13 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
         "</root>";
 
     /**
-     * @brief Construct a new SSBehaviorTreeAsset::SSBehaviorTreeAsset object
+     * @brief Construct a new BehaviorTreeAsset object
      *
      * @param assetId The unique ID of the asset.
      */
-    SSBehaviorTreeAsset::SSBehaviorTreeAsset(const AZ::Data::AssetId& assetId)
+    BehaviorTreeAsset::BehaviorTreeAsset(const AZ::Data::AssetId& assetId)
         : AZ::Data::AssetData(assetId)
-        , m_buffer(_default_content, _default_content + strlen(_default_content))
+        , _buffer(_default_content, _default_content + strlen(_default_content))
     {
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Assets

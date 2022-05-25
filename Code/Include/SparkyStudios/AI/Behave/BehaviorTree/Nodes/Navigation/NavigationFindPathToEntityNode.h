@@ -14,10 +14,10 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/SSBehaviorTreeBlackboard.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/SSBehaviorTreeBlackboardProperty.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeNode.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/Blackboard.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Blackboard/BlackboardProperty.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Node.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Registry.h>
 
 #include <LmbrCentral/Ai/NavigationComponentBus.h>
 
@@ -28,16 +28,20 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
     /**
      * @brief Make that entity navigate to the given target.
      *
-     * Even if this class can be used itself, it should be subclassed to be
-     * really usefull.
+     * Even if this class can be used itself, it should be inherited to be
+     * really useful.
+     *
+     * @par Node Ports
+     * - target: The target entity.
+     * - state: The blackboard entry in which store the current navigation state.
      */
     class NavigationFindPathToEntityNode
-        : public Core::SSBehaviorTreeNode
+        : public Core::Node
         , public LmbrCentral::NavigationComponentNotificationBus::Handler
     {
     public:
         AZ_CLASS_ALLOCATOR(NavigationFindPathToEntityNode, AZ::SystemAllocator, 0);
-        AZ_RTTI(NavigationFindPathToEntityNode, "{c8032d5e-dc02-42a8-868a-e1668c6a8eb1}", Core::SSBehaviorTreeNode);
+        AZ_RTTI(NavigationFindPathToEntityNode, "{C8032D5E-DC02-42A8-868A-E1668C6A8EB1}", Core::Node);
 
         static constexpr const char* NODE_NAME = "NavigationFindPathToEntity";
 
@@ -45,11 +49,11 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
         static constexpr const char* NODE_PORT_TARGET_DESCRIPTION = "The target entity.";
 
         static constexpr const char* NODE_PORT_STATE_NAME = "state";
-        static constexpr const char* NODE_PORT_STATE_DESCRIPTION = "The blackboard entry in which store the navigation state.";
+        static constexpr const char* NODE_PORT_STATE_DESCRIPTION = "The blackboard entry in which store the current navigation state.";
 
-        static void Reflect(AZ::ReflectContext* context);
+        static void Reflect(AZ::ReflectContext* rc);
 
-        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry);
 
         /**
          * @brief The current state of the navigation.
@@ -60,16 +64,16 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
          */
         enum class NavigationState
         {
-            STATE_IDLE = 0,
-            STATE_NAVIGATING,
-            STATE_COMPLETE
+            Idle = 0,
+            Navigating,
+            Complete
         };
 
-        NavigationFindPathToEntityNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
+        NavigationFindPathToEntityNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config);
 
-        static Core::SSBehaviorTreePortsList providedPorts();
+        static Core::BehaviorTreePortsList providedPorts();
 
-        const std::string NodeCategory() const override
+        std::string NodeCategory() const override
         {
             return "Navigation";
         }
@@ -90,7 +94,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
     protected:
         void Start() override;
 
-        Core::SSBehaviorTreeNodeStatus Tick() override;
+        Core::BehaviorTreeNodeStatus Tick() override;
 
         virtual void TraversalStarted();
 
@@ -102,7 +106,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
 
         virtual void TraversalCancelled();
 
-        void SetNavigationState(NavigationState state);
+        void SetNavigationState(const NavigationState& state);
 
         const AZ::EntityId& GetTarget() const;
 
@@ -119,48 +123,45 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
 
         void RestartNavigation();
 
-        NavigationState m_navigationState;
-        LmbrCentral::PathfindRequest::NavigationRequestId m_requestId;
-        AZ::EntityId m_lastTarget;
+        NavigationState _navigationState;
+        LmbrCentral::PathfindRequest::NavigationRequestId _requestId;
+        AZ::EntityId _lastTarget;
     };
 
 #pragma endregion
 
-#pragma region SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState
+#pragma region BlackboardPropertyNavigationFindPathToEntityNavigationState
 
-    class SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState : public Blackboard::SSBehaviorTreeBlackboardProperty
+    class BlackboardPropertyNavigationFindPathToEntityNavigationState : public Blackboard::BlackboardProperty
     {
     public:
-        AZ_CLASS_ALLOCATOR(SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState, AZ::SystemAllocator, 0);
+        AZ_CLASS_ALLOCATOR(BlackboardPropertyNavigationFindPathToEntityNavigationState, AZ::SystemAllocator, 0);
         AZ_RTTI(
-            SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState,
-            "{a2b1a6e2-1737-4085-ad12-039908d71586}",
-            Blackboard::SSBehaviorTreeBlackboardProperty);
+            BlackboardPropertyNavigationFindPathToEntityNavigationState,
+            "{A2B1A6E2-1737-4085-AD12-039908D71586}",
+            Blackboard::BlackboardProperty);
 
         using NavigationState = NavigationFindPathToEntityNode::NavigationState;
 
-        static void Reflect(AZ::ReflectContext* context);
+        static void Reflect(AZ::ReflectContext* rc);
 
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState();
+        BlackboardPropertyNavigationFindPathToEntityNavigationState();
+        explicit BlackboardPropertyNavigationFindPathToEntityNavigationState(const char* name);
+        BlackboardPropertyNavigationFindPathToEntityNavigationState(const char* name, const NavigationState& value);
 
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState(const char* name);
+        [[nodiscard]] const void* GetDataAddress() const override;
+        [[nodiscard]] const AZ::Uuid& GetDataTypeUuid() const override;
 
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState(const char* name, const NavigationState& value);
+        BlackboardPropertyNavigationFindPathToEntityNavigationState* Clone(const char* name = nullptr) const override;
 
-        const void* GetDataAddress() const override;
+        void AddBlackboardEntry(const Blackboard::Blackboard& blackboard) const override;
 
-        const AZ::Uuid& GetDataTypeUuid() const override;
+        void SetValueFromString(const char* value) override;
 
-        SSBehaviorTreeBlackboardPropertyNavigationFindPathToEntityNavigationState* Clone(const char* name = nullptr) const override;
-
-        void AddBlackboardEntry(const Blackboard::SSBehaviorTreeBlackboard& blackboard) const override;
-
-        void SetValueFromString(const char* value);
-
-        NavigationState m_value = NavigationState::STATE_IDLE;
+        NavigationState m_value = NavigationState::Idle;
 
     protected:
-        void CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property) override;
+        void CloneDataFrom(const BlackboardProperty* property) override;
     };
 
 #pragma endregion
@@ -170,45 +171,44 @@ namespace AZ
 {
     AZ_TYPE_INFO_SPECIALIZE(
         SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState,
-        "{ee3605c4-0a57-4642-b368-54b4f5bf96e7}");
+        "{EE3605C4-0A57-4642-B368-54B4F5BF96E7}");
 } // namespace AZ
 
 namespace BT
 {
+    using namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation;
+
     template<>
-    inline std::string toStr<SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState>(
-        SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState value)
+    inline std::string toStr<NavigationFindPathToEntityNode::NavigationState>(NavigationFindPathToEntityNode::NavigationState value)
     {
         switch (value)
         {
-        case SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState::STATE_IDLE:
-            return "idle";
-        case SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState::STATE_NAVIGATING:
-            return "navigating";
-        case SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState::STATE_COMPLETE:
-            return "complete";
         default:
+        case NavigationFindPathToEntityNode::NavigationState::Idle:
             return "idle";
+        case NavigationFindPathToEntityNode::NavigationState::Navigating:
+            return "navigating";
+        case NavigationFindPathToEntityNode::NavigationState::Complete:
+            return "complete";
         }
     }
 
     template<>
-    inline SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState convertFromString(
-        StringView str)
+    inline NavigationFindPathToEntityNode::NavigationState convertFromString(StringView str)
     {
         if (str.compare("idle") == 0)
         {
-            return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState::STATE_IDLE;
+            return NavigationFindPathToEntityNode::NavigationState::Idle;
         }
-        else if (str.compare("navigating") == 0)
+        if (str.compare("navigating") == 0)
         {
-            return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState::STATE_NAVIGATING;
+            return NavigationFindPathToEntityNode::NavigationState::Navigating;
         }
-        else if (str.compare("complete") == 0)
+        if (str.compare("complete") == 0)
         {
-            return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState::STATE_COMPLETE;
+            return NavigationFindPathToEntityNode::NavigationState::Complete;
         }
 
-        return SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation::NavigationFindPathToEntityNode::NavigationState::STATE_IDLE;
+        return NavigationFindPathToEntityNode::NavigationState::Idle;
     }
 } // namespace BT

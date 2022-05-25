@@ -20,150 +20,148 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 {
 #pragma region DebugMessageNode
 
-    DebugMessageNode::DebugMessageNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : Core::SSBehaviorTreeNode(name, config)
+    DebugMessageNode::DebugMessageNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+        : Core::Node(name, config)
     {
     }
 
     void DebugMessageNode::Reflect(AZ::ReflectContext* context)
     {
-        SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Reflect(context);
+        BlackboardPropertyDebugMessageLevel::Reflect(context);
     }
 
-    void DebugMessageNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void DebugMessageNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register properties
-        registry->RegisterProperty<SSBehaviorTreeBlackboardPropertyDebugMessageLevel>("DebugMessageNode::DebugMessageLevel");
+        registry->RegisterProperty<BlackboardPropertyDebugMessageLevel>("DebugMessageNode::DebugMessageLevel");
 
         // 2 - Add node for delayed registration
         registry->DelayNodeRegistration<DebugMessageNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList DebugMessageNode::providedPorts()
+    Core::BehaviorTreePortsList DebugMessageNode::providedPorts()
     {
-        Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+        Core::BehaviorTreePortsList ports = Core::Node::providedPorts();
 
-        ports.merge(Core::SSBehaviorTreePortsList({
+        ports.merge(Core::BehaviorTreePortsList({
             BT::InputPort<AZStd::string>(NODE_PORT_MESSAGE_NAME, NODE_PORT_MESSAGE_DESCRIPTION),
-            BT::InputPort<DebugMessageLevel>(NODE_PORT_LEVEL_NAME, DebugMessageLevel::LEVEL_INFO, NODE_PORT_LEVEL_DESCRIPTION),
+            BT::InputPort<DebugMessageLevel>(NODE_PORT_LEVEL_NAME, DebugMessageLevel::Info, NODE_PORT_LEVEL_DESCRIPTION),
         }));
 
         return ports;
     }
 
-    Core::SSBehaviorTreeNodeStatus DebugMessageNode::Tick()
+    Core::BehaviorTreeNodeStatus DebugMessageNode::Tick()
     {
         Core::Optional<AZStd::string> message = GetInputValue<AZStd::string>(NODE_PORT_MESSAGE_NAME);
         Core::Optional<DebugMessageLevel> type = GetInputValue<DebugMessageLevel>(NODE_PORT_LEVEL_NAME);
 
         if (message.has_value())
         {
-            switch (type.value_or(DebugMessageLevel::LEVEL_INFO))
+            switch (type.value_or(DebugMessageLevel::Info))
             {
-            case DebugMessageLevel::LEVEL_ERROR:
-                AZ_Error("SSBehaviorTree", false, "[%s:%s]: %s", RegisteredNodeName(), NodeName(), message.value().c_str());
-            case DebugMessageLevel::LEVEL_WARNING:
-                AZ_Warning("SSBehaviorTree", false, "[%s:%s]: %s", RegisteredNodeName(), NodeName(), message.value().c_str());
+            case DebugMessageLevel::Error:
+                AZ_Error("BehaveAI [BehaviorTree]", false, "[%s:%s]: %s", RegisteredNodeName(), NodeName(), message.value().c_str());
+            case DebugMessageLevel::Warning:
+                AZ_Warning("BehaveAI [BehaviorTree]", false, "[%s:%s]: %s", RegisteredNodeName(), NodeName(), message.value().c_str());
             default:
-            case DebugMessageLevel::LEVEL_INFO:
-                AZ_Printf("SSBehaviorTree", "[%s:%s]: %s", RegisteredNodeName(), NodeName(), message.value().c_str());
-            case DebugMessageLevel::LEVEL_SILENT:
-                return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+            case DebugMessageLevel::Info:
+                AZ_Printf("BehaveAI [BehaviorTree]", "[%s:%s]: %s", RegisteredNodeName(), NodeName(), message.value().c_str());
+            case DebugMessageLevel::Silent:
+                return Core::BehaviorTreeNodeStatus::SUCCESS;
             }
         }
 
-        return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+        return Core::BehaviorTreeNodeStatus::SUCCESS;
     }
 
 #pragma endregion
 
 #pragma region SSBehaviorTreeBlackboardPropertyDebugMessageLevel
 
-    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Reflect(AZ::ReflectContext* context)
+    void BlackboardPropertyDebugMessageLevel::Reflect(AZ::ReflectContext* context)
     {
-        if (AZ::SerializeContext* sc = azrtti_cast<AZ::SerializeContext*>(context))
+        if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(context))
         {
             sc->Enum<DebugMessageLevel>()
                 ->Version(1)
-                ->Value("silent", DebugMessageLevel::LEVEL_SILENT)
-                ->Value("info", DebugMessageLevel::LEVEL_INFO)
-                ->Value("warning", DebugMessageLevel::LEVEL_WARNING)
-                ->Value("error", DebugMessageLevel::LEVEL_ERROR);
+                ->Value("silent", DebugMessageLevel::Silent)
+                ->Value("info", DebugMessageLevel::Info)
+                ->Value("warning", DebugMessageLevel::Warning)
+                ->Value("error", DebugMessageLevel::Error);
 
-            sc->Class<SSBehaviorTreeBlackboardPropertyDebugMessageLevel, SSBehaviorTreeBlackboardProperty>()->Version(1)->Field(
-                "value", &SSBehaviorTreeBlackboardPropertyDebugMessageLevel::m_value);
+            sc->Class<BlackboardPropertyDebugMessageLevel, BlackboardProperty>()->Version(1)->Field(
+                "value", &BlackboardPropertyDebugMessageLevel::mValue);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
                 ec->Enum<DebugMessageLevel>("[DebugMessageNode] Debug Message Level", "The message level of the DebugMessage node.")
-                    ->Value("Silent", DebugMessageLevel::LEVEL_SILENT)
-                    ->Value("Information", DebugMessageLevel::LEVEL_INFO)
-                    ->Value("Warning", DebugMessageLevel::LEVEL_WARNING)
-                    ->Value("Error", DebugMessageLevel::LEVEL_ERROR);
+                    ->Value("Silent", DebugMessageLevel::Silent)
+                    ->Value("Information", DebugMessageLevel::Info)
+                    ->Value("Warning", DebugMessageLevel::Warning)
+                    ->Value("Error", DebugMessageLevel::Error);
 
-                ec->Class<SSBehaviorTreeBlackboardPropertyDebugMessageLevel>(
+                ec->Class<BlackboardPropertyDebugMessageLevel>(
                       "SS BehaviorTree Blackboard Property (DebugMessageLevel)", "A blackboard property.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Visibility, &SSBehaviorTreeBlackboardProperty::m_visibility)
+                    ->Attribute(AZ::Edit::Attributes::Visibility, &BlackboardProperty::mVisibility)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::ComboBox, &SSBehaviorTreeBlackboardPropertyDebugMessageLevel::m_value, "value",
-                        "A debug message level.")
-                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &SSBehaviorTreeBlackboardProperty::m_name)
-                    ->Attribute(AZ::Edit::Attributes::Suffix, &SSBehaviorTreeBlackboardProperty::m_suffix)
-                    ->Attribute(AZ::Edit::Attributes::DescriptionTextOverride, &SSBehaviorTreeBlackboardProperty::m_description);
+                        AZ::Edit::UIHandlers::ComboBox, &BlackboardPropertyDebugMessageLevel::mValue, "Value", "A debug message level.")
+                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &BlackboardProperty::mName)
+                    ->Attribute(AZ::Edit::Attributes::Suffix, &BlackboardProperty::mSuffix)
+                    ->Attribute(AZ::Edit::Attributes::DescriptionTextOverride, &BlackboardProperty::mDescription);
             }
         }
     }
 
-    SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SSBehaviorTreeBlackboardPropertyDebugMessageLevel()
+    BlackboardPropertyDebugMessageLevel::BlackboardPropertyDebugMessageLevel()
     {
     }
 
-    SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SSBehaviorTreeBlackboardPropertyDebugMessageLevel(const char* name)
-        : SSBehaviorTreeBlackboardProperty(name)
+    BlackboardPropertyDebugMessageLevel::BlackboardPropertyDebugMessageLevel(const char* name)
+        : BlackboardProperty(name)
     {
     }
 
-    SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SSBehaviorTreeBlackboardPropertyDebugMessageLevel(
-        const char* name, const DebugMessageLevel& value)
-        : SSBehaviorTreeBlackboardProperty(name)
-        , m_value(value)
+    BlackboardPropertyDebugMessageLevel::BlackboardPropertyDebugMessageLevel(const char* name, const DebugMessageLevel& value)
+        : BlackboardProperty(name)
+        , mValue(value)
     {
     }
 
-    const void* SSBehaviorTreeBlackboardPropertyDebugMessageLevel::GetDataAddress() const
+    const void* BlackboardPropertyDebugMessageLevel::GetDataAddress() const
     {
-        return &m_value;
+        return &mValue;
     }
 
-    const AZ::Uuid& SSBehaviorTreeBlackboardPropertyDebugMessageLevel::GetDataTypeUuid() const
+    const AZ::Uuid& BlackboardPropertyDebugMessageLevel::GetDataTypeUuid() const
     {
         return azrtti_typeid<DebugMessageLevel>();
     }
 
-    SSBehaviorTreeBlackboardPropertyDebugMessageLevel* SSBehaviorTreeBlackboardPropertyDebugMessageLevel::Clone(const char* name) const
+    BlackboardPropertyDebugMessageLevel* BlackboardPropertyDebugMessageLevel::Clone(const char* name) const
     {
-        return aznew SSBehaviorTreeBlackboardPropertyDebugMessageLevel(name ? name : m_name.c_str(), m_value);
+        return aznew BlackboardPropertyDebugMessageLevel(name ? name : mName.c_str(), mValue);
     }
 
-    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::AddBlackboardEntry(const Blackboard::SSBehaviorTreeBlackboard& blackboard) const
+    void BlackboardPropertyDebugMessageLevel::AddBlackboardEntry(const Blackboard::Blackboard& blackboard) const
     {
-        blackboard.m_blackboard->set<DebugMessageLevel>(m_name.c_str(), m_value);
+        blackboard.mBlackboard->set<DebugMessageLevel>(mName.c_str(), mValue);
     }
 
-    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::SetValueFromString(const char* value)
+    void BlackboardPropertyDebugMessageLevel::SetValueFromString(const char* value)
     {
-        m_value = BT::convertFromString<DebugMessageLevel>(value);
+        mValue = BT::convertFromString<DebugMessageLevel>(value);
     }
 
-    void SSBehaviorTreeBlackboardPropertyDebugMessageLevel::CloneDataFrom(const SSBehaviorTreeBlackboardProperty* property)
+    void BlackboardPropertyDebugMessageLevel::CloneDataFrom(const BlackboardProperty* property)
     {
-        const auto* p = azrtti_cast<const SSBehaviorTreeBlackboardPropertyDebugMessageLevel*>(property);
-        AZ_Error("SSBehaviorTree", p, "Invalid call to CloneData. Types must match before clone attempt is made.\n");
+        const auto* p = azrtti_cast<const BlackboardPropertyDebugMessageLevel*>(property);
+        AZ_Error("BehaveAI [BehaviorTree]", p, "Invalid call to CloneData. Types must match before clone attempt is made.\n");
 
         if (p)
         {
-            m_value = p->m_value;
+            mValue = p->mValue;
         }
     }
 

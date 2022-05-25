@@ -26,13 +26,13 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 
         static constexpr const char* NODE_NAME = "AnimGraphSetNamedParameterFloat";
 
-        AnimGraphSetNamedParameterFloatNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config);
+        AnimGraphSetNamedParameterFloatNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config);
 
-        static void Reflect(AZ::ReflectContext* context);
+        static void Reflect(AZ::ReflectContext* rc);
 
-        static void RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry);
+        static void RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry);
 
-        static Core::SSBehaviorTreePortsList providedPorts();
+        static Core::BehaviorTreePortsList providedPorts();
 
     protected:
         void SetParameter() override;

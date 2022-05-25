@@ -14,8 +14,8 @@
 
 #include <StdAfx.h>
 
-#include <BehaviorTree/SSBehaviorTreeEditorComponent.h>
-#include <BehaviorTree/SSBehaviorTreeEditorSystemComponent.h>
+#include <BehaviorTree/BehaviorTreeEditorComponent.h>
+#include <BehaviorTree/BehaviorTreeEditorSystemComponent.h>
 
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Utils/Utils.h>
@@ -64,61 +64,62 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         }
     } // namespace AssetHelpers
 
-    SSBehaviorTreeEditorSystemComponent::SSBehaviorTreeEditorSystemComponent()
+    BehaviorTreeEditorSystemComponent::BehaviorTreeEditorSystemComponent()
     {
-        m_assetHandler = aznew Assets::SSBehaviorTreeAssetHandler();
+        _openEditorAction = nullptr;
+        _assetHandler = aznew Assets::BehaviorTreeAssetHandler();
     }
 
-    SSBehaviorTreeEditorSystemComponent::~SSBehaviorTreeEditorSystemComponent()
+    BehaviorTreeEditorSystemComponent::~BehaviorTreeEditorSystemComponent()
     {
-        delete m_assetHandler;
+        delete _assetHandler;
     }
 
-    void SSBehaviorTreeEditorSystemComponent::Reflect(AZ::ReflectContext* context)
+    void BehaviorTreeEditorSystemComponent::Reflect(AZ::ReflectContext* rc)
     {
-        if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))
+        if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            serializeContext->Class<SSBehaviorTreeEditorSystemComponent, SSBehaviorTreeSystemComponent>()->Version(0);
+            sc->Class<BehaviorTreeEditorSystemComponent, BehaviorTreeSystemComponent>()->Version(0);
         }
     }
 
-    void SSBehaviorTreeEditorSystemComponent::OnApplicationAboutToStop()
+    void BehaviorTreeEditorSystemComponent::OnApplicationAboutToStop()
     {
         // TeardownThumbnails();
     }
 
-    void SSBehaviorTreeEditorSystemComponent::OnPopulateToolMenuItems()
+    void BehaviorTreeEditorSystemComponent::OnPopulateToolMenuItems()
     {
-        if (!m_openEditorAction)
+        if (!_openEditorAction)
         {
-            m_openEditorAction = new QAction("SS - BehaviorTree Editor");
-            m_openEditorAction->setCheckable(false);
-            m_openEditorAction->setChecked(false);
-            m_openEditorAction->setIcon(QIcon(":/Menu/ss_behaviortree_editor.svg"));
+            _openEditorAction = new QAction("Behave AI - BehaviorTree Editor");
+            _openEditorAction->setCheckable(false);
+            _openEditorAction->setChecked(false);
+            _openEditorAction->setIcon(QIcon(":/Menu/ss_behaviortree_editor.svg"));
             QObject::connect(
-                m_openEditorAction, &QAction::triggered, m_openEditorAction,
+                _openEditorAction, &QAction::triggered, _openEditorAction,
                 [this]()
                 {
                     OpenEditor();
                 });
 
-            EBUS_EVENT(AzToolsFramework::EditorMenuRequestBus, AddMenuAction, "ToolMenu", m_openEditorAction, true);
+            EBUS_EVENT(AzToolsFramework::EditorMenuRequestBus, AddMenuAction, "ToolMenu", _openEditorAction, true);
         }
     }
 
-    void SSBehaviorTreeEditorSystemComponent::OnResetToolMenuItems()
+    void BehaviorTreeEditorSystemComponent::OnResetToolMenuItems()
     {
-        if (m_openEditorAction)
+        if (_openEditorAction)
         {
-            delete m_openEditorAction;
-            m_openEditorAction = nullptr;
+            delete _openEditorAction;
+            _openEditorAction = nullptr;
         }
     }
 
-    void SSBehaviorTreeEditorSystemComponent::PopulateEditorGlobalContextMenu_SliceSection(QMenu* menu, const AZ::Vector2& point, int flags)
+    void BehaviorTreeEditorSystemComponent::PopulateEditorGlobalContextMenu_SliceSection(QMenu* menu, const AZ::Vector2& point, int flags)
     {
-        (void)point;
-        (void)flags;
+        AZ_UNUSED(point);
+        AZ_UNUSED(flags);
 
         if (!menu)
         {
@@ -149,12 +150,12 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
             {
                 if (!ssBehaviorTreeMenu)
                 {
-                    if (menu->children().size() > 0)
+                    if (!menu->children().empty())
                     {
                         menu->addSeparator();
                     }
 
-                    ssBehaviorTreeMenu = menu->addMenu(QObject::tr("Edit SS BehaviorTree"));
+                    ssBehaviorTreeMenu = menu->addMenu(QObject::tr("Edit Behavior Tree"));
                     ssBehaviorTreeMenu->setEnabled(false);
                     menu->addSeparator();
                 }
@@ -165,7 +166,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
                 if (entity)
                 {
                     AZ::EBusAggregateResults<AZ::Data::AssetId> assetIds;
-                    EBUS_EVENT_ID_RESULT(assetIds, entity->GetId(), SSBehaviorTreeEditorComponentRequestBus, GetAssetId);
+                    EBUS_EVENT_ID_RESULT(assetIds, entity->GetId(), BehaviorTreeEditorComponentRequestBus, GetAssetId);
 
                     if (!assetIds.values.empty())
                     {
@@ -198,7 +199,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
 
                             action = entityMenu->addAction(QString("%1").arg(QString(displayName.c_str())));
 
-                            AZ_Printf("SSBehaviorTreeEditor", "Adding menu item for asset");
+                            AZ_Printf("BehaveAI [BehaviorTree]", "Adding menu item for asset");
                             QObject::connect(
                                 action, &QAction::triggered,
                                 [this, rootPath]
@@ -212,7 +213,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         }
     }
 
-    void SSBehaviorTreeEditorSystemComponent::AddSourceFileOpeners(
+    void BehaviorTreeEditorSystemComponent::AddSourceFileOpeners(
         const char* fullSourceFileName, const AZ::Uuid& sourceUUID, AzToolsFramework::AssetBrowser::SourceFileOpenerList& openers)
     {
         using namespace AzToolsFramework;
@@ -227,10 +228,10 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         QString assetGroup;
         AZ::AssetTypeInfoBus::EventResult(assetGroup, fullDetails->GetPrimaryAssetType(), &AZ::AssetTypeInfo::GetGroup);
 
-        if (AZStd::wildcard_match("*.ssbt", fullSourceFileName))
+        if (AZStd::wildcard_match("*.bhbtree", fullSourceFileName))
         {
             AZStd::string fullName(fullSourceFileName);
-            openers.push_back({ "SparkyStudios_AI_BehaviorTree_Editor", "Open in BehaviorTree Editor...",
+            openers.push_back({ "SparkyStudios_AI_Behave_BehaviorTree_Editor", "Open in Behavior Tree Editor...",
                                 QIcon(":/Menu/ss_behaviortree_editor.svg"),
                                 [&](const char* fullSourceFileNameInCallback, const AZ::Uuid& /*sourceUUID*/)
                                 {
@@ -239,7 +240,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         }
     }
 
-    const AzToolsFramework::AssetBrowser::ProductAssetBrowserEntry* SSBehaviorTreeEditorSystemComponent::GetProductFromBrowserEntry(
+    const AzToolsFramework::AssetBrowser::ProductAssetBrowserEntry* BehaviorTreeEditorSystemComponent::GetProductFromBrowserEntry(
         AzToolsFramework::AssetBrowser::AssetBrowserEntry* entry) const
     {
         if (!entry)
@@ -257,23 +258,21 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
             AZStd::vector<const ProductAssetBrowserEntry*> productChildren;
             entry->GetChildren(productChildren);
 
-            auto entryIt = AZStd::find_if(
-                productChildren.begin(), productChildren.end(),
-                [this](const ProductAssetBrowserEntry* entry) -> bool
-                {
-                    return IsSSBTAssetType(entry->GetAssetType());
-                });
-
-            if (entryIt != productChildren.end())
+            if (auto entryIt = AZStd::find_if(
+                    productChildren.begin(), productChildren.end(),
+                    [this](const ProductAssetBrowserEntry* entry) -> bool
+                    {
+                        return IsBehaviorTreeAssetType(entry->GetAssetType());
+                    });
+                entryIt != productChildren.end())
             {
                 product = *entryIt;
             }
         }
         else if (entry->GetEntryType() == AssetBrowserEntry::AssetEntryType::Product)
         {
-            const ProductAssetBrowserEntry* productCast = azrtti_cast<const ProductAssetBrowserEntry*>(entry);
-
-            if (productCast && IsSSBTAssetType(productCast->GetAssetType()))
+            if (const auto* productCast = azrtti_cast<const ProductAssetBrowserEntry*>(entry);
+                productCast && IsBehaviorTreeAssetType(productCast->GetAssetType()))
             {
                 // Entry is the right type, proceed
                 product = productCast;
@@ -283,19 +282,19 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         return product;
     }
 
-    bool SSBehaviorTreeEditorSystemComponent::IsSSBTAssetType(const AZ::Data::AssetType& type) const
+    bool BehaviorTreeEditorSystemComponent::IsBehaviorTreeAssetType(const AZ::Data::AssetType& type) const
     {
-        return (type == AZ::AzTypeInfo<Assets::SSBehaviorTreeAsset>::Uuid());
+        return (type == AZ::AzTypeInfo<Assets::BehaviorTreeAsset>::Uuid());
     }
 
-    void SSBehaviorTreeEditorSystemComponent::FilterForBehaviorTreeEnabledEntities(
+    void BehaviorTreeEditorSystemComponent::FilterForBehaviorTreeEnabledEntities(
         AzToolsFramework::EntityIdList& sourceList, AzToolsFramework::EntityIdList& targetList)
     {
         for (const AZ::EntityId& entityId : sourceList)
         {
             if (entityId.IsValid())
             {
-                if (SSBehaviorTreeEditorComponentRequestBus::FindFirstHandler(entityId))
+                if (BehaviorTreeEditorComponentRequestBus::FindFirstHandler(entityId))
                 {
                     if (targetList.end() == AZStd::find(targetList.begin(), targetList.end(), entityId))
                     {
@@ -306,7 +305,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         }
     }
 
-    void SSBehaviorTreeEditorSystemComponent::OpenEditor(const char* file)
+    void BehaviorTreeEditorSystemComponent::OpenEditor(const char* file)
     {
         AZStd::string args = "";
         if (file && strlen(file) > 0)
@@ -314,14 +313,14 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
             args = AZStd::string::format("\"%s\"", file);
         }
 
-        AZ::IO::FixedMaxPathString engineRoot(AZ::Utils::GetEnginePath());
+        const AZ::IO::FixedMaxPathString engineRoot(AZ::Utils::GetEnginePath());
         AZ_Assert(!engineRoot.empty(), "Unable to get the engine root.");
 
         AZ::IO::FixedMaxPathString exePath(
             SS_PROJECT_RUNTIME_OUTPUT_DIRECTORY AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING AZ_BUILD_CONFIGURATION_TYPE);
-        AZ::IO::FixedMaxPathString projectPath(AZ::Utils::GetProjectPath());
+        const AZ::IO::FixedMaxPathString projectPath(AZ::Utils::GetProjectPath());
 
-        AZStd::string process = AZStd::string::format(
+        const AZStd::string process = AZStd::string::format(
             "\"%.*s" AZ_CORRECT_FILESYSTEM_SEPARATOR_STRING "BehaviorTree.Editor"
 #if defined(AZ_PLATFORM_WINDOWS)
             ".exe"
@@ -329,13 +328,13 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
             "\"",
             aznumeric_cast<int>(exePath.size()), exePath.data());
 
-        AZStd::string processArgs =
-            AZStd::string::format("%s --engine-path \"%s\" --project-path \"%s\"", args.c_str(), engineRoot.c_str(), projectPath.c_str());
+        const AZStd::string processArgs =
+            AZStd::string::format(R"(%s --engine-path "%s" --project-path "%s")", args.c_str(), engineRoot.c_str(), projectPath.c_str());
 
         StartProcessDetached(process.c_str(), processArgs.c_str());
     }
 
-    void SSBehaviorTreeEditorSystemComponent::StartProcessDetached(const char* process, const char* args)
+    void BehaviorTreeEditorSystemComponent::StartProcessDetached(const char* process, const char* args)
     {
         // Build the arguments as a QStringList
         AZStd::vector<AZStd::string> tokens;
@@ -391,43 +390,43 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         }
 
         // Launch the process
-        [[maybe_unused]] bool startDetachedReturn = QProcess::startDetached(process, argsList, QCoreApplication::applicationDirPath());
+        const bool startDetachedReturn = QProcess::startDetached(process, argsList, QCoreApplication::applicationDirPath());
         AZ_Warning("StartProcessDetached", startDetachedReturn, "Failed to start process:%s args:%s", process, args);
     }
 
-    void SSBehaviorTreeEditorSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
+    void BehaviorTreeEditorSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
         BaseSystemComponent::GetProvidedServices(provided);
-        provided.push_back(AZ_CRC_CE("SSBehaviorTreeEditorService"));
+        provided.push_back(AZ_CRC_CE("BehaveAI_BehaviorTreeEditorService"));
     }
 
-    void SSBehaviorTreeEditorSystemComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
+    void BehaviorTreeEditorSystemComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
         BaseSystemComponent::GetIncompatibleServices(incompatible);
-        incompatible.push_back(AZ_CRC_CE("SSBehaviorTreeEditorService"));
+        incompatible.push_back(AZ_CRC_CE("BehaveAI_BehaviorTreeEditorService"));
     }
 
-    void SSBehaviorTreeEditorSystemComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
+    void BehaviorTreeEditorSystemComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
     {
         BaseSystemComponent::GetRequiredServices(required);
         required.push_back(AZ_CRC_CE("AssetCatalogService"));
     }
 
-    void SSBehaviorTreeEditorSystemComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
+    void BehaviorTreeEditorSystemComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
     {
         BaseSystemComponent::GetDependentServices(dependent);
     }
 
-    void SSBehaviorTreeEditorSystemComponent::Activate()
+    void BehaviorTreeEditorSystemComponent::Activate()
     {
         if (AZ::Data::AssetManager::IsReady())
         {
-            AZ::Data::AssetManager::Instance().RegisterHandler(m_assetHandler, m_assetHandler->GetAssetType());
+            AZ::Data::AssetManager::Instance().RegisterHandler(_assetHandler, _assetHandler->GetAssetType());
         }
 
         // Register with the Asset Catalog
-        EBUS_EVENT(AZ::Data::AssetCatalogRequestBus, EnableCatalogForAsset, m_assetHandler->GetAssetType());
-        EBUS_EVENT(AZ::Data::AssetCatalogRequestBus, AddExtension, m_assetHandler->GetExtension().c_str());
+        EBUS_EVENT(AZ::Data::AssetCatalogRequestBus, EnableCatalogForAsset, _assetHandler->GetAssetType());
+        EBUS_EVENT(AZ::Data::AssetCatalogRequestBus, AddExtension, _assetHandler->GetExtension().c_str());
 
         BaseSystemComponent::Activate();
         AzToolsFramework::EditorEvents::Bus::Handler::BusConnect();
@@ -437,7 +436,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         AzToolsFramework::EditorMenuNotificationBus::Handler::BusConnect();
     }
 
-    void SSBehaviorTreeEditorSystemComponent::Deactivate()
+    void BehaviorTreeEditorSystemComponent::Deactivate()
     {
         AzToolsFramework::EditorMenuNotificationBus::Handler::BusDisconnect();
         AzFramework::ApplicationLifecycleEvents::Bus::Handler::BusDisconnect();
@@ -448,13 +447,13 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
 
         if (AZ::Data::AssetManager::IsReady())
         {
-            AZ::Data::AssetManager::Instance().UnregisterHandler(m_assetHandler);
+            AZ::Data::AssetManager::Instance().UnregisterHandler(_assetHandler);
         }
 
-        if (m_openEditorAction)
+        if (_openEditorAction)
         {
-            delete m_openEditorAction;
-            m_openEditorAction = nullptr;
+            delete _openEditorAction;
+            _openEditorAction = nullptr;
         }
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree

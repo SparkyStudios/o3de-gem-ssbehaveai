@@ -22,111 +22,106 @@
 #include <Editor/Core/Models/SubtreeNodeModel.h>
 #include <Editor/Windows/MainWindow.h>
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeRegistry.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/BehaveBehaviorTreeBus.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Registry.h>
 #include <SparkyStudios/AI/Behave/BehaviorTree/Nodes.h>
-#include <SparkyStudios/AI/Behave/BehaviorTree/SSBehaviorTreeBus.h>
 
-#include <QDir>
 #include <QDomDocument>
 #include <QFileDialog>
 #include <QInputDialog>
-#include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QPushButton>
 #include <QSettings>
 #include <QShortcut>
-#include <QSizePolicy>
 #include <QStatusBar>
-#include <QVBoxLayout>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 {
     MainWindow::MainWindow(QWidget* parent, const AZ::IO::PathView& projectPath, const AZ::IO::PathView& filePath)
-        : AzQtComponents::DockMainWindow(parent)
-        , _current_layout(QtNodes::PortLayout::Vertical)
-        , _dirty_file(false)
+        : DockMainWindow(parent)
+        , _currentLayout(QtNodes::PortLayout::Vertical)
+        , _dirtyFile(false)
     {
-        setWindowTitle(tr("BehaviorTree Editor"));
+        setWindowTitle(tr("Behave AI - Behavior Tree Editor"));
         setMinimumSize(800, 600);
 
-        _model_registry = createDataModelRegistry();
+        _modelRegistry = CreateDataModelRegistry();
 
-        m_sidePanel = new Widgets::NodesSidePanel(_model_registry, _treenode_models, this);
-        m_sidePanel->updateTreeView();
+        _sidePanel = new Widgets::NodesSidePanel(_modelRegistry, _treeNodeModels, this);
+        _sidePanel->updateTreeView();
 
-        m_nodeProperties = new Widgets::NodeProperties(this);
+        _nodeProperties = new Widgets::NodeProperties(this);
 
-        m_blackboardProperties = new Widgets::BlackboardProperties(_blackboard_models, this);
-        m_blackboardProperties->UpdateProperties();
+        _blackboardProperties = new Widgets::BlackboardProperties(_blackboardModels, this);
+        _blackboardProperties->UpdateProperties();
 
-        m_tabWidget = new AzQtComponents::TabWidget();
-        AzQtComponents::TabWidget::applySecondaryStyle(m_tabWidget, false);
+        _tabWidget = new AzQtComponents::TabWidget();
+        AzQtComponents::TabWidget::applySecondaryStyle(_tabWidget, false);
 
-        m_tabWidget->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
-        connect(m_tabWidget->tabBar(), &QTabBar::customContextMenuRequested, this, &MainWindow::OnTabCustomContextMenuRequested);
+        _tabWidget->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(_tabWidget->tabBar(), &QTabBar::customContextMenuRequested, this, &MainWindow::OnTabCustomContextMenuRequested);
 
-        m_fancyDocking = new AzQtComponents::FancyDocking(this);
+        _fancyDocking = new AzQtComponents::FancyDocking(this);
 
-        auto nodesLibrary = new AzQtComponents::StyledDockWidget(tr("Nodes Library"), this);
+        auto* const nodesLibrary = new AzQtComponents::StyledDockWidget(tr("Nodes Library"), this);
         nodesLibrary->setObjectName(nodesLibrary->windowTitle());
-        nodesLibrary->setWidget(m_sidePanel);
+        nodesLibrary->setWidget(_sidePanel);
         addDockWidget(Qt::LeftDockWidgetArea, nodesLibrary);
 
-        auto blackboardProperties = new AzQtComponents::StyledDockWidget(tr("Blackboard Properties"), this);
+        auto* const blackboardProperties = new AzQtComponents::StyledDockWidget(tr("Blackboard Properties"), this);
         blackboardProperties->setObjectName(blackboardProperties->windowTitle());
-        blackboardProperties->setWidget(m_blackboardProperties);
+        blackboardProperties->setWidget(_blackboardProperties);
         addDockWidget(Qt::RightDockWidgetArea, blackboardProperties);
 
-        auto nodeProperties = new AzQtComponents::StyledDockWidget(tr("Node Properties"), this);
+        auto* const nodeProperties = new AzQtComponents::StyledDockWidget(tr("Node Properties"), this);
         nodeProperties->setObjectName(nodeProperties->windowTitle());
-        nodeProperties->setWidget(m_nodeProperties);
+        nodeProperties->setWidget(_nodeProperties);
         addDockWidget(Qt::RightDockWidgetArea, nodeProperties);
 
-        m_statusBar = new Widgets::StatusBar(this);
-        statusBar()->addWidget(m_statusBar);
+        _statusBar = new Widgets::StatusBar(this);
+        statusBar()->addWidget(_statusBar);
 
         resize(800, 600);
-        setCentralWidget(m_tabWidget);
+        setCentralWidget(_tabWidget);
 
-        setupMenu();
+        SetupMenu();
 
         if (!projectPath.empty())
         {
-            _project_path = QString::fromUtf8(projectPath.Native().data(), aznumeric_cast<int>(projectPath.Native().size()));
+            _projectPath = QString::fromUtf8(projectPath.Native().data(), aznumeric_cast<int>(projectPath.Native().size()));
         }
 
         if (!filePath.empty())
         {
-            openFile(QString::fromUtf8(filePath.Native().data(), aznumeric_cast<int>(filePath.Native().size())));
+            OpenFile(QString::fromUtf8(filePath.Native().data(), aznumeric_cast<int>(filePath.Native().size())));
         }
         else
         {
-            OnActionNewTrigerred();
+            OnActionNewTriggered();
         }
 
-        _current_state = saveCurrentState();
+        _currentState = SaveCurrentState();
     }
 
     Widgets::GraphicContainer* MainWindow::CurrentTabInfo()
     {
-        int index = m_tabWidget->currentIndex();
-        QString tab_name = m_tabWidget->tabText(index);
-        return GetTabByName(tab_name);
+        const int index = _tabWidget->currentIndex();
+        const QString tabName = _tabWidget->tabText(index);
+        return GetTabByName(tabName);
     }
 
-    Widgets::GraphicContainer* MainWindow::GetTabByName(const QString& tab_name)
+    Widgets::GraphicContainer* MainWindow::GetTabByName(const QString& name)
     {
-        auto it = _tab_info.find(tab_name);
-        return (it != _tab_info.end()) ? (it->second) : nullptr;
+        const auto it = _tabInfo.find(name);
+        return it != _tabInfo.end() ? it->second : nullptr;
     }
 
-    void MainWindow::LockEditor(const bool locked)
+    void MainWindow::LockEditor(const bool locked) const
     {
-        for (auto& tab_it : _tab_info)
+        for (const auto& tab : _tabInfo)
         {
-            tab_it.second->lockEditing(locked);
+            tab.second->lockEditing(locked);
         }
     }
 
@@ -144,95 +139,92 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
             }
             //---------------
             std::vector<QString> registeredId;
-            for (const auto& it : _treenode_models)
+            for (const auto& it : _treeNodeModels)
             {
                 registeredId.push_back(it.first);
             }
-            std::vector<QString> error_messages;
-            bool done = Core::VerifyXML(document, registeredId, error_messages);
 
-            if (!done)
+            std::vector<QString> errorMessages;
+            if (bool done = Core::VerifyXML(document, registeredId, errorMessages); !done)
             {
-                QString merged_error;
-                for (const auto& err : error_messages)
+                QString mergedError;
+                for (const auto& err : errorMessages)
                 {
-                    merged_error += err + "\n";
+                    mergedError += err + "\n";
                 }
-                throw std::runtime_error(merged_error.toStdString());
+                throw std::runtime_error(mergedError.toStdString());
             }
         } catch (std::runtime_error& err)
         {
-            QMessageBox messageBox;
-            messageBox.critical(this, "Error parsing the XML", err.what());
-            messageBox.show();
+            QMessageBox::critical(this, "Error parsing the XML", err.what());
             return;
         }
 
         //---------------
         bool error = false;
-        QString err_message;
-        auto saved_state = _current_state;
-        auto prev_tree_model = _treenode_models;
+        QString errMessage;
+        auto savedState = _currentState;
+        auto prevTreeModel = _treeNodeModels;
 
         try
         {
-            auto document_root = document.documentElement();
+            auto documentRoot = document.documentElement();
 
-            if (document_root.hasAttribute("main_tree_to_execute"))
+            if (documentRoot.hasAttribute("main_tree_to_execute"))
             {
-                _main_tree = document_root.attribute("main_tree_to_execute");
+                _mainTree = documentRoot.attribute("main_tree_to_execute");
             }
 
-            auto custom_models = Core::ReadTreeNodesModel(document_root);
+            auto customModels = Core::ReadTreeNodesModel(documentRoot);
 
-            for (const auto& model : custom_models)
+            for (const auto& model : customModels)
             {
                 OnAddToModelRegistry(model.second);
             }
 
-            m_sidePanel->updateTreeView();
+            _sidePanel->updateTreeView();
 
-            auto bb_properties = Core::ReadBlackboardPropertiesModel(document_root);
-            _blackboard_models.clear();
+            auto bbProperties = Core::ReadBlackboardPropertiesModel(documentRoot);
+            _blackboardModels.clear();
 
-            for (auto&& property : bb_properties)
+            for (const auto& property : bbProperties)
             {
-                _blackboard_models.insert({ property.second.name, property.second });
+                _blackboardModels.insert({ property.second.mName, property.second });
             }
 
-            m_blackboardProperties->UpdateProperties();
+            _blackboardProperties->UpdateProperties();
 
             OnActionClearTriggered(false);
 
             const QSignalBlocker blocker(CurrentTabInfo());
 
-            for (auto bt_root = document_root.firstChildElement("BehaviorTree"); !bt_root.isNull();
-                 bt_root = bt_root.nextSiblingElement("BehaviorTree"))
+            for (auto btRoot = documentRoot.firstChildElement("BehaviorTree"); !btRoot.isNull();
+                 btRoot = btRoot.nextSiblingElement("BehaviorTree"))
             {
-                auto tree = Core::BuildTreeFromXML(bt_root, _treenode_models);
-                QString tree_name("BehaviorTree");
+                auto tree = Core::BuildTreeFromXML(btRoot, _treeNodeModels);
+                QString treeName("BehaviorTree");
 
-                if (bt_root.hasAttribute("ID"))
+                if (btRoot.hasAttribute("ID"))
                 {
-                    tree_name = bt_root.attribute("ID");
-                    if (_main_tree.isEmpty()) // valid when there is only one
+                    treeName = btRoot.attribute("ID");
+                    if (_mainTree.isEmpty()) // valid when there is only one
                     {
-                        _main_tree = tree_name;
+                        _mainTree = treeName;
                     }
                 }
 
-                OnCreateAbsBehaviorTree(tree, tree_name);
+                OnCreateAbsBehaviorTree(tree, treeName);
             }
 
-            if (!_main_tree.isEmpty())
+            if (!_mainTree.isEmpty())
             {
-                for (int i = 0; i < m_tabWidget->count(); i++)
+                for (int i = 0; i < _tabWidget->count(); i++)
                 {
-                    if (m_tabWidget->tabText(i) == _main_tree)
+                    if (_tabWidget->tabText(i) == _mainTree)
                     {
-                        m_tabWidget->tabBar()->moveTab(i, 0);
-                        m_tabWidget->setCurrentIndex(0);
-                        m_tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/green_star.png"));
+                        _tabWidget->tabBar()->moveTab(i, 0);
+                        _tabWidget->setCurrentIndex(0);
+                        _tabWidget->tabBar()->setTabIcon(0, QIcon(":/icons/green_star.png"));
                         break;
                     }
                 }
@@ -240,8 +232,8 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
             if (CurrentTabInfo() == nullptr)
             {
-                createTab("BehaviorTree");
-                _main_tree = "BehaviorTree";
+                CreateTab("BehaviorTree");
+                _mainTree = "BehaviorTree";
             }
             else
             {
@@ -249,7 +241,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
             }
 
             // TODO
-            // auto models_to_remove = GetModelsToRemove(this, _treenode_models, custom_models);
+            // auto models_to_remove = GetModelsToRemove(this, _treeNodeModels, custom_models);
 
             // for (QString model_name : models_to_remove)
             // {
@@ -258,16 +250,16 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         } catch (std::exception& err)
         {
             error = true;
-            err_message = err.what();
+            errMessage = err.what();
         }
 
         if (error)
         {
-            _treenode_models = prev_tree_model;
-            loadSavedStateFromJson(saved_state);
-            qDebug() << "R: Undo size: " << _undo_stack.size() << " Redo size: " << _redo_stack.size();
+            _treeNodeModels = prevTreeModel;
+            LoadSavedStateFromJson(savedState);
+            qDebug() << "R: Undo size: " << _undoStack.size() << " Redo size: " << _redoStack.size();
             QMessageBox::warning(
-                this, tr("Exception!"), tr("It was not possible to parse the file. Error:\n\n%1").arg(err_message), QMessageBox::Ok);
+                this, tr("Exception!"), tr("It was not possible to parse the file. Error:\n\n%1").arg(errMessage), QMessageBox::Ok);
         }
         else
         {
@@ -278,7 +270,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
     void MainWindow::SetCurrentNode(QtNodes::Node* node)
     {
-        m_nodeProperties->SetNode(node);
+        _nodeProperties->SetNode(node);
     }
 
     void MainWindow::OnAutoArrange()
@@ -288,12 +280,10 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
     void MainWindow::OnSceneChanged()
     {
-        const bool isValidTree = CurrentTabInfo()->containsValidTree();
-
         // TODO: Enable/Disable toolbox buttons
         // TODO: Enable/Disable save button
 
-        if (isValidTree)
+        if (const bool isValidTree = CurrentTabInfo()->containsValidTree())
         {
             // TODO: Update status bar to mark tree as valid
             emit ValidTree();
@@ -309,56 +299,56 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
     void MainWindow::OnUndoInvoked()
     {
-        if (_undo_stack.size() > 0)
+        if (!_undoStack.empty())
         {
-            _redo_stack.push_back(std::move(_current_state));
-            _current_state = _undo_stack.back();
-            _undo_stack.pop_back();
+            _redoStack.push_back(std::move(_currentState));
+            _currentState = _undoStack.back();
+            _undoStack.pop_back();
 
-            loadSavedStateFromJson(_current_state);
+            LoadSavedStateFromJson(_currentState);
         }
     }
 
     void MainWindow::OnRedoInvoked()
     {
-        if (_redo_stack.size() > 0)
+        if (!_redoStack.empty())
         {
-            _undo_stack.push_back(_current_state);
-            _current_state = std::move(_redo_stack.back());
-            _redo_stack.pop_back();
+            _undoStack.push_back(_currentState);
+            _currentState = std::move(_redoStack.back());
+            _redoStack.pop_back();
 
-            loadSavedStateFromJson(_current_state);
+            LoadSavedStateFromJson(_currentState);
         }
     }
 
-    void MainWindow::OnTabSetMainTree(int tab_index)
+    void MainWindow::OnTabSetMainTree(int index)
     {
-        for (int i = 0; i < m_tabWidget->count(); i++)
+        for (int i = 0; i < _tabWidget->count(); i++)
         {
-            if (i == tab_index)
+            if (i == index)
             {
                 // TODO: Mark this tab as active (maybe with an icon?)
-                _main_tree = m_tabWidget->tabBar()->tabText(i);
+                _mainTree = _tabWidget->tabBar()->tabText(i);
             }
             else
             {
-                m_tabWidget->tabBar()->setTabIcon(i, QIcon());
+                _tabWidget->tabBar()->setTabIcon(i, QIcon());
             }
         }
 
-        m_tabWidget->setCurrentIndex(tab_index);
+        _tabWidget->setCurrentIndex(index);
     }
 
     void MainWindow::OnTabCustomContextMenuRequested(const QPoint& pos)
     {
-        int index = m_tabWidget->tabBar()->tabAt(pos);
-        QString name = m_tabWidget->tabText(index);
-        bool isMainTree = _main_tree == name;
+        int index = _tabWidget->tabBar()->tabAt(pos);
+        const QString name = _tabWidget->tabText(index);
+        const bool isMainTree = _mainTree == name;
 
         QMenu menu(this);
 
         // ------------
-        QAction* save = menu.addAction("Save");
+        const QAction* save = menu.addAction("Save");
         connect(save, &QAction::triggered, this, &MainWindow::OnActionSaveTriggered);
         // ------------
         QAction* setAsEntryPoint = menu.addAction("Set as Entry Point");
@@ -370,7 +360,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
                 OnTabSetMainTree(index);
             });
         // ------------
-        QAction* rename = menu.addAction("Rename");
+        const QAction* rename = menu.addAction("Rename");
         connect(
             rename, &QAction::triggered, this,
             [this, index]()
@@ -379,74 +369,75 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
             });
         // ------------
 
-        QPoint globalPos = m_tabWidget->tabBar()->mapToGlobal(pos);
+        const QPoint globalPos = _tabWidget->tabBar()->mapToGlobal(pos);
         menu.exec(globalPos);
     }
 
     void MainWindow::OnActionClearTriggered(bool createNew)
     {
-        for (auto& it : _tab_info)
+        for (const auto& it : _tabInfo)
         {
             it.second->clearScene();
             it.second->deleteLater();
         }
 
-        _tab_info.clear();
-        _opened_file.clear();
-        m_statusBar->SetOpenedFileName("Unsaved File");
+        _tabInfo.clear();
+        _openedFile.clear();
+        _statusBar->SetOpenedFileName("Unsaved File");
 
-        m_tabWidget->clear();
-        m_sidePanel->clear();
+        _tabWidget->clear();
+        _sidePanel->clear();
 
         if (createNew)
         {
-            createTab("BehaviorTree");
+            CreateTab("BehaviorTree");
             OnTabSetMainTree(0);
-            clearUndoStacks();
+            ClearUndoStacks();
         }
     }
 
     void MainWindow::OnPushUndo()
     {
-        SavedState saved = saveCurrentState();
+        const SavedState saved = SaveCurrentState();
 
-        if (_undo_stack.empty() || (saved != _current_state && _undo_stack.back() != _current_state))
+        if (_undoStack.empty() || saved != _currentState && _undoStack.back() != _currentState)
         {
-            _undo_stack.push_back(std::move(_current_state));
-            _redo_stack.clear();
+            _undoStack.push_back(std::move(_currentState));
+            _redoStack.clear();
         }
-        _current_state = saved;
+
+        _currentState = saved;
     }
 
-    void MainWindow::OnCreateAbsBehaviorTree(const Core::AbstractBehaviorTree& tree, const QString& bt_name, bool secondary_tabs)
+    void MainWindow::OnCreateAbsBehaviorTree(const Core::AbstractBehaviorTree& tree, const QString& btName, bool secondaryTabs)
     {
-        auto container = GetTabByName(bt_name);
+        auto container = GetTabByName(btName);
         if (!container)
         {
-            container = createTab(bt_name);
+            container = CreateTab(btName);
         }
 
         const QSignalBlocker blocker(container);
         container->loadSceneFromTree(tree);
         container->nodeReorder();
 
-        if (secondary_tabs)
+        if (secondaryTabs)
         {
             for (const auto& node : tree.Nodes())
             {
                 if (node.model.type == Core::NodeType::SUBTREE && GetTabByName(node.model.registrationId) == nullptr)
                 {
-                    createTab(node.model.registrationId);
+                    CreateTab(node.model.registrationId);
                 }
             }
         }
 
-        clearUndoStacks();
+        ClearUndoStacks();
     }
 
-    void MainWindow::OnActionNewTrigerred()
+    void MainWindow::OnActionNewTriggered()
     {
-        if (checkDirty(tr("You will lost your changes if you create a new file, do you want to save the current one?")))
+        if (CheckDirty(tr("You will lost your changes if you create a new file, do you want to save the current one?")))
         {
             OnActionClearTriggered(true);
         }
@@ -454,37 +445,37 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
     bool MainWindow::OnActionSaveTriggered()
     {
-        return saveFile(false);
+        return SaveFile(false);
     }
 
     bool MainWindow::OnActionSaveAsTriggered()
     {
-        return saveFile(true);
+        return SaveFile(true);
     }
 
     void MainWindow::OnActionLoadTriggered()
     {
-        QSettings settings;
-        QString directory_path = settings.value("MainWindow.lastLoadDirectory", _project_path).toString();
+        const QSettings settings;
+        const QString directoryPath = settings.value("MainWindow.lastLoadDirectory", _projectPath).toString();
 
-        QString fileName =
-            QFileDialog::getOpenFileName(this, tr("Load BehaviorTree from file"), directory_path, tr("SS BehaviorTree files (*.ssbt)"));
+        const QString fileName =
+            QFileDialog::getOpenFileName(this, tr("Load Behavior Tree from file"), directoryPath, tr("Behavior Tree files (*.bhbtree)"));
         if (!QFileInfo::exists(fileName))
         {
             return;
         }
 
-        if (_opened_file == fileName)
+        if (_openedFile == fileName)
         {
             return;
         }
 
-        openFile(fileName);
+        OpenFile(fileName);
     }
 
     void MainWindow::OnActionQuitTriggered()
     {
-        if (checkDirty(tr("Do you want to save the current file before closing?")))
+        if (CheckDirty(tr("Do you want to save the current file before closing?")))
         {
             close();
         }
@@ -492,133 +483,135 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
     void MainWindow::OnAddToModelRegistry(const Core::NodeModel& model)
     {
-        namespace util = QtNodes::detail;
-        const auto& ID = model.registrationId;
+        namespace Util = QtNodes::detail;
+        const auto& id = model.registrationId;
 
-        QtNodes::DataModelRegistry::RegistryItemCreator node_creator = [model]() -> QtNodes::DataModelRegistry::RegistryItemPtr
+        const QtNodes::DataModelRegistry::RegistryItemCreator nodeCreator = [model]() -> QtNodes::DataModelRegistry::RegistryItemPtr
         {
             if (model.type == Core::NodeType::SUBTREE)
             {
-                return util::make_unique<Core::Models::SubtreeNodeModel>(model);
+                return Util::make_unique<Core::Models::SubtreeNodeModel>(model);
             }
-            return util::make_unique<Core::Models::SSBehaviorTreeNodeDataModel>(model);
+            return Util::make_unique<Core::Models::SSBehaviorTreeNodeDataModel>(model);
         };
 
-        _model_registry->registerModel(QString::fromStdString(BT::toStr(model.type)), node_creator, ID);
+        _modelRegistry->registerModel(QString::fromStdString(BT::toStr(model.type)), nodeCreator, id);
 
-        _treenode_models.insert({ ID, model });
-        m_sidePanel->updateTreeView();
+        _treeNodeModels.insert({ id, model });
+        _sidePanel->updateTreeView();
     }
 
-    void MainWindow::OnTabRenameRequested(int tab_index, QString new_name)
+    void MainWindow::OnTabRenameRequested(int tabIndex, QString newName)
     {
-        QString old_name = m_tabWidget->tabText(tab_index);
+        const QString oldName = _tabWidget->tabText(tabIndex);
 
-        if (new_name.isEmpty())
+        if (newName.isEmpty())
         {
             bool ok = false;
-            new_name = QInputDialog::getText(
-                this, tr("Change BehaviorTree Name"), tr("Insert the new name of this BehaviorTree"), QLineEdit::Normal, old_name, &ok);
+            newName = QInputDialog::getText(
+                this, tr("Change Behavior Tree Name"), tr("Insert the new name of this Behavior Tree"), QLineEdit::Normal, oldName, &ok);
+
             if (!ok)
             {
                 return;
             }
         }
 
-        if (new_name == old_name)
+        if (newName == oldName)
         {
             return;
         }
 
-        if (GetTabByName(new_name))
+        if (GetTabByName(newName))
         {
             QMessageBox::warning(
                 this, "Tab name already is use",
-                tr("There is already a BehaviorTree called [%1].\n"
+                tr("There is already a Behavior Tree called [%1].\n"
                    "Use another name.")
-                    .arg(new_name),
+                    .arg(newName),
                 QMessageBox::Ok);
             return;
         }
 
-        m_tabWidget->setTabText(tab_index, new_name);
-        auto it = _tab_info.find(old_name);
+        _tabWidget->setTabText(tabIndex, newName);
+        const auto it = _tabInfo.find(oldName);
         auto container = it->second;
-        _tab_info.insert({ new_name, container });
-        _tab_info.erase(it);
-        if (_main_tree == old_name)
+        _tabInfo.insert({ newName, container });
+        _tabInfo.erase(it);
+        if (_mainTree == oldName)
         {
-            _main_tree = new_name;
+            _mainTree = newName;
         }
 
         // if a subtree SUBTREE already
-        if (_model_registry->registeredModelsCategoryAssociation().count(old_name) != 0)
+        if (_modelRegistry->registeredModelsCategoryAssociation().count(oldName) != 0)
         {
             // _model_registry->unregisterModel(old_name);
-            _treenode_models.erase(old_name);
-            Core::NodeModel model = { Core::NodeType::SUBTREE, new_name, {} };
+            _treeNodeModels.erase(oldName);
+            Core::NodeModel model = { Core::NodeType::SUBTREE, newName, {} };
             OnAddToModelRegistry(model);
-            _treenode_models.insert({ new_name, model });
-            m_sidePanel->updateTreeView();
-            OnTreeNodeEdited(old_name, new_name);
+            _treeNodeModels.insert({ newName, model });
+            _sidePanel->updateTreeView();
+            OnTreeNodeEdited(oldName, newName);
         }
 
         // TODO: this is a work around until we find a better solution
-        clearUndoStacks();
+        ClearUndoStacks();
     }
 
-    void MainWindow::OnTreeNodeEdited(QString prev_ID, QString new_ID)
+    void MainWindow::OnTreeNodeEdited(const QString& prevId, const QString& newId)
     {
-        for (auto& it : _tab_info)
+        for (const auto& it : _tabInfo)
         {
-            auto container = it.second;
-            std::vector<QtNodes::Node*> nodes_to_rename;
+            const auto container = it.second;
+            std::vector<QtNodes::Node*> nodesToRename;
 
-            for (const auto& node_it : container->scene()->nodes())
+            for (const auto& nodeIt : container->scene()->nodes())
             {
-                QtNodes::Node* graphic_node = node_it.second.get();
-                if (!graphic_node)
-                {
-                    continue;
-                }
-                auto bt_node = dynamic_cast<Core::Models::SSBehaviorTreeNodeDataModel*>(graphic_node->nodeDataModel());
-                if (!bt_node)
+                QtNodes::Node* graphicNode = nodeIt.second.get();
+                if (!graphicNode)
                 {
                     continue;
                 }
 
-                if (bt_node->model().registrationId == prev_ID)
+                const auto btNode = dynamic_cast<Core::Models::SSBehaviorTreeNodeDataModel*>(graphicNode->nodeDataModel());
+                if (!btNode)
                 {
-                    nodes_to_rename.push_back(graphic_node);
+                    continue;
+                }
+
+                if (btNode->model().registrationId == prevId)
+                {
+                    nodesToRename.push_back(graphicNode);
                 }
             }
 
-            for (auto& graphic_node : nodes_to_rename)
+            for (const auto& graphicNode : nodesToRename)
             {
-                auto bt_node = dynamic_cast<Core::Models::SSBehaviorTreeNodeDataModel*>(graphic_node->nodeDataModel());
-                bool is_expanded_subtree = false;
+                const auto btNode = dynamic_cast<Core::Models::SSBehaviorTreeNodeDataModel*>(graphicNode->nodeDataModel());
+                bool isExpandedSubtree = false;
 
-                if (bt_node->model().type == Core::NodeType::SUBTREE)
+                if (btNode->model().type == Core::NodeType::SUBTREE)
                 {
-                    auto subtree_model = dynamic_cast<Core::Models::SubtreeNodeModel*>(bt_node);
-                    if (subtree_model && subtree_model->expanded())
+                    if (const auto subtreeModel = dynamic_cast<Core::Models::SubtreeNodeModel*>(btNode);
+                        subtreeModel && subtreeModel->expanded())
                     {
-                        is_expanded_subtree = true;
-                        subTreeExpand(*container, *graphic_node, SUBTREE_COLLAPSE);
+                        isExpandedSubtree = true;
+                        SubTreeExpand(*container, *graphicNode, SUBTREE_COLLAPSE);
                     }
                 }
 
-                auto new_node = container->substituteNode(graphic_node, new_ID);
+                const auto newNode = container->substituteNode(graphicNode, newId);
 
-                if (is_expanded_subtree)
+                if (isExpandedSubtree)
                 {
-                    subTreeExpand(*container, *new_node, SUBTREE_EXPAND);
-                };
+                    SubTreeExpand(*container, *newNode, SUBTREE_EXPAND);
+                }
             }
         }
     }
 
-    void MainWindow::setupMenu()
+    void MainWindow::SetupMenu()
     {
         QMenuBar* mb = menuBar();
 
@@ -626,7 +619,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         QMenu* editMenu = mb->addMenu(tr("&Edit"));
         // QMenu* helpMenu = mb->addMenu(tr("&Help"));
 
-        fileMenu->addAction(tr("&New"), this, &MainWindow::OnActionNewTrigerred, QKeySequence(Qt::CTRL + Qt::Key_N));
+        fileMenu->addAction(tr("&New"), this, &MainWindow::OnActionNewTriggered, QKeySequence(Qt::CTRL + Qt::Key_N));
         fileMenu->addAction(tr("&Open..."), this, &MainWindow::OnActionLoadTriggered, QKeySequence(Qt::CTRL + Qt::Key_O));
         fileMenu->addAction(tr("&Save"), this, &MainWindow::OnActionSaveTriggered, QKeySequence(Qt::CTRL + Qt::Key_S));
         fileMenu->addAction(tr("Save &As..."), this, &MainWindow::OnActionSaveAsTriggered, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
@@ -639,25 +632,25 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         editMenu->addAction(tr("Rearrange &Graph"), this, &MainWindow::OnAutoArrange, QKeySequence(Qt::CTRL + Qt::Key_G, Qt::Key_A));
     }
 
-    Widgets::GraphicContainer* MainWindow::createTab(const QString& name, bool setActive)
+    Widgets::GraphicContainer* MainWindow::CreateTab(const QString& name, bool setActive)
     {
-        if (_tab_info.count(name) > 0)
+        if (_tabInfo.count(name) > 0)
         {
             AZ_Warning("SSBehaviorTreeEditor", false, "There is already a Tab named %s", name.toStdString().c_str());
-            return _tab_info[name];
+            return _tabInfo[name];
         }
 
-        Widgets::GraphicContainer* ti = new Widgets::GraphicContainer(_model_registry, this);
+        auto* ti = new Widgets::GraphicContainer(_modelRegistry, this);
         ti->setObjectName(name);
-        _tab_info.insert({ name, ti });
+        _tabInfo.insert({ name, ti });
 
-        ti->scene()->setLayout(_current_layout);
+        ti->scene()->setLayout(_currentLayout);
 
-        int index = m_tabWidget->addTab(ti->view(), name);
+        const int index = _tabWidget->addTab(ti->view(), name);
 
         if (setActive)
         {
-            m_tabWidget->setCurrentIndex(index);
+            _tabWidget->setCurrentIndex(index);
         }
 
         ti->scene()->CreateNodeAtPosition("Root", "Root", QPointF(0, 0));
@@ -667,11 +660,9 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         //--------------------------------
 
         connect(ti, &Widgets::GraphicContainer::undoableChange, this, &MainWindow::OnPushUndo);
-
         connect(ti, &Widgets::GraphicContainer::undoableChange, this, &MainWindow::OnSceneChanged);
-
         // connect(ti, &Widgets::GraphicContainer::requestSubTreeExpand, this, &MainWindow::OnRequestSubTreeExpand);
-
+        connect(ti, &Widgets::GraphicContainer::addNewModel, this, &MainWindow::OnAddToModelRegistry);
         connect(
             ti, &Widgets::GraphicContainer::requestSubTreeCreate, this,
             [this](const Core::AbstractBehaviorTree& tree, const QString& bt_name)
@@ -679,14 +670,12 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
                 OnCreateAbsBehaviorTree(tree, bt_name, false);
             });
 
-        connect(ti, &Widgets::GraphicContainer::addNewModel, this, &MainWindow::OnAddToModelRegistry);
-
         return ti;
     }
 
-    std::shared_ptr<QtNodes::DataModelRegistry> MainWindow::createDataModelRegistry()
+    std::shared_ptr<QtNodes::DataModelRegistry> MainWindow::CreateDataModelRegistry()
     {
-        EBUS_EVENT_RESULT(m_factory, SSBehaviorTreeRequestBus, GetFactory);
+        EBUS_EVENT_RESULT(m_factory, BehaveBehaviorTreeRequestBus, GetFactory);
 
         Nodes::RegisterDefaultNodes(m_factory.GetRegistry());
         Nodes::RegisterDefaultProperties(m_factory.GetRegistry());
@@ -696,74 +685,74 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
         auto ret = std::make_shared<QtNodes::DataModelRegistry>();
 
-        auto registerModel = [&ret](const QString& ID, const Core::NodeModel& model)
+        auto registerModel = [&ret](const QString& id, const Core::NodeModel& model)
         {
             QString category = QString::fromStdString(BT::toStr(model.type));
 
-            if (ID == "Root")
+            if (id == "Root")
             {
                 category = "Root";
             }
 
-            QtNodes::DataModelRegistry::RegistryItemCreator creator;
-            creator = [model]() -> QtNodes::DataModelRegistry::RegistryItemPtr
+            const QtNodes::DataModelRegistry::RegistryItemCreator creator = [model]() -> QtNodes::DataModelRegistry::RegistryItemPtr
             {
                 return std::make_unique<Core::Models::SSBehaviorTreeNodeDataModel>(model);
             };
 
-            ret->registerModel(category, creator, ID);
+            ret->registerModel(category, creator, id);
         };
 
         for (const auto& model : Core::BuiltInNodeModels(m_factory))
         {
             registerModel(model.first, model.second);
-            _treenode_models.insert({ model.first, model.second });
+            _treeNodeModels.insert({ model.first, model.second });
         }
 
         return ret;
     }
 
-    void MainWindow::loadSavedStateFromJson(SavedState saved_state)
+    void MainWindow::LoadSavedStateFromJson(SavedState state)
     {
         // TODO crash if the name of the container (tab) changed
-        for (auto& it : _tab_info)
+        for (const auto& it : _tabInfo)
         {
             it.second->clearScene();
             it.second->deleteLater();
         }
 
-        _tab_info.clear();
-        m_tabWidget->clear();
+        _tabInfo.clear();
+        _tabWidget->clear();
 
-        _main_tree = saved_state.main_tree;
+        _mainTree = state.mMainTree;
 
-        for (const auto& it : saved_state.json_states)
+        for (const auto& it : state.mJsonStates)
         {
-            QString tab_name = it.first;
-            _tab_info.insert({ tab_name, createTab(tab_name) });
+            QString tabName = it.first;
+            _tabInfo.insert({ tabName, CreateTab(tabName) });
         }
-        for (const auto& it : saved_state.json_states)
+        for (const auto& it : state.mJsonStates)
         {
             QString name = it.first;
             auto* container = GetTabByName(name);
             container->loadFromJson(it.second);
-            container->view()->setTransform(saved_state.view_transform);
-            container->view()->setSceneRect(saved_state.view_area);
+            container->view()->setTransform(state.mViewTransform);
+            container->view()->setSceneRect(state.mViewArea);
         }
 
-        for (int i = 0; i < m_tabWidget->count(); i++)
+        for (int i = 0; i < _tabWidget->count(); i++)
         {
-            if (m_tabWidget->tabText(i) == saved_state.current_tab_name)
+            if (_tabWidget->tabText(i) == state.mCurrentTabName)
             {
-                m_tabWidget->setCurrentIndex(i);
-                m_tabWidget->widget(i)->setFocus();
+                _tabWidget->setCurrentIndex(i);
+                _tabWidget->widget(i)->setFocus();
             }
-            if (m_tabWidget->tabText(i) == _main_tree)
+            if (_tabWidget->tabText(i) == _mainTree)
             {
                 OnTabSetMainTree(i);
             }
         }
-        if (m_tabWidget->count() == 1)
+
+        if (_tabWidget->count() == 1)
         {
             OnTabSetMainTree(0);
         }
@@ -771,81 +760,81 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         OnSceneChanged();
     }
 
-    MainWindow::SavedState MainWindow::saveCurrentState()
+    MainWindow::SavedState MainWindow::SaveCurrentState()
     {
         SavedState saved;
-        int index = m_tabWidget->currentIndex();
-        saved.main_tree = _main_tree;
-        saved.current_tab_name = m_tabWidget->tabText(index);
-        auto current_view = GetTabByName(saved.current_tab_name)->view();
-        saved.view_transform = current_view->transform();
-        saved.view_area = current_view->sceneRect();
+        const int index = _tabWidget->currentIndex();
+        saved.mMainTree = _mainTree;
+        saved.mCurrentTabName = _tabWidget->tabText(index);
+        const auto currentView = GetTabByName(saved.mCurrentTabName)->view();
+        saved.mViewTransform = currentView->transform();
+        saved.mViewArea = currentView->sceneRect();
 
-        for (auto& it : _tab_info)
+        for (const auto& it : _tabInfo)
         {
-            saved.json_states[it.first] = it.second->scene()->saveToMemory();
+            saved.mJsonStates[it.first] = it.second->scene()->saveToMemory();
         }
 
-        _dirty_file = true;
+        _dirtyFile = true;
 
         return saved;
     }
 
-    void MainWindow::clearUndoStacks()
+    void MainWindow::ClearUndoStacks()
     {
-        _undo_stack.clear();
-        _redo_stack.clear();
+        _undoStack.clear();
+        _redoStack.clear();
         OnSceneChanged();
         OnPushUndo();
     }
 
-    QString MainWindow::saveToXML() const
+    QString MainWindow::SaveToXml() const
     {
         QDomDocument doc;
 
-        const char* COMMENT_SEPARATOR = " ////////// ";
+        static constexpr auto COMMENT_SEPARATOR = " ////////// ";
 
         QDomElement root = doc.createElement("root");
         doc.appendChild(root);
 
-        if (_main_tree.isEmpty() == false)
+        if (_mainTree.isEmpty() == false)
         {
-            root.setAttribute("main_tree_to_execute", _main_tree.toStdString().c_str());
+            root.setAttribute("main_tree_to_execute", _mainTree.toStdString().c_str());
         }
 
-        for (auto& it : _tab_info)
+        for (const auto& it : _tabInfo)
         {
             auto& container = it.second;
-            auto scene = container->scene();
+            const auto scene = container->scene();
 
-            auto abs_tree = Core::BuildTreeFromScene(container->scene());
-            auto abs_root = abs_tree.RootNode();
+            auto absTree = Core::BuildTreeFromScene(container->scene());
+            auto absRoot = absTree.RootNode();
 
-            if (abs_root->childrenIndex.size() == 1 && abs_root->model.registrationId == "Root")
+            if (absRoot->childrenIndex.size() == 1 && absRoot->model.registrationId == "Root")
             {
                 // Move to the child of ROOT
-                abs_root = abs_tree.Node(abs_root->childrenIndex.front());
+                absRoot = absTree.Node(absRoot->childrenIndex.front());
             }
 
-            QtNodes::Node* root_node = abs_root->graphicNode;
+            const QtNodes::Node* rootNode = absRoot->graphicNode;
 
             root.appendChild(doc.createComment(COMMENT_SEPARATOR));
-            QDomElement root_element = doc.createElement("BehaviorTree");
+            QDomElement rootElement = doc.createElement("BehaviorTree");
 
-            root_element.setAttribute("ID", it.first.toStdString().c_str());
-            root.appendChild(root_element);
+            rootElement.setAttribute("ID", it.first.toStdString().c_str());
+            root.appendChild(rootElement);
 
-            Core::RecursivelyCreateXml(*scene, doc, root_element, root_node, m_factory);
+            Core::RecursivelyCreateXml(*scene, doc, rootElement, rootNode, m_factory);
         }
 
-        QDomElement root_models = doc.createElement("TreeNodesModel");
+        QDomElement rootModels = doc.createElement("TreeNodesModel");
 
-        for (const auto& tree_it : _treenode_models)
+        for (const auto& treeIt : _treeNodeModels)
         {
-            const auto& ID = tree_it.first;
-            const auto& model = tree_it.second;
+            const auto& id = treeIt.first;
+            const auto& model = treeIt.second;
 
-            if (Core::BuiltInNodeModels(m_factory).count(ID) != 0)
+            if (Core::BuiltInNodeModels(m_factory).count(id) != 0)
             {
                 continue;
             }
@@ -854,94 +843,96 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
             if (!node.isNull())
             {
-                node.setAttribute("ID", ID);
+                node.setAttribute("ID", id);
 
-                for (const auto& port_it : model.ports)
+                for (const auto& portIt : model.ports)
                 {
-                    const auto& port_name = port_it.first;
-                    const auto& port = port_it.second;
+                    const auto& portName = portIt.first;
+                    const auto& port = portIt.second;
 
-                    QDomElement port_element = writePortModel(port_name, port, doc);
-                    node.appendChild(port_element);
+                    QDomElement portElement = writePortModel(portName, port, doc);
+                    node.appendChild(portElement);
                 }
             }
 
-            root_models.appendChild(node);
+            rootModels.appendChild(node);
         }
 
-        QDomElement root_properties = doc.createElement("Blackboard");
+        QDomElement rootProperties = doc.createElement("Blackboard");
 
-        for (auto&& property : _blackboard_models)
+        for (const auto& property : _blackboardModels)
         {
-            QDomElement property_element = doc.createElement("Property");
+            QDomElement propertyElement = doc.createElement("Property");
 
-            if (!property_element.isNull())
+            if (!propertyElement.isNull())
             {
-                property_element.setAttribute("name", property.second.name);
-                property_element.setAttribute("description", property.second.description);
-                property_element.setAttribute("type", property.second.type);
-                property_element.setAttribute("suffix", property.second.suffix);
-                property_element.setAttribute("private", property.second.isPrivate ? "true" : "false");
+                propertyElement.setAttribute("name", property.second.mName);
+                propertyElement.setAttribute("description", property.second.mDescription);
+                propertyElement.setAttribute("type", property.second.mType);
+                propertyElement.setAttribute("suffix", property.second.mSuffix);
+                propertyElement.setAttribute("private", property.second.mIsPrivate ? "true" : "false");
+                propertyElement.setAttribute("order", property.second.mOrder);
             }
 
-            root_properties.appendChild(property_element);
+            rootProperties.appendChild(propertyElement);
         }
 
         root.appendChild(doc.createComment(COMMENT_SEPARATOR));
-        root.appendChild(root_models);
+        root.appendChild(rootModels);
         root.appendChild(doc.createComment(COMMENT_SEPARATOR));
-        root.appendChild(root_properties);
+        root.appendChild(rootProperties);
         root.appendChild(doc.createComment(COMMENT_SEPARATOR));
 
-        return xmlDocumentToString(doc);
+        return XmlDocumentToString(doc);
     }
 
-    QString MainWindow::xmlDocumentToString(const QDomDocument& document) const
+    QString MainWindow::XmlDocumentToString(const QDomDocument& document) const
     {
-        QString output_string;
+        QString outputString;
 
-        QXmlStreamWriter stream(&output_string);
+        QXmlStreamWriter stream(&outputString);
 
         stream.setAutoFormatting(true);
         stream.setAutoFormattingIndent(4);
 
         stream.writeStartDocument();
 
-        auto root_element = document.documentElement();
+        const auto rootElement = document.documentElement();
 
-        stream.writeStartElement(root_element.tagName());
+        stream.writeStartElement(rootElement.tagName());
 
-        streamElementAttributes(stream, root_element);
+        StreamElementAttributes(stream, rootElement);
 
-        auto next_node = root_element.firstChild();
+        auto nextNode = rootElement.firstChild();
 
-        while (!next_node.isNull())
+        while (!nextNode.isNull())
         {
-            recursivelySaveNodeCanonically(stream, next_node);
+            RecursivelySaveNodeCanonically(stream, nextNode);
 
             if (stream.hasError())
             {
                 break;
             }
-            next_node = next_node.nextSibling();
+
+            nextNode = nextNode.nextSibling();
         }
 
         stream.writeEndElement();
         stream.writeEndDocument();
 
-        return output_string;
+        return outputString;
     }
 
-    void MainWindow::streamElementAttributes(QXmlStreamWriter& stream, const QDomElement& element) const
+    void MainWindow::StreamElementAttributes(QXmlStreamWriter& stream, const QDomElement& element) const
     {
         if (element.hasAttributes())
         {
             QMap<QString, QString> attributes;
-            const QDomNamedNodeMap attributes_map = element.attributes();
+            const QDomNamedNodeMap attributesMap = element.attributes();
 
-            for (int i = 0; i < attributes_map.count(); ++i)
+            for (int i = 0; i < attributesMap.count(); ++i)
             {
-                auto attribute = attributes_map.item(i);
+                auto attribute = attributesMap.item(i);
                 attributes.insert(attribute.nodeName(), attribute.nodeValue());
             }
 
@@ -954,29 +945,27 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         }
     }
 
-    void MainWindow::recursivelySaveNodeCanonically(QXmlStreamWriter& stream, const QDomNode& parent_node) const
+    void MainWindow::RecursivelySaveNodeCanonically(QXmlStreamWriter& stream, const QDomNode& parentNode) const
     {
         if (stream.hasError())
         {
             return;
         }
 
-        if (parent_node.isElement())
+        if (parentNode.isElement())
         {
-            const QDomElement parent_element = parent_node.toElement();
-
-            if (!parent_element.isNull())
+            if (const QDomElement parentElement = parentNode.toElement(); !parentElement.isNull())
             {
-                stream.writeStartElement(parent_element.tagName());
+                stream.writeStartElement(parentElement.tagName());
 
-                streamElementAttributes(stream, parent_element);
+                StreamElementAttributes(stream, parentElement);
 
-                if (parent_element.hasChildNodes())
+                if (parentElement.hasChildNodes())
                 {
-                    auto child = parent_element.firstChild();
+                    auto child = parentElement.firstChild();
                     while (!child.isNull())
                     {
-                        recursivelySaveNodeCanonically(stream, child);
+                        RecursivelySaveNodeCanonically(stream, child);
                         child = child.nextSibling();
                     }
                 }
@@ -984,64 +973,66 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
                 stream.writeEndElement();
             }
         }
-        else if (parent_node.isComment())
+        else if (parentNode.isComment())
         {
-            stream.writeComment(parent_node.nodeValue());
+            stream.writeComment(parentNode.nodeValue());
         }
-        else if (parent_node.isText())
+        else if (parentNode.isText())
         {
-            stream.writeCharacters(parent_node.nodeValue());
+            stream.writeCharacters(parentNode.nodeValue());
         }
     }
 
     bool MainWindow::SavedState::operator==(const MainWindow::SavedState& other) const
     {
-        if (current_tab_name != other.current_tab_name || json_states.size() != other.json_states.size())
+        if (mCurrentTabName != other.mCurrentTabName || mJsonStates.size() != other.mJsonStates.size())
         {
             return false;
         }
-        for (auto& it : json_states)
+
+        for (const auto& it : mJsonStates)
         {
-            auto other_it = other.json_states.find(it.first);
-            if (other_it == other.json_states.end() || it.second != other_it->second)
+            if (auto otherIt = other.mJsonStates.find(it.first); otherIt == other.mJsonStates.end() || it.second != otherIt->second)
             {
                 return false;
             }
         }
-        if (view_area != other.view_area || view_transform != other.view_transform)
+
+        if (mViewArea != other.mViewArea || mViewTransform != other.mViewTransform)
         {
             return false;
         }
+
         return true;
     }
 
-    QtNodes::Node* MainWindow::subTreeExpand(
+    QtNodes::Node* MainWindow::SubTreeExpand(
         Widgets::GraphicContainer& container, QtNodes::Node& node, MainWindow::SubtreeExpandOption option)
     {
-        bool is_editor_mode = true;
+        constexpr bool isEditorMode = true;
         const QSignalBlocker blocker(this);
-        auto subtree_model = dynamic_cast<Core::Models::SubtreeNodeModel*>(node.nodeDataModel());
-        const QString& subtree_name = subtree_model->registrationName();
+        const auto subtreeModel = dynamic_cast<Core::Models::SubtreeNodeModel*>(node.nodeDataModel());
+        const QString& subtreeName = subtreeModel->registrationName();
 
-        if (option == SUBTREE_EXPAND && subtree_model->expanded() == false)
+        if (option == SUBTREE_EXPAND && subtreeModel->expanded() == false)
         {
-            auto subtree_container = GetTabByName(subtree_name);
+            const auto subtreeContainer = GetTabByName(subtreeName);
 
             // Prevent expansion of invalid subtree
-            if (!subtree_container->containsValidTree())
+            if (!subtreeContainer->containsValidTree())
             {
                 QMessageBox::warning(this, tr("Warning"), tr("Invalid SubTree. Can not expand SubTree."), QMessageBox::Cancel);
                 return &node;
             }
 
-            auto abs_subtree = BuildTreeFromScene(subtree_container->scene());
+            auto abstractBehaviorTree = BuildTreeFromScene(subtreeContainer->scene());
 
-            subtree_model->setExpanded(true);
+            subtreeModel->setExpanded(true);
             node.nodeState().getEntries(QtNodes::PortType::Out).resize(1);
-            container.appendTreeToNode(node, abs_subtree);
-            container.lockSubtreeEditing(node, true, is_editor_mode);
+            container.appendTreeToNode(node, abstractBehaviorTree);
+            container.lockSubtreeEditing(node, true, isEditorMode);
 
-            if (abs_subtree.Nodes().size() > 1)
+            if (abstractBehaviorTree.Nodes().size() > 1)
             {
                 container.nodeReorder();
             }
@@ -1049,30 +1040,30 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
             return &node;
         }
 
-        if (option == SUBTREE_COLLAPSE && subtree_model->expanded() == true)
+        if (option == SUBTREE_COLLAPSE && subtreeModel->expanded() == true)
         {
-            bool need_reorder = true;
-            const auto& conn_out = node.nodeState().connections(QtNodes::PortType::Out, 0);
-            QtNodes::Node* child_node = nullptr;
-            if (conn_out.size() == 1)
+            bool needReorder = true;
+            const auto& connOut = node.nodeState().connections(QtNodes::PortType::Out, 0);
+            QtNodes::Node* childNode = nullptr;
+            if (connOut.size() == 1)
             {
-                child_node = conn_out.begin()->second->getNode(QtNodes::PortType::In);
+                childNode = connOut.begin()->second->getNode(QtNodes::PortType::In);
             }
 
             const QSignalBlocker b2(container);
-            if (child_node)
+            if (childNode)
             {
-                container.deleteSubTreeRecursively(*child_node);
+                container.deleteSubTreeRecursively(*childNode);
             }
             else
             {
-                need_reorder = false;
+                needReorder = false;
             }
 
-            subtree_model->setExpanded(false);
+            subtreeModel->setExpanded(false);
             node.nodeState().getEntries(QtNodes::PortType::Out).resize(0);
-            container.lockSubtreeEditing(node, false, is_editor_mode);
-            if (need_reorder)
+            container.lockSubtreeEditing(node, false, isEditorMode);
+            if (needReorder)
             {
                 container.nodeReorder();
             }
@@ -1080,23 +1071,23 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
             return &node;
         }
 
-        if (option == SUBTREE_REFRESH && subtree_model->expanded() == true)
+        if (option == SUBTREE_REFRESH && subtreeModel->expanded() == true)
         {
-            const auto& conn_out = node.nodeState().connections(QtNodes::PortType::Out, 0);
-            if (conn_out.size() != 1)
+            const auto& connOut = node.nodeState().connections(QtNodes::PortType::Out, 0);
+            if (connOut.size() != 1)
             {
                 throw std::logic_error("subTreeExpand with SUBTREE_REFRESH, but not an expanded SubTree");
             }
 
-            QtNodes::Node* child_node = conn_out.begin()->second->getNode(QtNodes::PortType::In);
+            QtNodes::Node* childNode = connOut.begin()->second->getNode(QtNodes::PortType::In);
 
-            auto subtree_container = GetTabByName(subtree_name);
-            auto subtree = Core::BuildTreeFromScene(subtree_container->scene());
+            const auto subtreeContainer = GetTabByName(subtreeName);
+            auto subtree = Core::BuildTreeFromScene(subtreeContainer->scene());
 
-            container.deleteSubTreeRecursively(*child_node);
+            container.deleteSubTreeRecursively(*childNode);
             container.appendTreeToNode(node, subtree);
             container.nodeReorder();
-            container.lockSubtreeEditing(node, true, is_editor_mode);
+            container.lockSubtreeEditing(node, true, isEditorMode);
 
             return &node;
         }
@@ -1104,106 +1095,105 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         return nullptr;
     }
 
-    bool MainWindow::saveFile(bool overwrite)
+    bool MainWindow::SaveFile(bool overwrite)
     {
-        for (auto& it : _tab_info)
+        for (const auto& it : _tabInfo)
         {
-            auto& container = it.second;
-            if (!container->containsValidTree())
+            if (auto& container = it.second; !container->containsValidTree())
             {
                 QMessageBox::warning(this, tr("Warning"), tr("Malformed behavior tree. File can not be saved."), QMessageBox::Cancel);
                 return false;
             }
         }
 
-        if (_tab_info.size() == 1)
+        if (_tabInfo.size() == 1)
         {
-            _main_tree = _tab_info.begin()->first;
+            _mainTree = _tabInfo.begin()->first;
         }
 
         QSettings settings;
-        QString directory_path = settings.value("MainWindow.lastSaveDirectory", _project_path).toString();
+        QString directoryPath = settings.value("MainWindow.lastSaveDirectory", _projectPath).toString();
 
         QString fileName;
 
-        if (overwrite || _opened_file.isNull())
+        if (overwrite || _openedFile.isNull())
         {
-            fileName = QFileDialog::getSaveFileName(this, "Save BehaviorTree to file", directory_path, "SS BehaviorTree files (*.ssbt)");
+            fileName = QFileDialog::getSaveFileName(this, "Save Behavior Tree to file", directoryPath, "Behavior Tree files (*.bhbtree)");
             if (fileName.isEmpty())
             {
                 return false;
             }
-            if (!fileName.endsWith(".ssbt"))
+            if (!fileName.endsWith(".bhbtree"))
             {
-                fileName += ".ssbt";
+                fileName += ".bhbtree";
             }
         }
         else
         {
-            fileName = _opened_file;
+            fileName = _openedFile;
         }
 
-        QString xml_text = saveToXML();
+        const QString xmlText = SaveToXml();
 
-        QFileInfo fileInfo(fileName);
+        const QFileInfo fileInfo(fileName);
         QFile file(fileName);
 
         if (file.open(QIODevice::WriteOnly))
         {
             QTextStream stream(&file);
-            stream << xml_text << Qt::endl;
+            stream << xmlText << Qt::endl;
         }
 
-        directory_path = fileInfo.absolutePath();
-        settings.setValue("MainWindow.lastSaveDirectory", directory_path);
+        directoryPath = fileInfo.absolutePath();
+        settings.setValue("MainWindow.lastSaveDirectory", directoryPath);
 
-        _opened_file = fileName;
-        m_statusBar->SetOpenedFileName(fileInfo.baseName());
+        _openedFile = fileName;
+        _statusBar->SetOpenedFileName(fileInfo.baseName());
 
-        _dirty_file = false;
+        _dirtyFile = false;
 
         return true;
     }
 
-    bool MainWindow::openFile(const QString& fileName)
+    bool MainWindow::OpenFile(const QString& filename)
     {
-        QFileInfo fileInfo(fileName);
-        QFile file(fileName);
+        const QFileInfo fileInfo(filename);
+        QFile file(filename);
         if (!file.open(QIODevice::ReadOnly))
         {
             return false;
         }
 
         QSettings settings;
-        QString directory_path = fileInfo.absolutePath();
-        settings.setValue("MainWindow.lastLoadDirectory", directory_path);
+        const QString directoryPath = fileInfo.absolutePath();
+        settings.setValue("MainWindow.lastLoadDirectory", directoryPath);
         settings.sync();
 
-        QString xml_text;
+        QString xmlText;
 
         QTextStream in(&file);
         while (!in.atEnd())
         {
-            xml_text += in.readLine();
+            xmlText += in.readLine();
         }
 
-        createTab(fileInfo.baseName());
-        LoadFromXML(xml_text);
-        _opened_file = fileName;
-        m_statusBar->SetOpenedFileName(fileInfo.baseName());
+        CreateTab(fileInfo.baseName());
+        LoadFromXML(xmlText);
+
+        _openedFile = filename;
+        _statusBar->SetOpenedFileName(fileInfo.baseName());
 
         return true;
     }
 
-    bool MainWindow::checkDirty(const QString& message)
+    bool MainWindow::CheckDirty(const QString& message)
     {
-        if (_dirty_file)
+        if (_dirtyFile)
         {
-            QMessageBox::StandardButton result = QMessageBox::warning(
-                this, "The current file have unsaved changes", message, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
-                QMessageBox::Save);
-
-            if (result == QMessageBox::Save)
+            if (const QMessageBox::StandardButton result = QMessageBox::warning(
+                    this, "The current file have unsaved changes", message, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+                    QMessageBox::Save);
+                result == QMessageBox::Save)
             {
                 return OnActionSaveTriggered();
             }

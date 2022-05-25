@@ -17,25 +17,25 @@
 #include <AzCore/EBus/EBus.h>
 #include <AzCore/Interface/Interface.h>
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Factory.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree
 {
-    class SSBehaviorTreeRequests
+    class BehaveBehaviorTreeRequests
     {
     public:
-        AZ_RTTI(SSBehaviorTreeRequests, "{cf1733ed-eeb3-4330-af52-b0f290232a14}");
-        virtual ~SSBehaviorTreeRequests() = default;
+        AZ_RTTI(SSBehaviorTreeRequests, "{CF1733ED-EEB3-4330-AF52-B0F290232A14}");
+        virtual ~BehaveBehaviorTreeRequests() = default;
 
         /**
          * @brief Get the nodes/properties factory.
          *
-         * @return const SSBehaviorTreeFactory&
+         * @return const Factory&
          */
-        virtual const Core::SSBehaviorTreeFactory& GetFactory() const = 0;
+        [[nodiscard]] virtual const Core::Factory& GetFactory() const = 0;
     };
 
-    class SSBehaviorTreeBusTraits : public AZ::EBusTraits
+    class BehaveBehaviorTreeBusTraits : public AZ::EBusTraits
     {
     public:
         //////////////////////////////////////////////////////////////////////////
@@ -45,6 +45,6 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         //////////////////////////////////////////////////////////////////////////
     };
 
-    using SSBehaviorTreeRequestBus = AZ::EBus<SSBehaviorTreeRequests, SSBehaviorTreeBusTraits>;
-    using SSBehaviorTreeInterface = AZ::Interface<SSBehaviorTreeRequests>;
+    using BehaveBehaviorTreeRequestBus = AZ::EBus<BehaveBehaviorTreeRequests, BehaveBehaviorTreeBusTraits>;
+    using BehaveBehaviorTreeInterface = AZ::Interface<BehaveBehaviorTreeRequests>;
 } // namespace SparkyStudios::AI::Behave::BehaviorTree

@@ -16,7 +16,7 @@
 
 #include <SparkyStudios/AI/Behave/BehaviorTree/Nodes.h>
 
-#include <BehaviorTree/SSBehaviorTreeSystemComponent.h>
+#include <BehaviorTree/BehaviorTreeSystemComponent.h>
 
 #include <AzCore/Module/DynamicModuleHandle.h>
 #include <AzCore/Module/ModuleManager.h>
@@ -29,34 +29,34 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree
 {
-    using namespace SparkyStudios::AI::Behave::BehaviorTree::Blackboard;
+    using namespace Blackboard;
 
-    SSBehaviorTreeSystemComponent::SSBehaviorTreeSystemComponent()
+    BehaviorTreeSystemComponent::BehaviorTreeSystemComponent()
     {
-        if (SSBehaviorTreeInterface::Get() == nullptr)
+        if (BehaveBehaviorTreeInterface::Get() == nullptr)
         {
-            SSBehaviorTreeInterface::Register(this);
+            BehaveBehaviorTreeInterface::Register(this);
         }
     }
 
-    SSBehaviorTreeSystemComponent::~SSBehaviorTreeSystemComponent()
+    BehaviorTreeSystemComponent::~BehaviorTreeSystemComponent()
     {
-        if (SSBehaviorTreeInterface::Get() == this)
+        if (BehaveBehaviorTreeInterface::Get() == this)
         {
-            SSBehaviorTreeInterface::Unregister(this);
+            BehaveBehaviorTreeInterface::Unregister(this);
         }
     }
 
-    void SSBehaviorTreeSystemComponent::Reflect(AZ::ReflectContext* context)
+    void BehaviorTreeSystemComponent::Reflect(AZ::ReflectContext* rc)
     {
-        if (AZ::SerializeContext* serialize = azrtti_cast<AZ::SerializeContext*>(context))
+        if (auto* const serialize = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            serialize->Class<SSBehaviorTreeSystemComponent, AZ::Component>()->Version(0);
+            serialize->Class<BehaviorTreeSystemComponent, AZ::Component>()->Version(0);
 
             if (AZ::EditContext* ec = serialize->GetEditContext())
             {
-                ec->Class<SSBehaviorTreeSystemComponent>(
-                      "Sparky Studios - AI - BehaviorTree", "The Game System Component for the Sparky Studios BehaviorTree engine.")
+                ec->Class<BehaviorTreeSystemComponent>(
+                      "Sparky Studios - Behave AI - BehaviorTree", "The Game System Component for the Sparky Studios BehaviorTree engine.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "AI")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("System"))
@@ -65,58 +65,57 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         }
     }
 
-    void SSBehaviorTreeSystemComponent::RegisterDefaultNodes()
+    void BehaviorTreeSystemComponent::RegisterDefaultNodes() const
     {
-        Nodes::RegisterDefaultNodes(m_factory.GetRegistry());
+        Nodes::RegisterDefaultNodes(_factory.GetRegistry());
     }
 
-    void SSBehaviorTreeSystemComponent::RegisterDefaultProperties()
+    void BehaviorTreeSystemComponent::RegisterDefaultProperties() const
     {
-        Nodes::RegisterDefaultProperties(m_factory.GetRegistry());
+        Nodes::RegisterDefaultProperties(_factory.GetRegistry());
     }
 
-    void SSBehaviorTreeSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
+    void BehaviorTreeSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
-        provided.push_back(AZ_CRC_CE("SSBehaviorTreeService"));
+        provided.push_back(AZ_CRC_CE("BehaveAI_BehaviorTreeService"));
     }
 
-    void SSBehaviorTreeSystemComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
+    void BehaviorTreeSystemComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
-        incompatible.push_back(AZ_CRC_CE("SSBehaviorTreeService"));
+        incompatible.push_back(AZ_CRC_CE("BehaveAI_BehaviorTreeService"));
     }
 
-    void SSBehaviorTreeSystemComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)
-    {
-    }
-
-    void SSBehaviorTreeSystemComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
+    void BehaviorTreeSystemComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)
     {
     }
 
-    void SSBehaviorTreeSystemComponent::Init()
+    void BehaviorTreeSystemComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
+    {
+    }
+
+    void BehaviorTreeSystemComponent::Init()
     {
         RegisterDefaultProperties();
         RegisterDefaultNodes();
     }
 
-    void SSBehaviorTreeSystemComponent::Activate()
+    void BehaviorTreeSystemComponent::Activate()
     {
-        SSBehaviorTreeRequestBus::Handler::BusConnect();
+        BehaveBehaviorTreeRequestBus::Handler::BusConnect();
 
         AZStd::vector<AZStd::string> superchargedGems{ "EMotionFX", "LmbrCentral" };
 
         auto settingsRegistry = AZ::SettingsRegistry::Get();
-        AZStd::vector<AzFramework::GemInfo> gemInfoList;
-        if (AzFramework::GetGemsInfo(gemInfoList, *settingsRegistry))
+        if (AZStd::vector<AzFramework::GemInfo> gemInfoList; AzFramework::GetGemsInfo(gemInfoList, *settingsRegistry))
         {
-            // Get path to the SSBehaviorTree gem root
-            auto FindBehaviorTreeGem = [](const AzFramework::GemInfo& gemInfo)
+            // Get path to the SSBehaveAI gem root
+            auto findBehaviorTreeGem = [](const AzFramework::GemInfo& gemInfo) -> bool
             {
-                return gemInfo.m_gemName.starts_with("SSBehaviorTree");
+                return gemInfo.m_gemName.starts_with("SSBehaveAI");
             };
 
             AZ::IO::FixedMaxPath behaviorTreeGemRegistryPath;
-            if (auto behaviorTreeGemFoundIt = AZStd::find_if(gemInfoList.begin(), gemInfoList.end(), FindBehaviorTreeGem);
+            if (const auto behaviorTreeGemFoundIt = AZStd::find_if(gemInfoList.begin(), gemInfoList.end(), findBehaviorTreeGem);
                 behaviorTreeGemFoundIt != gemInfoList.end())
             {
                 behaviorTreeGemRegistryPath = behaviorTreeGemFoundIt->m_absoluteSourcePaths.front().Append("Registry");
@@ -126,19 +125,19 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
             {
                 AZ::SettingsRegistryInterface::Specializations specializationTags;
 
-                auto GemEnumeratedCallback = [&superchargedGems, &specializationTags](const AZ::ModuleData& moduleData) -> bool
+                auto gemEnumeratedCallback = [&superchargedGems, &specializationTags](const AZ::ModuleData& moduleData) -> bool
                 {
-                    if (AZ::DynamicModuleHandle* moduleHandle = moduleData.GetDynamicModuleHandle(); moduleHandle != nullptr)
+                    if (const AZ::DynamicModuleHandle* moduleHandle = moduleData.GetDynamicModuleHandle(); moduleHandle != nullptr)
                     {
-                        auto FindGemName = [&moduleHandle, &superchargedGems](const AZStd::string& gemName)
+                        auto findGemName = [&moduleHandle](const AZStd::string& gemName) -> bool
                         {
-                            AZ::IO::FixedMaxPathString moduleFileStem =
+                            const AZ::IO::FixedMaxPathString moduleFileStem =
                                 AZ::IO::PathView(moduleHandle->GetFilename()).Stem().FixedMaxPathString();
 
                             return moduleFileStem.starts_with(gemName);
                         };
 
-                        if (auto gemFoundIt = AZStd::find_if(superchargedGems.begin(), superchargedGems.end(), FindGemName);
+                        if (const auto gemFoundIt = AZStd::find_if(superchargedGems.begin(), superchargedGems.end(), findGemName);
                             gemFoundIt != superchargedGems.end() && !specializationTags.Contains(*gemFoundIt))
                         {
                             specializationTags.Append(*gemFoundIt);
@@ -148,7 +147,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
                     return true;
                 };
 
-                AZ::ModuleManagerRequestBus::Broadcast(&AZ::ModuleManagerRequests::EnumerateModules, GemEnumeratedCallback);
+                AZ::ModuleManagerRequestBus::Broadcast(&AZ::ModuleManagerRequests::EnumerateModules, gemEnumeratedCallback);
 
                 settingsRegistry->MergeSettingsFolder(
                     behaviorTreeGemRegistryPath.Native(), specializationTags, AZ_TRAIT_OS_PLATFORM_CODENAME);
@@ -166,27 +165,27 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
             AZ_UNUSED(action);
             AZ_UNUSED(type);
 
-            AZStd::string nodeName;
-            if (settingsRegistry->Get(nodeName, path))
+            if (AZStd::string nodeName; settingsRegistry->Get(nodeName, path))
                 enabledNodes.push_back(nodeName);
 
             return AZ::SettingsRegistryInterface::VisitResponse::Continue;
         };
 
         // Collect the list of nodes to enable.
-        settingsRegistry->Visit(availableNodesVisitor, "/SparkyStudios/AI/Behave/BehaviorTree/AvailableNodes");
-
-        // Enable all the available nodes.
-        m_factory.GetRegistry()->EnableNodes(enabledNodes);
+        if (settingsRegistry->Visit(availableNodesVisitor, "/SparkyStudios/AI/Behave/BehaviorTree/AvailableNodes"))
+        {
+            // Enable all the available nodes.
+            _factory.GetRegistry()->EnableNodes(enabledNodes);
+        }
     }
 
-    void SSBehaviorTreeSystemComponent::Deactivate()
+    void BehaviorTreeSystemComponent::Deactivate()
     {
-        SSBehaviorTreeRequestBus::Handler::BusDisconnect();
+        BehaveBehaviorTreeRequestBus::Handler::BusDisconnect();
     }
 
-    const Core::SSBehaviorTreeFactory& SSBehaviorTreeSystemComponent::GetFactory() const
+    const Core::Factory& BehaviorTreeSystemComponent::GetFactory() const
     {
-        return m_factory;
+        return _factory;
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree

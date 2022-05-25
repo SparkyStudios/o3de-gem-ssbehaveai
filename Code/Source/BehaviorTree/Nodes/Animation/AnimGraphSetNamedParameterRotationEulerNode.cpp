@@ -19,31 +19,30 @@
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
     AnimGraphSetNamedParameterRotationEulerNode::AnimGraphSetNamedParameterRotationEulerNode(
-        const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
+        const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
         : AnimGraphSetNamedParameterNode<AZ::Vector3>(name, config)
     {
     }
 
-    void AnimGraphSetNamedParameterRotationEulerNode::Reflect(AZ::ReflectContext* context)
+    void AnimGraphSetNamedParameterRotationEulerNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(rc);
     }
 
-    void AnimGraphSetNamedParameterRotationEulerNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void AnimGraphSetNamedParameterRotationEulerNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Register node
         registry->DelayNodeRegistration<AnimGraphSetNamedParameterRotationEulerNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList AnimGraphSetNamedParameterRotationEulerNode::providedPorts()
+    Core::BehaviorTreePortsList AnimGraphSetNamedParameterRotationEulerNode::providedPorts()
     {
         return AnimGraphSetNamedParameterNode<AZ::Vector3>::providedPorts();
     }
 
     void AnimGraphSetNamedParameterRotationEulerNode::SetParameter()
     {
-        Core::Optional<AZ::Vector3> value = GetInputValue<AZ::Vector3>(NODE_PORT_VALUE_NAME);
-        if (value.has_value())
+        if (Core::Optional<AZ::Vector3> value = GetInputValue<AZ::Vector3>(NODE_PORT_VALUE_NAME); value.has_value())
         {
             EBUS_EVENT_ID(
                 GetEntityId(), EMotionFX::Integration::AnimGraphComponentRequestBus, SetParameterRotationEuler, m_parameterIndex,

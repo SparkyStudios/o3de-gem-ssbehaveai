@@ -20,38 +20,38 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
 {
-    SimpleMotionGetPlayTimeNode::SimpleMotionGetPlayTimeNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : Core::SSBehaviorTreeNode(name, config)
+    SimpleMotionGetPlayTimeNode::SimpleMotionGetPlayTimeNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+        : Node(name, config)
     {
     }
 
-    void SimpleMotionGetPlayTimeNode::Reflect(AZ::ReflectContext* reflection)
+    void SimpleMotionGetPlayTimeNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(reflection);
+        AZ_UNUSED(rc);
     }
 
-    void SimpleMotionGetPlayTimeNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void SimpleMotionGetPlayTimeNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         registry->DelayNodeRegistration<SimpleMotionGetPlayTimeNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList SimpleMotionGetPlayTimeNode::providedPorts()
+    Core::BehaviorTreePortsList SimpleMotionGetPlayTimeNode::providedPorts()
     {
-        Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+        Core::BehaviorTreePortsList ports = Node::providedPorts();
 
-        ports.merge(Core::SSBehaviorTreePortsList({
+        ports.merge(Core::BehaviorTreePortsList({
             BT::OutputPort<float>(NODE_PORT_VALUE_NAME, NODE_PORT_VALUE_DESCRIPTION),
         }));
 
         return ports;
     }
 
-    Core::SSBehaviorTreeNodeStatus SimpleMotionGetPlayTimeNode::Tick()
+    Core::BehaviorTreeNodeStatus SimpleMotionGetPlayTimeNode::Tick()
     {
         float value;
         EBUS_EVENT_ID_RESULT(value, GetEntityId(), EMotionFX::Integration::SimpleMotionComponentRequestBus, GetPlayTime);
         SetOutputValue<float>(NODE_PORT_VALUE_NAME, value);
 
-        return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+        return Core::BehaviorTreeNodeStatus::SUCCESS;
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation

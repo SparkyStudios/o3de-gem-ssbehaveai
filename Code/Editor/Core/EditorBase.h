@@ -26,7 +26,7 @@
 #include <AzCore/std/containers/unordered_map.h>
 #include <AzCore/std/containers/vector.h>
 
-#include <SparkyStudios/AI/Behave/BehaviorTree/Core/SSBehaviorTreeFactory.h>
+#include <SparkyStudios/AI/Behave/BehaviorTree/Core/Factory.h>
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 {
@@ -74,11 +74,12 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
 
     struct BlackboardPropertyModel
     {
-        QString name;
-        QString description;
-        QString suffix;
-        QString type;
-        bool isPrivate = false;
+        QString mName;
+        QString mDescription;
+        QString mSuffix;
+        QString mType;
+        float mOrder = FLT_MAX;
+        bool mIsPrivate = false;
 
         bool operator==(const BlackboardPropertyModel& other) const;
         bool operator!=(const BlackboardPropertyModel& other) const
@@ -112,7 +113,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
     /// <summary>
     /// Gets the list of built-in models.
     /// </summary>
-    const NodeModels& BuiltInNodeModels(const BehaviorTree::Core::SSBehaviorTreeFactory& factory);
+    const NodeModels& BuiltInNodeModels(const BehaviorTree::Core::Factory& factory);
 
     struct AbstractBehaviorTreeNode
     {

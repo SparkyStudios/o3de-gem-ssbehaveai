@@ -192,7 +192,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
     QtNodes::Node* GetParentNode(QtNodes::Node* node);
 
     std::set<QString> GetModelsToRemove(
-        QWidget* parent, NodeModels& prev_models, const NodeModels& new_models, const BehaviorTree::Core::SSBehaviorTreeFactory& factory);
+        QWidget* parent, NodeModels& prev_models, const NodeModels& new_models, const BehaviorTree::Core::Factory& factory);
 
     BT::NodeType convert(Serialization::NodeType type);
 
@@ -209,7 +209,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
         QDomDocument& doc,
         QDomElement& parent_element,
         const QtNodes::Node* node,
-        const BehaviorTree::Core::SSBehaviorTreeFactory& factory);
+        const BehaviorTree::Core::Factory& factory);
 
     bool VerifyXML(QDomDocument& doc, const std::vector<QString>& registered_ID, std::vector<QString>& error_messages);
 

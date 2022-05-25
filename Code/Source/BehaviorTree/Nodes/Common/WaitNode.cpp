@@ -18,27 +18,27 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 {
-    WaitNode::WaitNode(const std::string& name, const Core::SSBehaviorTreeNodeConfiguration& config)
-        : Core::SSBehaviorTreeNode(name, config)
+    WaitNode::WaitNode(const std::string& name, const Core::BehaviorTreeNodeConfiguration& config)
+        : Core::Node(name, config)
     {
     }
 
-    void WaitNode::Reflect(AZ::ReflectContext* context)
+    void WaitNode::Reflect(AZ::ReflectContext* rc)
     {
-        AZ_UNUSED(context);
+        AZ_UNUSED(rc);
     }
 
-    void WaitNode::RegisterNode(const AZStd::shared_ptr<Core::SSBehaviorTreeRegistry>& registry)
+    void WaitNode::RegisterNode(const AZStd::shared_ptr<Core::Registry>& registry)
     {
         // 1 - Add node for delayed registration
         registry->DelayNodeRegistration<WaitNode>(NODE_NAME);
     }
 
-    Core::SSBehaviorTreePortsList WaitNode::providedPorts()
+    Core::BehaviorTreePortsList WaitNode::providedPorts()
     {
-        Core::SSBehaviorTreePortsList ports = Core::SSBehaviorTreeNode::providedPorts();
+        Core::BehaviorTreePortsList ports = Core::Node::providedPorts();
 
-        ports.merge(Core::SSBehaviorTreePortsList({
+        ports.merge(Core::BehaviorTreePortsList({
             BT::InputPort<float>(NODE_PORT_SECONDS_NAME, 0, NODE_PORT_SECONDS_DESCRIPTION),
         }));
 
@@ -47,33 +47,33 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Common
 
     void WaitNode::Start()
     {
-        m_countDown = GetSeconds();
+        _countDown = GetSeconds();
     }
 
-    Core::SSBehaviorTreeNodeStatus WaitNode::Tick()
+    Core::BehaviorTreeNodeStatus WaitNode::Tick()
     {
-        float seconds = GetSeconds();
+        const float seconds = GetSeconds();
 
         if (seconds == 0)
-            return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+            return Core::BehaviorTreeNodeStatus::SUCCESS;
 
         float dt = -1;
         EBUS_EVENT_RESULT(dt, AZ::TickRequestBus, GetTickDeltaTime);
 
         if (dt > -1)
         {
-            m_countDown -= dt;
+            _countDown -= dt;
 
-            if (m_countDown < 0)
+            if (_countDown < 0)
             {
-                m_countDown = seconds;
-                return Core::SSBehaviorTreeNodeStatus::SUCCESS;
+                _countDown = seconds;
+                return Core::BehaviorTreeNodeStatus::SUCCESS;
             }
 
-            return Core::SSBehaviorTreeNodeStatus::RUNNING;
+            return Core::BehaviorTreeNodeStatus::RUNNING;
         }
 
-        return Core::SSBehaviorTreeNodeStatus::FAILURE;
+        return Core::BehaviorTreeNodeStatus::FAILURE;
     }
 
     float WaitNode::GetSeconds() const

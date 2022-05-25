@@ -53,11 +53,11 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         connect(ui->propertySuffixLineEdit, &QLineEdit::textChanged, this, &BlackboardPropertyDialog::OnPropertySuffixChanged);
         connect(ui->isPrivateCheckBox, &QCheckBox::stateChanged, this, &BlackboardPropertyDialog::OnPropertyIsPrivateChanged);
 
-        ui->propertyNameLineEdit->setText(model.name);
-        ui->propertyTypeComboBox->setCurrentText(model.type.isEmpty() ? ui->propertyTypeComboBox->itemText(0) : model.type);
-        ui->propertyDescriptionLineEdit->setText(model.description);
-        ui->propertySuffixLineEdit->setText(model.suffix);
-        ui->isPrivateCheckBox->setChecked(model.isPrivate);
+        ui->propertyNameLineEdit->setText(model.mName);
+        ui->propertyTypeComboBox->setCurrentText(model.mType.isEmpty() ? ui->propertyTypeComboBox->itemText(0) : model.mType);
+        ui->propertyDescriptionLineEdit->setText(model.mDescription);
+        ui->propertySuffixLineEdit->setText(model.mSuffix);
+        ui->isPrivateCheckBox->setChecked(model.mIsPrivate);
     }
 
     BlackboardPropertyDialog::~BlackboardPropertyDialog()
@@ -67,27 +67,27 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
     void BlackboardPropertyDialog::OnPropertyNameChanged(const QString& name)
     {
-        _model.name = name;
+        _model.mName = name;
     }
 
     void BlackboardPropertyDialog::OnPropertyTypeChanged(const QString& type)
     {
-        _model.type = type;
+        _model.mType = type;
     }
 
     void BlackboardPropertyDialog::OnPropertyDescriptionChanged(const QString& description)
     {
-        _model.description = description;
+        _model.mDescription = description;
     }
 
     void BlackboardPropertyDialog::OnPropertySuffixChanged(const QString& suffix)
     {
-        _model.suffix = suffix;
+        _model.mSuffix = suffix;
     }
 
     void BlackboardPropertyDialog::OnPropertyIsPrivateChanged(int isPrivate)
     {
-        _model.isPrivate = isPrivate == Qt::Checked;
+        _model.mIsPrivate = isPrivate == Qt::Checked;
     }
 } // namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 

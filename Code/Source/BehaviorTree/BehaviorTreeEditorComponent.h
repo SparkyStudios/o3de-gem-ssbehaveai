@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <BehaviorTree/SSBehaviorTreeComponent.h>
+#include <BehaviorTree/BehaviorTreeComponent.h>
 
 #include <AzCore/Serialization/DynamicSerializableField.h>
 #include <AzCore/Serialization/EditContext.h>
@@ -27,11 +27,13 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree
 {
-    class SSBehaviorTreeEditorComponentRequests : public AZ::ComponentBus
+    using namespace Blackboard;
+
+    class BehaviorTreeEditorComponentRequests : public AZ::ComponentBus
     {
     public:
-        AZ_RTTI(SSBehaviorTreeEditorComponentRequests, "{BBCB1021-D379-4AEC-A343-96CAED019859}");
-        virtual ~SSBehaviorTreeEditorComponentRequests() = default;
+        AZ_RTTI(BehaviorTreeEditorComponentRequests, "{BBCB1021-D379-4AEC-A343-96CAED019859}");
+        ~BehaviorTreeEditorComponentRequests() override = default;
 
         /**
          * @brief Get the id of the asset held by this component.
@@ -41,56 +43,41 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         virtual const AZ::Data::AssetId& GetAssetId() const = 0;
     };
 
-    using SSBehaviorTreeEditorComponentRequestBus = AZ::EBus<SSBehaviorTreeEditorComponentRequests>;
-    using SSBehaviorTreeEditorComponentInterface = AZ::Interface<SSBehaviorTreeEditorComponentRequests>;
+    using BehaviorTreeEditorComponentRequestBus = AZ::EBus<BehaviorTreeEditorComponentRequests>;
+    using BehaviorTreeEditorComponentInterface = AZ::Interface<BehaviorTreeEditorComponentRequests>;
 
-    class SSBehaviorTreeEditorComponent
+    class BehaviorTreeEditorComponent
         : public AzToolsFramework::Components::EditorComponentBase
         , private AZ::Data::AssetBus::Handler
-        , private SSBehaviorTreeEditorComponentRequestBus::Handler
+        , private BehaviorTreeEditorComponentRequestBus::Handler
     {
     public:
-        AZ_EDITOR_COMPONENT(SSBehaviorTreeEditorComponent, "{109004F0-14F0-4B5A-9A3E-533D404B4FCA}");
+        AZ_EDITOR_COMPONENT(BehaviorTreeEditorComponent, "{109004F0-14F0-4B5A-9A3E-533D404B4FCA}");
 
-        // Perform reflection for this component. The context parameter is the reflection context.
-        static void Reflect(AZ::ReflectContext* context);
+        // Perform reflection for this component. The rc parameter is the reflection context.
+        static void Reflect(AZ::ReflectContext* rc);
 
-        ~SSBehaviorTreeEditorComponent() override;
+        ~BehaviorTreeEditorComponent() override;
 
-        //////////////////////////////////////////////////////////////////////////
         // AZ::Component
         void Init() override;
         void Activate() override;
         void Deactivate() override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // AzToolsFramework::Components::EditorComponentBase
         void BuildGameEntity(AZ::Entity* gameEntity) override;
         void SetPrimaryAsset(const AZ::Data::AssetId& /*assetId*/) override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // AZ::Data::AssetEvents
         void OnAssetReady(AZ::Data::Asset<AZ::Data::AssetData> asset) override;
         void OnAssetReloaded(AZ::Data::Asset<AZ::Data::AssetData> asset) override;
         void OnAssetError(AZ::Data::Asset<AZ::Data::AssetData> asset) override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // AZ::Data::AssetEvents
-        const AZ::Data::AssetId& GetAssetId() const override
-        {
-            return m_behaviorTreeAsset.GetId();
-        }
-        //////////////////////////////////////////////////////////////////////////
+        [[nodiscard]] const AZ::Data::AssetId& GetAssetId() const override;
+        [[nodiscard]] const AZ::Data::Asset<Assets::BehaviorTreeAsset>& GetBehaviorTree() const;
 
-        const AZ::Data::Asset<Assets::SSBehaviorTreeAsset>& GetBehaviorTree() const
-        {
-            return m_behaviorTreeComponent.GetBehaviorTree();
-        }
-
-        void SetBehaviorTree(const AZ::Data::Asset<Assets::SSBehaviorTreeAsset>& asset = {});
+        void SetBehaviorTree(const AZ::Data::Asset<Assets::BehaviorTreeAsset>& asset = {});
 
         static const AZ::Edit::ElementData* GetScriptPropertyEditData(
             const void* handlerPtr, const void* elementPtr, const AZ::Uuid& elementType);
@@ -99,39 +86,41 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         struct ElementInfo
         {
             // Type uuid for the class field that should use this edit data.
-            AZ::Uuid m_uuid;
-            // Edit metadata (name, description, attribs, etc).
-            AZ::Edit::ElementData m_editData;
+            AZ::Uuid mUuid;
+
+            // Edit metadata (name, description, attributes, etc).
+            AZ::Edit::ElementData mEditData;
+
             // True if this ElementInfo owns the internal attributes. We can use a single
             // ElementInfo for more than one class field, but only one owns the Attributes.
-            bool m_isAttributeOwner;
+            bool mIsAttributeOwner;
+
             // Sort order of the property as defined by using the "order" attribute, by default the order is FLT_MAX
             // which means alphabetical sort will be used
-            float m_sortOrder;
+            float mSortOrder;
         };
 
         const char* CacheString(const char* str);
-        bool LoadAttribute(
-            const char* name, AZ::Edit::ElementData& ed, Blackboard::SSBehaviorTreeBlackboardProperty* prop, const char* type);
+        bool LoadAttribute(const char* name, AZ::Edit::ElementData& ed, BlackboardProperty* prop, const char* type);
         void ClearDataElements();
         const AZ::Edit::ElementData* GetDataElement(const void* element, const AZ::Uuid& typeUuid) const;
 
-        void ParseProperties(const Blackboard::SSBehaviorTreeBlackboard& blackboard);
-        void RemovedOldProperties(Blackboard::SSBehaviorTreeBlackboard& blackboard);
-        void SortProperties(Blackboard::SSBehaviorTreeBlackboard& blackboard);
+        void ParseProperties(const BehaviorTree::Blackboard::Blackboard& blackboard);
+        void RemovedOldProperties(BehaviorTree::Blackboard::Blackboard& blackboard);
+        void SortProperties(BehaviorTree::Blackboard::Blackboard& blackboard);
 
         void LoadBehaviorTree();
         void LoadProperties();
         AZ::u32 BehaviorTreeHasChanged();
 
         AZStd::unordered_map<const void*, AZStd::string>
-            m_cachedStrings; // TODO: Make editor global as we can chase them across multiple areas
+            _cachedStrings; // TODO: Make editor global as we can chase them across multiple areas
 
-        AZStd::unordered_map<const void*, ElementInfo> m_dataElements;
+        AZStd::unordered_map<const void*, ElementInfo> _dataElements;
 
-        SSBehaviorTreeComponent m_behaviorTreeComponent;
-        AZ::Data::Asset<Assets::SSBehaviorTreeAsset> m_behaviorTreeAsset;
-        AZStd::string m_customName;
+        BehaviorTreeComponent _behaviorTreeComponent;
+        AZ::Data::Asset<Assets::BehaviorTreeAsset> _behaviorTreeAsset;
+        AZStd::string _customName;
     };
 } // namespace SparkyStudios::AI::Behave::BehaviorTree
 
@@ -139,20 +128,20 @@ namespace AZ
 {
     namespace Edit
     {
-        class AttributeDynamicPropertyValue : public Attribute
+        class AttributeDynamicPropertyValue final : public Attribute
         {
         public:
             AZ_CLASS_ALLOCATOR(AttributeDynamicPropertyValue, AZ::SystemAllocator, 0)
-            AZ_RTTI(AttributeDynamicPropertyValue, "{3c70a26c-18e1-4f30-b131-51a415c6300c}", Attribute);
+            AZ_RTTI(AttributeDynamicPropertyValue, "{3C70A26C-18E1-4F30-B131-51A415C6300C}", Attribute);
 
             AttributeDynamicPropertyValue(const DynamicSerializableField& value)
-                : m_value(value)
+                : mValue(value)
             {
             }
 
-            virtual ~AttributeDynamicPropertyValue()
+            ~AttributeDynamicPropertyValue() override
             {
-                m_value.DestroyData();
+                mValue.DestroyData();
             }
 
             template<class T>
@@ -161,8 +150,8 @@ namespace AZ
                 // We deal only with exact types no base types, etc.
                 // We can do that if needed, but introduces lots of complications
                 // which we are not convinced they are worth it.
-                // if (dhtypeid(AZStd::remove_pointer<T>::type) == m_value.m_typeId)
-                if (AzTypeInfo<T>::Uuid() == m_value.m_typeId)
+                // if (dhtypeid(AZStd::remove_pointer<T>::type) == mValue.m_typeId)
+                if (AzTypeInfo<T>::Uuid() == mValue.m_typeId)
                 {
                     GetValue(value, AZStd::is_pointer<T>::type());
                     return true;
@@ -174,16 +163,16 @@ namespace AZ
             template<class T>
             void GetValue(T& value, AZStd::false_type /*AZStd::is_pointer<T>::type()*/)
             {
-                value = *reinterpret_cast<T*>(m_value.m_data);
+                value = *static_cast<T*>(mValue.m_data);
             }
 
             template<class T>
             void GetValue(T& value, AZStd::true_type /*AZStd::is_pointer<T>::type()*/)
             {
-                value = reinterpret_cast<T>(m_value.m_data);
+                value = reinterpret_cast<T>(mValue.m_data);
             }
 
-            DynamicSerializableField m_value;
+            DynamicSerializableField mValue;
         };
     } // namespace Edit
 } // namespace AZ
