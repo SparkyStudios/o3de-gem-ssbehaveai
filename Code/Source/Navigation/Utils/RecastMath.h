@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <AzCore/Math/PolygonPrism.h>
 #include <AzCore/Math/Vector3.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
@@ -76,7 +77,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         /**
          * @brief Returns the pointer to the first vector component.
          */
-        const float* data() const
+        [[nodiscard]] const float* data() const
         {
             return &m_x;
         }
@@ -84,11 +85,33 @@ namespace SparkyStudios::AI::Behave::Navigation
         /**
          * @brief Returns the vector as an O3DE vector.
          */
-        AZ::Vector3 AsVector3() const
+        [[nodiscard]] AZ::Vector3 AsVector3() const
         {
-            return AZ::Vector3(m_x, m_z, m_y);
+            return { m_x, m_z, m_y };
         }
 
         float m_x = 0, m_y = 0, m_z = 0;
+    };
+
+    /**
+     * @brief Stores geometry data to send to Recast.
+     */
+    struct RecastGeometry
+    {
+        AZStd::vector<RecastVector3> m_vertices;
+        AZStd::vector<AZ::s32> m_indices;
+
+        void Clear();
+    };
+
+    struct RecastAreaConvexVolume
+    {
+        AZStd::vector<RecastVector3> m_vertices;
+        float m_hMin, m_hMax;
+        AZ::u32 m_area;
+
+        RecastAreaConvexVolume();
+
+        explicit RecastAreaConvexVolume(const AZ::PolygonPrism& prism);
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

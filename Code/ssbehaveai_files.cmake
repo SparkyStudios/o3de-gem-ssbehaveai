@@ -62,8 +62,10 @@ set(FILES
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes/Common/WaitNode.h
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
 
+    Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h
+    Include/SparkyStudios/AI/Behave/Navigation/IBehaveNavigationMesh.h
 
     Source/BehaviorTree/Assets/BehaviorTreeAsset.h
     Source/BehaviorTree/Assets/BehaviorTreeAsset.cpp
@@ -114,14 +116,27 @@ set(FILES
     Source/BehaviorTree/BehaviorTreeSystemComponent.cpp
     Source/BehaviorTree/BehaviorTreeSystemComponent.h
 
+    Source/Navigation/Assets/BehaveNavigationAgentAsset.h
+    Source/Navigation/Assets/BehaveNavigationAgentAsset.cpp
+    Source/Navigation/Assets/BehaveNavigationMeshAreaAsset.h
+    Source/Navigation/Assets/BehaveNavigationMeshAreaAsset.cpp
+    Source/Navigation/Assets/BehaveNavigationMeshSettingsAsset.h
+    Source/Navigation/Assets/BehaveNavigationMeshSettingsAsset.cpp
+
+    Source/Navigation/BehaveNavigationMeshArea.cpp
+    Source/Navigation/BehaveNavigationMeshAreaProviderRequestBus.h
     Source/Navigation/BehaveNavigationSystemComponent.h
     Source/Navigation/BehaveNavigationSystemComponent.cpp
 
     Source/Navigation/Components/DynamicNavigationMeshComponent.h
     Source/Navigation/Components/DynamicNavigationMeshComponent.cpp
+    Source/Navigation/Components/NavigationMeshAreaComponent.h
+    Source/Navigation/Components/NavigationMeshAreaComponent.cpp
     Source/Navigation/Components/WalkableComponent.h
     Source/Navigation/Components/WalkableComponent.cpp
 
+    Source/Navigation/Utils/RecastMath.h
+    Source/Navigation/Utils/RecastMath.cpp
     Source/Navigation/Utils/RecastSmartPointer.h
     Source/Navigation/Utils/RecastNavigationMesh.h
     Source/Navigation/Utils/RecastNavigationMesh.cpp

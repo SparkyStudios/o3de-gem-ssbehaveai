@@ -12,18 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <StdAfx.h>
+#pragma once
 
-#include <BehaveAIModuleInterface.h>
-
-namespace SparkyStudios::AI::Behave
+namespace SparkyStudios::AI::Behave::Navigation
 {
-    class BehaveAIModule : public BehaveAIModuleInterface
-    {
-    public:
-        AZ_RTTI(BehaveAIModule, "{29519363-7A4E-4601-B854-3AC69D83DBD0}", BehaveAIModuleInterface);
-        AZ_CLASS_ALLOCATOR(BehaveAIModule, AZ::SystemAllocator, 0);
-    };
-} // namespace SparkyStudios::AI::Behave
+    static constexpr char kDefaultNavigationMeshAgentName[] = "Default Agent";
 
-AZ_DECLARE_MODULE_CLASS(Gem_Behave, SparkyStudios::AI::Behave::BehaveAIModule)
+    /**
+     * @brief The name of the default navigation mesh area.
+     */
+    static constexpr char kDefaultNavigationMeshAreaName[] = "Default Area";
+} // namespace SparkyStudios::AI::Behave::Navigation

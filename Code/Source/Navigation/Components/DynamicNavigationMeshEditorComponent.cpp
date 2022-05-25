@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <DetourDebugDraw.h>
-
 #include <Navigation/Components/DynamicNavigationMeshEditorComponent.h>
+#include <Navigation/Utils/Constants.h>
+
+#include <DetourDebugDraw.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
@@ -25,118 +26,20 @@ namespace SparkyStudios::AI::Behave::Navigation
             DynamicNavigationMeshComponent::Reflect(rc);
 
             sc->Class<DynamicNavigationMeshEditorComponent, EditorComponentBase>()
-                ->Field("debugDraw", &DynamicNavigationMeshEditorComponent::_enableDebug)
-                ->Field("debugDepthTest", &DynamicNavigationMeshEditorComponent::_depthTest)
-                ->Field("settings", &DynamicNavigationMeshEditorComponent::_settings);
+                ->Field("Component", &DynamicNavigationMeshEditorComponent::_navMeshComponent)
+                ->Field("DebugDraw", &DynamicNavigationMeshEditorComponent::_enableDebug)
+                ->Field("DebugDepthTest", &DynamicNavigationMeshEditorComponent::_depthTest)
+                ->Field("Settings", &DynamicNavigationMeshEditorComponent::_settings)
+                ->Field("Bounds", &DynamicNavigationMeshEditorComponent::_aabb);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
                 ec->Class<DynamicNavigationMeshComponent>(
                       "Dynamic Navigation Mesh", "Setup a navigation mesh to be dynamically built and updated at runtime.")
-                    ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshComponent::_settings, "Settings", "Navigation Mesh Settings.")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly);
-
-                ec->Class<NavigationMeshSettings>("Dynamic Navigation Mesh Settings", "Settings to use when building the navigation mesh.")
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Rasterization")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Slider, &NavigationMeshSettings::m_cellSize, "Cell Size",
-                        "The xy-plane cell size to use for fields.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0.1f)
-                    ->Attribute(AZ::Edit::Attributes::Max, 1.0f)
-                    ->Attribute(AZ::Edit::Attributes::Decimals, 2)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Slider, &NavigationMeshSettings::m_cellHeight, "Cell Height",
-                        "The z-axis cell size to use for fields.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0.1f)
-                    ->Attribute(AZ::Edit::Attributes::Max, 1.0f)
-                    ->Attribute(AZ::Edit::Attributes::Decimals, 2)
-
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Region")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &NavigationMeshSettings::m_regionMinSize, "Min Region Size",
-                        "The minimum number of cells allowed to form isolated island areas.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &NavigationMeshSettings::m_regionMergedSize, "Merged Region Height",
-                        "Any regions with a span count smaller than this value will, if possible, be merged with larger regions.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Partitioning")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::ComboBox, &NavigationMeshSettings::m_partitionType, "Partinion Type",
-                        "Define how the regions should be partitioned.")
-                    ->EnumAttribute(NavigationMeshPartitionType::Watershed, "Watershed")
-                    ->EnumAttribute(NavigationMeshPartitionType::Monotone, "Monotone")
-                    ->EnumAttribute(NavigationMeshPartitionType::Layers, "Layers")
-
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Filtering")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::CheckBox, &NavigationMeshSettings::m_filterLowHangingObstacles, "Low Hanging Obstacles",
-                        "Allows the formation of walkable regions that will flow over low lying objects such as curbs, and up structures "
-                        "such as stairways.")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::CheckBox, &NavigationMeshSettings::m_filterLedgeSpans, "Ledge Spans",
-                        "A ledge is a span with one or more neighbors whose maximum is further away than the walkable climb value from the "
-                        "current span's maximum. This filter removes the impact of the overestimation of conservative voxelization so the "
-                        "resulting mesh will not have regions hanging in the air over ledges.")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::CheckBox, &NavigationMeshSettings::m_filterWalkableLowHeightSpans,
-                        "Walkable Low Height Spans",
-                        "For this filter, the clearance above the span is the distance from the span's maximum to the next higher span's "
-                        "minimum. (Same grid column.)")
-
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Polygonization")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &NavigationMeshSettings::m_edgeMaxLength, "Max Edge Lenght",
-                        "The maximum allowed length for contour edges along the border of the mesh.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &NavigationMeshSettings::m_edgeMaxError, "Max Edge Error",
-                        "The maximum distance a simplfied contour's border edges should deviate the original raw contour.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &NavigationMeshSettings::m_maxVerticesPerPoly, "Mar Vertices per Polygon",
-                        "The maximum number of vertices allowed for polygons generated during the contour to polygon conversion process.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 3)
-                    ->Attribute(AZ::Edit::Attributes::Max, 12)
-
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Detail Mesh")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Slider, &NavigationMeshSettings::m_detailSampleDist, "Detail Sample Distance",
-                        "Sets the sampling distance to use when generating the detail mesh.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->Attribute(AZ::Edit::Attributes::Max, 16)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Slider, &NavigationMeshSettings::m_detailSampleMaxError, "Max Sample Error",
-                        "The maximum distance the detail mesh surface should deviate from heightfield data.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->Attribute(AZ::Edit::Attributes::Max, 16)
-
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Tiling")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::CheckBox, &NavigationMeshSettings::m_enableTiling, "Enable Tiling",
-                        "If enabled, the navigation mesh wiil be built separated in tiles.")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Slider, &NavigationMeshSettings::m_tileSize, "Tile Size",
-                        "The width/height size of tile's on the xy-plane.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 16)
-                    ->Attribute(AZ::Edit::Attributes::Max, 1024)
-                    ->Attribute(AZ::Edit::Attributes::Step, 16)
-
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Stats")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, false)
-                    ->UIElement(AZ::Edit::UIHandlers::Default, "Voxels", "Voxel Size")
-                    ->Attribute(AZ::Edit::Attributes::ValueText, &NavigationMeshSettings::StatGetVoxelSize);
+                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::Hide)
+                    ->Attribute(AZ::Edit::Attributes::SliceFlags, AZ::Edit::SliceFlags::NotPushable);
 
                 ec->Class<DynamicNavigationMeshEditorComponent>(
                       "Dynamic Navigation Mesh", "Setup a navigation mesh to be dynamically built and updated at runtime.")
@@ -147,6 +50,10 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "Behave AI - Dynamic Navigation Mesh")
 
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_settings, "Settings",
+                        "Settings to use when building the navigation mesh.")
+
                     ->ClassElement(AZ::Edit::ClassElements::Group, "Debug")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_enableDebug, "Enable",
@@ -155,12 +62,10 @@ namespace SparkyStudios::AI::Behave::Navigation
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_depthTest, "Depth Test",
                         "Enable the depth test while drawing the navigation mesh.")
 
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "")
                     ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_settings, "Settings",
-                        "Settings to use when building the navigation mesh.")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
+                        AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_navMeshComponent,
+                        "Navigation Mesh Properties", "The Navigation Mesh Component that will be used to build the navigation mesh.")
+                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::Hide)
 
                     ->UIElement(AZ::Edit::UIHandlers::Button, "", "Build the navigation mesh with the current settings.")
                     ->Attribute(AZ::Edit::Attributes::ButtonText, "Build")
@@ -200,6 +105,35 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
     }
 
+    AZ::u32 DynamicNavigationMeshEditorComponent::NavigationMeshSettingsAssetUpdated()
+    {
+        AZ::Data::AssetBus::Handler::BusDisconnect();
+
+        if (_settings.GetId().IsValid())
+        {
+            SyncSettings();
+
+            AZ::Data::AssetBus::Handler::BusConnect(_settings.GetId());
+            _settings.QueueLoad();
+        }
+        else
+        {
+            SetSettings();
+        }
+
+        return AZ::Edit::PropertyRefreshLevels::EntireTree;
+    }
+
+    const BehaveNavigationMeshSettingsAsset* DynamicNavigationMeshEditorComponent::GetSettings() const
+    {
+        return _settings.Get();
+    }
+
+    const AZ::Aabb& DynamicNavigationMeshEditorComponent::GetBoundingBox() const
+    {
+        return _aabb;
+    }
+
     void DynamicNavigationMeshEditorComponent::Init()
     {
     }
@@ -215,11 +149,27 @@ namespace SparkyStudios::AI::Behave::Navigation
         AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(GetEntityId());
 
         _navMeshComponent.Init();
-        SyncSettings();
+
+        if (_settings.GetId().IsValid())
+        {
+            // Re-retrieve the asset in case it was reloaded while we were inactive.
+            _settings = AZ::Data::AssetManager::Instance().GetAsset<BehaveNavigationMeshSettingsAsset>(
+                _settings.GetId(), AZ::Data::AssetLoadBehavior::Default);
+            SetSettings(_settings);
+
+            AZ::Data::AssetBus::Handler::BusConnect(_settings.GetId());
+            _settings.QueueLoad();
+        }
+        else
+        {
+            SetSettings();
+        }
     }
 
     void DynamicNavigationMeshEditorComponent::Deactivate()
     {
+        AZ::Data::AssetBus::Handler::BusDisconnect();
+
         AzFramework::EntityDebugDisplayEventBus::Handler::BusDisconnect();
         AZ::TransformNotificationBus::Handler::BusDisconnect();
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusDisconnect();
@@ -290,6 +240,35 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
+    void DynamicNavigationMeshEditorComponent::OnAssetReady(AZ::Data::Asset<AZ::Data::AssetData> asset)
+    {
+        SetSettings(asset);
+    }
+
+    void DynamicNavigationMeshEditorComponent::OnAssetReloaded(AZ::Data::Asset<AZ::Data::AssetData> asset)
+    {
+        SetSettings(asset);
+    }
+
+    void DynamicNavigationMeshEditorComponent::OnAssetError(AZ::Data::Asset<AZ::Data::AssetData> asset)
+    {
+        // only notify for asset errors for the asset we care about.
+#if defined(AZ_ENABLE_TRACING)
+        if ((asset.GetId().IsValid()) && (asset == _settings))
+        {
+            AZ_Error("BehaveAI", false, "Navigation Mesh Settings asset \"%s\" failed to load.", asset.ToString<AZStd::string>().c_str());
+        }
+#else // else if AZ_ENABLE_TRACING is not currently defined...
+        AZ_UNUSED(asset);
+#endif
+    }
+
+    void DynamicNavigationMeshEditorComponent::SetSettings(const AZ::Data::Asset<AZ::Data::AssetData>& settings)
+    {
+        _settings = settings;
+        SyncSettings();
+    }
+
     void DynamicNavigationMeshEditorComponent::UpdateNavMeshAABB()
     {
         AZ::Transform transform;
@@ -298,13 +277,14 @@ namespace SparkyStudios::AI::Behave::Navigation
         LmbrCentral::ShapeComponentRequestsBus::Event(
             GetEntityId(), &LmbrCentral::ShapeComponentRequestsBus::Events::GetTransformAndLocalBounds, transform, aabb);
 
-        _settings.m_aabb = AZStd::move(aabb);
+        _aabb = AZStd::move(aabb);
         SyncSettings();
     }
 
     void DynamicNavigationMeshEditorComponent::SyncSettings()
     {
         _navMeshComponent._settings = _settings;
+        _navMeshComponent._aabb = _aabb;
     }
 
     AZ::Crc32 DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh()
@@ -312,8 +292,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         if (_waitingOnNavMeshBuild)
             return AZ::Edit::PropertyRefreshLevels::None;
 
-        _waitingOnNavMeshBuild = true;
-        _navigationMesh->BuildNavigationMesh(_settings);
+        //_waitingOnNavMeshBuild = true;
+        _navigationMesh->BuildNavigationMesh(this);
 
         return AZ::Edit::PropertyRefreshLevels::EntireTree;
     }
@@ -322,5 +302,4 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
         return _waitingOnNavMeshBuild ? AZ::Edit::PropertyVisibility::Hide : AZ::Edit::PropertyVisibility::Show;
     }
-
 } // namespace SparkyStudios::AI::Behave::Navigation

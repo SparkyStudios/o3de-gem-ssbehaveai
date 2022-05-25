@@ -16,11 +16,13 @@
 
 #include <DetourNavMeshBuilder.h>
 
+#include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
 #include <Navigation/Utils/RecastContext.h>
 #include <Navigation/Utils/RecastNavigationMesh.h>
 
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/Jobs/JobFunction.h>
+#include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 
 #include <AzFramework/Physics/Common/PhysicsSceneQueries.h>
@@ -29,49 +31,10 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    void NavigationMeshSettings::Reflect(AZ::ReflectContext* rc)
-    {
-        if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
-        {
-            sc->Class<NavigationMeshSettings>()
-                ->Version(0)
-                ->Field("cellSize", &NavigationMeshSettings::m_cellSize)
-                ->Field("cellHeight", &NavigationMeshSettings::m_cellHeight)
-                ->Field("regionMinSize", &NavigationMeshSettings::m_regionMinSize)
-                ->Field("regionMergedSize", &NavigationMeshSettings::m_regionMergedSize)
-                ->Field("partitionType", &NavigationMeshSettings::m_partitionType)
-                ->Field("filterLowHangingObstacles", &NavigationMeshSettings::m_filterLowHangingObstacles)
-                ->Field("filterLedgeSpans", &NavigationMeshSettings::m_filterLedgeSpans)
-                ->Field("filterWalkableLowHeightSpans", &NavigationMeshSettings::m_filterWalkableLowHeightSpans)
-                ->Field("edgeMaxError", &NavigationMeshSettings::m_edgeMaxError)
-                ->Field("edgeMaxLength", &NavigationMeshSettings::m_edgeMaxLength)
-                ->Field("maxVerticesPerPolygon", &NavigationMeshSettings::m_maxVerticesPerPoly)
-                ->Field("detailSampleDistance", &NavigationMeshSettings::m_detailSampleDist)
-                ->Field("maxSampleError", &NavigationMeshSettings::m_detailSampleMaxError)
-                ->Field("borderPadding", &NavigationMeshSettings::m_borderPadding)
-                ->Field("enableTiling", &NavigationMeshSettings::m_enableTiling)
-                ->Field("tileSize", &NavigationMeshSettings::m_tileSize)
-                ->Field("worldBounds", &NavigationMeshSettings::m_aabb);
-        }
-    }
-
-    AZStd::string NavigationMeshSettings::StatGetVoxelSize() const
-    {
-        const RecastVector3 worldMin(m_aabb.GetMin());
-        const RecastVector3 worldMax(m_aabb.GetMax());
-
-        const float* min = worldMin.data();
-        const float* max = worldMax.data();
-
-        int gw = 0, gh = 0;
-        rcCalcGridSize(min, max, m_cellSize, &gw, &gh);
-
-        return AZStd::string::format("%d x %d", gw, gh);
-    }
-
     RecastNavigationMesh::RecastNavigationMesh(AZ::EntityId navigationMeshEntityId, bool isEditor)
         : _entityId(AZStd::move(navigationMeshEntityId))
         , _isEditor(isEditor)
+        , _areaConvexVolume()
     {
         _context = AZStd::make_unique<RecastContext>();
     }
@@ -120,16 +83,9 @@ namespace SparkyStudios::AI::Behave::Navigation
         return center;
     }
 
-    void RecastNavigationMesh::Geometry::Clear()
+    RecastGeometry RecastNavigationMesh::GetColliderGeometry(const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits)
     {
-        m_vertices.clear();
-        m_indices.clear();
-    }
-
-    RecastNavigationMesh::Geometry RecastNavigationMesh::GetColliderGeometry(
-        const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits)
-    {
-        Geometry geom;
+        RecastGeometry geom{};
 
         AZ::Aabb volumeAabb = aabb;
 
@@ -144,47 +100,66 @@ namespace SparkyStudios::AI::Behave::Navigation
             {
                 AZ::EntityId hitEntityId = overlapHit.m_entityId;
 
-                bool isWalkable = false;
-                BehaveWalkableRequestBus::EventResult(isWalkable, hitEntityId, &BehaveWalkableRequestBus::Events::IsWalkable, _entityId);
+                bool isWalkable = false, isArea = false;
+                EBUS_EVENT_ID_RESULT(isWalkable, hitEntityId, BehaveWalkableRequestBus, IsWalkable, _entityId);
+                EBUS_EVENT_ID_RESULT(isArea, hitEntityId, BehaveNavigationMeshAreaRequestBus, IsNavigationMeshArea, _entityId);
 
-                if (isWalkable == false)
+                // If this collider is not a part of the navigation mesh generation, skip it
+                if (!isWalkable && !isArea)
                     continue;
 
-                // most physics bodies just have world transforms, but some also have local transforms including terrain.
-                // we are not applying the local orientation because it causes terrain geometry to be oriented incorrectly
-
-                AZ::Transform t = AZ::Transform::CreateIdentity();
-                AZ::TransformBus::EventResult(t, hitEntityId, &AZ::TransformBus::Events::GetWorldTM);
-
-                const AZ::Transform worldTransform = t;
-
-                vertices.clear();
-                indices.clear();
-
-                overlapHit.m_shape->GetGeometry(vertices, indices, &volumeAabb);
-                if (!vertices.empty())
+                if (isArea)
                 {
-                    if (!indices.empty())
+                    RecastAreaConvexVolume area;
+
+                    BehaveNavigationMeshArea areaSettings;
+                    EBUS_EVENT_ID_RESULT(areaSettings, hitEntityId, BehaveNavigationMeshAreaRequestBus, GetNavigationMeshArea);
+                    AZ::PolygonPrism areaPolygon;
+                    EBUS_EVENT_ID_RESULT(areaPolygon, hitEntityId, BehaveNavigationMeshAreaRequestBus, GetNavigationMeshAreaPolygon);
+
+                    area = RecastAreaConvexVolume(areaPolygon);
+                    area.m_area = AZ::u32(areaSettings);
+
+                    _areaConvexVolume.push_back(area);
+                }
+                else if (isWalkable)
+                {
+                    // Most physics bodies just have world transforms, but some also have local transforms including terrain.
+                    // We are not applying the local orientation because it causes terrain geometry to be oriented incorrectly
+
+                    AZ::Transform t = AZ::Transform::CreateIdentity();
+                    EBUS_EVENT_ID_RESULT(t, hitEntityId, AZ::TransformBus, GetWorldTM);
+
+                    const AZ::Transform worldTransform = t;
+
+                    vertices.clear();
+                    indices.clear();
+
+                    overlapHit.m_shape->GetGeometry(vertices, indices, &volumeAabb);
+                    if (!vertices.empty())
                     {
-                        for (const AZ::Vector3& vertex : vertices)
+                        if (!indices.empty())
                         {
-                            const AZ::Vector3 translated = worldTransform.TransformPoint(vertex);
+                            for (const AZ::Vector3& vertex : vertices)
+                            {
+                                const AZ::Vector3 translated = worldTransform.TransformPoint(vertex);
 
-                            geom.m_vertices.push_back(RecastVector3(translated));
+                                geom.m_vertices.push_back(RecastVector3(translated));
+                            }
+
+                            for (size_t i = 2; i < indices.size(); i += 3)
+                            {
+                                geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 0]));
+                                geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 1]));
+                                geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 2]));
+                            }
+
+                            indicesCount += vertices.size();
                         }
-
-                        for (size_t i = 2; i < indices.size(); i += 3)
+                        else
                         {
-                            geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 0]));
-                            geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 1]));
-                            geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 2]));
+                            AZ_Assert(false, "Not implemented");
                         }
-
-                        indicesCount += vertices.size();
-                    }
-                    else
-                    {
-                        AZ_Assert(false, "Not implemented");
                     }
                 }
             }
@@ -193,15 +168,17 @@ namespace SparkyStudios::AI::Behave::Navigation
         return geom;
     }
 
-    bool RecastNavigationMesh::BuildNavigationMesh(const NavigationMeshSettings& settings)
+    bool RecastNavigationMesh::BuildNavigationMesh(const IBehaveNavigationMesh* navMesh)
     {
         _navMeshReady = false;
-        _settings = settings;
-        _geom.Clear();
+        _settings = navMesh->GetSettings();
+        _aabb = navMesh->GetBoundingBox();
 
-        AZ::Vector3 dimension = _settings.m_aabb.GetExtents();
-        AZ::Transform pose =
-            AZ::Transform::CreateFromQuaternionAndTranslation(AZ::Quaternion::CreateIdentity(), _settings.m_aabb.GetCenter());
+        _geom.Clear();
+        _areaConvexVolume.clear();
+
+        AZ::Vector3 dimension = _aabb.GetExtents();
+        AZ::Transform pose = AZ::Transform::CreateFromQuaternionAndTranslation(AZ::Quaternion::CreateIdentity(), _aabb.GetCenter());
 
         Physics::BoxShapeConfiguration shapeConfiguration;
         shapeConfiguration.m_dimensions = dimension;
@@ -220,7 +197,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         AZ_Printf("DynamicNavigationMeshComponent", "found %llu physx meshes", results.m_hits.size());
 
-        _geom = GetColliderGeometry(_settings.m_aabb, results);
+        _geom = GetColliderGeometry(_aabb, results);
 
         auto* job = AZ::CreateJobFunction(
             [this]()
@@ -255,26 +232,26 @@ namespace SparkyStudios::AI::Behave::Navigation
         rcConfig config{};
         memset(&config, 0, sizeof(config));
 
-        config.cs = _settings.m_cellSize;
-        config.ch = _settings.m_cellHeight;
+        config.cs = _settings->m_cellSize;
+        config.ch = _settings->m_cellHeight;
         config.walkableSlopeAngle = 45; // TODO
         config.walkableHeight = static_cast<int>(std::ceil(2.0f / config.ch)); // TODO
         config.walkableClimb = static_cast<int>(std::floor(0.9f / config.ch)); // TODO
         config.walkableRadius = static_cast<int>(std::ceil(0.75f / config.cs)); // TODO
-        config.maxEdgeLen = static_cast<int>(_settings.m_edgeMaxLength / _settings.m_cellSize);
-        config.maxSimplificationError = _settings.m_edgeMaxError;
-        config.minRegionArea = static_cast<int>(rcSqr(_settings.m_regionMinSize)); // Note: area = size*size
-        config.mergeRegionArea = static_cast<int>(rcSqr(_settings.m_regionMergedSize)); // Note: area = size*size
-        config.maxVertsPerPoly = static_cast<int>(_settings.m_maxVerticesPerPoly);
-        config.detailSampleDist = _settings.m_detailSampleDist < 0.9f ? 0 : _settings.m_cellSize * _settings.m_detailSampleDist;
-        config.detailSampleMaxError = _settings.m_cellHeight * _settings.m_detailSampleMaxError;
+        config.maxEdgeLen = static_cast<int>(_settings->m_edgeMaxLength / _settings->m_cellSize);
+        config.maxSimplificationError = _settings->m_edgeMaxError;
+        config.minRegionArea = static_cast<int>(rcSqr(_settings->m_regionMinSize)); // Note: area = size*size
+        config.mergeRegionArea = static_cast<int>(rcSqr(_settings->m_regionMergedSize)); // Note: area = size*size
+        config.maxVertsPerPoly = static_cast<int>(_settings->m_maxVerticesPerPoly);
+        config.detailSampleDist = _settings->m_detailSampleDist < 0.9f ? 0 : _settings->m_cellSize * _settings->m_detailSampleDist;
+        config.detailSampleMaxError = _settings->m_cellHeight * _settings->m_detailSampleMaxError;
 
         // Set the area where the navigation will be build.
         // Here the bounds of the input mesh are used, but the
         // area could be specified by an user defined box, etc.
 
-        const RecastVector3 worldMin(_settings.m_aabb.GetMin());
-        const RecastVector3 worldMax(_settings.m_aabb.GetMax());
+        const RecastVector3 worldMin(_aabb.GetMin());
+        const RecastVector3 worldMax(_aabb.GetMax());
 
         rcVcopy(config.bmin, &worldMin.m_x);
         rcVcopy(config.bmax, &worldMax.m_x);
@@ -335,11 +312,11 @@ namespace SparkyStudios::AI::Behave::Navigation
         // Once all geometry is rasterized, we do initial pass of filtering to
         // remove unwanted overhangs caused by the conservative rasterization
         // as well as filter spans where the character cannot possibly stand.
-        if (_settings.m_filterLowHangingObstacles)
+        if (_settings->m_filterLowHangingObstacles)
             rcFilterLowHangingWalkableObstacles(_context.get(), config.walkableClimb, *_solidHeightField);
-        if (_settings.m_filterLedgeSpans)
+        if (_settings->m_filterLedgeSpans)
             rcFilterLedgeSpans(_context.get(), config.walkableHeight, config.walkableClimb, *_solidHeightField);
-        if (_settings.m_filterWalkableLowHeightSpans)
+        if (_settings->m_filterWalkableLowHeightSpans)
             rcFilterWalkableLowHeightSpans(_context.get(), config.walkableHeight, *_solidHeightField);
 
         //
@@ -369,7 +346,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             return false;
         }
 
-        if (_settings.m_partitionType == NavigationMeshPartitionType::Watershed)
+        if (_settings->m_partitionType == NavigationMeshPartitionType::Watershed)
         {
             // Prepare for region partitioning, by calculating distance field along the walkable surface.
             if (!rcBuildDistanceField(_context.get(), *_compactHeightField))
@@ -385,7 +362,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                 return false;
             }
         }
-        else if (_settings.m_partitionType == NavigationMeshPartitionType::Monotone)
+        else if (_settings->m_partitionType == NavigationMeshPartitionType::Monotone)
         {
             // Partition the walkable surface into simple regions without holes.
             // Monotone partitioning does not need distancefield.
@@ -550,5 +527,4 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         return false;
     }
-
 } // namespace SparkyStudios::AI::Behave::Navigation

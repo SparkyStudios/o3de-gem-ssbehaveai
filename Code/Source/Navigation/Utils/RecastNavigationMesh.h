@@ -14,12 +14,14 @@
 
 #pragma once
 
+#include <SparkyStudios/AI/Behave/Navigation/IBehaveNavigationMesh.h>
+
+#include <Navigation/Utils/RecastMath.h>
+#include <Navigation/Utils/RecastSmartPointer.h>
+
 #include <DetourNavMesh.h>
 #include <DetourNavMeshQuery.h>
 #include <Recast.h>
-
-#include <Navigation/Utils/RecastSmartPointer.h>
-#include <Navigation/Utils/RecastVector3.h>
 
 #include <AzCore/Math/Aabb.h>
 
@@ -27,55 +29,6 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    enum class NavigationMeshPartitionType
-    {
-        Watershed,
-        Monotone,
-        Layers,
-    };
-
-    struct NavigationMeshSettings
-    {
-    public:
-        AZ_TYPE_INFO(NavigationMeshSettings, "{6390ABAE-0D7B-4F5B-8ED2-56A92C38CB52}");
-
-        using NavigationMeshPartitionTypeComboBoxVec = AZStd::vector<AZStd::pair<NavigationMeshPartitionType, AZStd::string>>;
-
-        static void Reflect(AZ::ReflectContext* rc);
-
-        int m_borderPadding = 0;
-
-        float m_cellSize = 0.3f;
-        float m_cellHeight = 0.2f;
-
-        int m_regionMinSize = 8;
-        int m_regionMergedSize = 20;
-
-        NavigationMeshPartitionType m_partitionType = NavigationMeshPartitionType::Watershed;
-
-        bool m_filterLowHangingObstacles = true;
-        bool m_filterLedgeSpans = true;
-        bool m_filterWalkableLowHeightSpans = true;
-
-        float m_edgeMaxError = 1.3f;
-        int m_edgeMaxLength = 12;
-        int m_maxVerticesPerPoly = 6;
-
-        int m_detailSampleDist = 6;
-        int m_detailSampleMaxError = 1;
-
-        bool m_enableTiling = true;
-        int m_tileSize = 16;
-
-        AZ::Aabb m_aabb{};
-
-    private:
-        friend class DynamicNavigationMeshEditorComponent;
-        friend class DynamicNavigationMeshComponent;
-
-        AZStd::string StatGetVoxelSize() const;
-    };
-
     class RecastNavigationMesh
     {
         friend class DynamicNavigationMeshEditorComponent;
@@ -84,7 +37,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     public:
         RecastNavigationMesh(AZ::EntityId navigationMeshEntityId, bool isEditor = false);
 
-        bool BuildNavigationMesh(const NavigationMeshSettings& settings);
+        bool BuildNavigationMesh(const IBehaveNavigationMesh* navMesh);
 
         dtNavMesh* GetNavigationMesh() const;
         dtNavMeshQuery* GetNavigationMeshQuery() const;
@@ -94,26 +47,20 @@ namespace SparkyStudios::AI::Behave::Navigation
         static RecastVector3 GetPolyCenter(const dtNavMesh* navMesh, dtPolyRef ref);
 
     private:
-        struct Geometry
-        {
-            AZStd::vector<RecastVector3> m_vertices;
-            AZStd::vector<AZ::s32> m_indices;
-
-            void Clear();
-        };
-
-        Geometry GetColliderGeometry(const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits);
+        RecastGeometry GetColliderGeometry(const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits);
 
         bool BuildNavigationMeshInternal();
 
         AZ::EntityId _entityId;
         bool _isEditor;
 
-        NavigationMeshSettings _settings;
+        const BehaveNavigationMeshSettingsAsset* _settings;
+        AZ::Aabb _aabb;
 
         AZStd::atomic<bool> _navMeshReady = false;
 
-        Geometry _geom;
+        RecastGeometry _geom;
+        AZStd::vector<RecastAreaConvexVolume> _areaConvexVolume;
 
         AZStd::unique_ptr<rcContext> _context;
         AZStd::vector<AZ::u8> _trianglesArea;

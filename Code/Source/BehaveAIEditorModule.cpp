@@ -16,15 +16,19 @@
 
 #include <BehaveAIModuleInterface.h>
 
-#include <BehaviorTree/SSBehaviorTreeEditorComponent.h>
-#include <BehaviorTree/SSBehaviorTreeEditorSystemComponent.h>
+#include <BehaviorTree/BehaviorTreeEditorComponent.h>
+#include <BehaviorTree/BehaviorTreeEditorSystemComponent.h>
+
+#include <Navigation/BehaveNavigationEditorSystemComponent.h>
+#include <Navigation/Components/DynamicNavigationMeshEditorComponent.h>
+#include <Navigation/Components/WalkableEditorComponent.h>
 
 namespace SparkyStudios::AI::Behave
 {
     class BehaveAIEditorModule : public BehaveAIModuleInterface
     {
     public:
-        AZ_RTTI(BehaveAIEditorModule, "{2FC25376-C0A0-4B56-BFBE-5A65BAD02586}", BehaveAIModuleInterface);
+        AZ_RTTI(BehaveAIEditorModule, "{CBC8E767-E436-4398-954D-0E3C84219DF1}", BehaveAIModuleInterface);
         AZ_CLASS_ALLOCATOR(BehaveAIEditorModule, AZ::SystemAllocator, 0);
 
         BehaveAIEditorModule()
@@ -33,8 +37,12 @@ namespace SparkyStudios::AI::Behave
             m_descriptors.insert(
                 m_descriptors.end(),
                 {
-                    BehaviorTree::SSBehaviorTreeEditorSystemComponent::CreateDescriptor(),
-                    BehaviorTree::SSBehaviorTreeEditorComponent::CreateDescriptor(),
+                    BehaviorTree::BehaviorTreeEditorSystemComponent::CreateDescriptor(),
+                    BehaviorTree::BehaviorTreeEditorComponent::CreateDescriptor(),
+
+                    Navigation::BehaveNavigationEditorSystemComponent::CreateDescriptor(),
+                    Navigation::DynamicNavigationMeshEditorComponent::CreateDescriptor(),
+                    Navigation::WalkableEditorComponent::CreateDescriptor(),
                 });
         }
 
@@ -42,13 +50,15 @@ namespace SparkyStudios::AI::Behave
          * Add required SystemComponents to the SystemEntity.
          * Non-SystemComponents should not be added here
          */
-        AZ::ComponentTypeList GetRequiredSystemComponents() const override
+        [[nodiscard]] AZ::ComponentTypeList GetRequiredSystemComponents() const override
         {
             return AZ::ComponentTypeList{
-                azrtti_typeid<BehaviorTree::SSBehaviorTreeEditorSystemComponent>(),
+                azrtti_typeid<BehaviorTree::BehaviorTreeEditorSystemComponent>(),
+
+                azrtti_typeid<Navigation::BehaveNavigationEditorSystemComponent>(),
             };
         }
     };
 } // namespace SparkyStudios::AI::Behave
 
-AZ_DECLARE_MODULE_CLASS(Gem_SSBehaveAI, SparkyStudios::AI::Behave::BehaveAIEditorModule)
+AZ_DECLARE_MODULE_CLASS(Gem_Behave, SparkyStudios::AI::Behave::BehaveAIEditorModule)

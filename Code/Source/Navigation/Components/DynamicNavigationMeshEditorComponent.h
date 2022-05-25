@@ -14,8 +14,9 @@
 
 #pragma once
 
+#include <Navigation/Assets/BehaveNavigationAgentAsset.h>
 #include <Navigation/Components/DynamicNavigationMeshComponent.h>
-#include <Navigation/Utils/RecastDebugDraw.h>
+#include <Navigation/Utils/RecastNavMeshDebugDraw.h>
 #include <Navigation/Utils/RecastNavigationMesh.h>
 
 #include <AzCore/Component/TransformBus.h>
@@ -30,13 +31,15 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class DynamicNavigationMeshEditorComponent final
+    class DynamicNavigationMeshEditorComponent
         : public AzToolsFramework::Components::EditorComponentBase
         , public AZ::TickBus::Handler
+        , public IBehaveNavigationMesh
         , protected BehaveNavigationMeshNotificationBus::Handler
         , private LmbrCentral::ShapeComponentNotificationsBus::Handler
         , private AZ::TransformNotificationBus::Handler
         , private AzFramework::EntityDebugDisplayEventBus::Handler
+        , private AZ::Data::AssetBus::Handler
     {
     public:
         AZ_EDITOR_COMPONENT(DynamicNavigationMeshEditorComponent, "{819CE185-5738-406A-AADB-E5B0177B1D05}");
@@ -51,45 +54,45 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         ~DynamicNavigationMeshEditorComponent() override;
 
-        //////////////////////////////////////////////////////////////////////////
+        AZ::u32 NavigationMeshSettingsAssetUpdated();
+
+        // SparkyStudios::AI::Behave::Navigation::IBehaveNavigationMesh
+        [[nodiscard]] const BehaveNavigationMeshSettingsAsset* GetSettings() const override;
+        [[nodiscard]] const AZ::Aabb& GetBoundingBox() const override;
+
         // AZ::Component
         void Init() override;
         void Activate() override;
         void Deactivate() override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // AzToolsFramework::Components::EditorComponentBase
         void BuildGameEntity(AZ::Entity* gameEntity) override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // AZ::TickBus
         void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
         int GetTickOrder() override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // SparkyStudios::AI::Behave::Navigation::BehaveNavigationMeshNotificationBus
         void OnNavigationMeshUpdated() override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // LmbrCentral::ShapeComponentNotificationsBus
         void OnShapeChanged(ShapeChangeReasons changeReason) override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // AZ::TransformNotificationBus::Handler
         void OnTransformChanged(const AZ::Transform& local, const AZ::Transform& world) override;
-        //////////////////////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////////////////////
         // AzToolsFramework::EntityDebugDisplayEventBus
         void DisplayEntityViewport(const AzFramework::ViewportInfo& viewportInfo, AzFramework::DebugDisplayRequests& debugDisplay) override;
-        //////////////////////////////////////////////////////////////////////////
+
+        // AZ::Data::AssetBus
+        void OnAssetReady(AZ::Data::Asset<AZ::Data::AssetData> asset) override;
+        void OnAssetReloaded(AZ::Data::Asset<AZ::Data::AssetData> asset) override;
+        void OnAssetError(AZ::Data::Asset<AZ::Data::AssetData> asset) override;
 
     private:
+        using NavigationAgentList = AZStd::vector<AZStd::pair<AZ::u32, AZStd::string>>;
+
+        void SetSettings(const AZ::Data::Asset<AZ::Data::AssetData>& settings = {});
         void UpdateNavMeshAABB();
         void SyncSettings();
 
@@ -98,14 +101,16 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         AZ::Transform _currentEntityTransform{};
 
-        bool _enableDebug{};
-        bool _depthTest{};
-        RecastDebugDraw _debugDraw;
+        bool _enableDebug = false;
+        bool _depthTest = false;
+        RecastNavMeshDebugDraw _debugDraw{};
 
         DynamicNavigationMeshComponent _navMeshComponent;
-        NavigationMeshSettings _settings;
+
+        AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> _settings{};
+        AZ::Aabb _aabb = AZ::Aabb::CreateNull();
 
         bool _waitingOnNavMeshBuild = false;
-        RecastNavigationMesh* _navigationMesh{};
+        RecastNavigationMesh* _navigationMesh = nullptr;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

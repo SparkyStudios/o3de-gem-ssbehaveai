@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef RECAST_COMMON_INL
 #define RECAST_COMMON_INL
 
@@ -65,7 +63,7 @@ static bool between(const int* a, const int* b, const int* c)
 }
 
 // Returns true iff segments ab and cd intersect, properly or improperly.
-static bool intersect(const int* a, const int* b, const int* c, const int* d)
+[[maybe_unused]] static bool intersect(const int* a, const int* b, const int* c, const int* d)
 {
 	if (intersectProp(a, b, c, d))
 		return true;
@@ -76,7 +74,7 @@ static bool intersect(const int* a, const int* b, const int* c, const int* d)
 		return false;
 }
 
-static bool vequal(const int* a, const int* b)
+[[maybe_unused]] static bool vequal(const int* a, const int* b)
 {
 	return a[0] == b[0] && a[2] == b[2];
 }

@@ -30,28 +30,38 @@ namespace SparkyStudios::AI::Behave::Navigation
             // We may have been reflected by DynamicNavigationMeshEditorComponent already, so check first
             if (sc->FindClassData(azrtti_typeid<DynamicNavigationMeshComponent>()) == nullptr)
             {
-                sc->Class<DynamicNavigationMeshComponent, AZ::Component>()->Version(0)->Field(
-                    "settings", &DynamicNavigationMeshComponent::_settings);
-
-                NavigationMeshSettings::Reflect(rc);
+                sc->Class<DynamicNavigationMeshComponent, AZ::Component>()
+                    ->Version(0)
+                    ->Field("Settings", &DynamicNavigationMeshComponent::_settings)
+                    ->Field("Bounds", &DynamicNavigationMeshComponent::_aabb);
             }
         }
     }
 
-    bool DynamicNavigationMeshComponent::UpdateNavigationMesh()
+    const BehaveNavigationMeshSettingsAsset* DynamicNavigationMeshComponent::GetSettings() const
     {
-        return _navigationMesh->BuildNavigationMesh(_settings);
+        return _settings.Get();
     }
 
-    AZStd::vector<AZ::Vector3> DynamicNavigationMeshComponent::FindPathToEntity(AZ::EntityId fromEntity, AZ::EntityId toEntity)
+    const AZ::Aabb& DynamicNavigationMeshComponent::GetBoundingBox() const
+    {
+        return _aabb;
+    }
+
+    bool DynamicNavigationMeshComponent::UpdateNavigationMesh()
+    {
+        return _navigationMesh->BuildNavigationMesh(this);
+    }
+
+    AZStd::vector<AZ::Vector3> DynamicNavigationMeshComponent::FindPathToEntity(const AZ::EntityId& from, const AZ::EntityId& to)
     {
         if (_navigationMesh->IsNavigationMeshReady())
         {
-            if (fromEntity.IsValid() && toEntity.IsValid())
+            if (from.IsValid() && to.IsValid())
             {
                 AZ::Vector3 start = AZ::Vector3::CreateZero(), end = AZ::Vector3::CreateZero();
-                AZ::TransformBus::EventResult(start, fromEntity, &AZ::TransformBus::Events::GetWorldTranslation);
-                AZ::TransformBus::EventResult(end, toEntity, &AZ::TransformBus::Events::GetWorldTranslation);
+                AZ::TransformBus::EventResult(start, from, &AZ::TransformBus::Events::GetWorldTranslation);
+                AZ::TransformBus::EventResult(end, to, &AZ::TransformBus::Events::GetWorldTranslation);
 
                 return FindPathToPosition(start, end);
             }
@@ -60,18 +70,17 @@ namespace SparkyStudios::AI::Behave::Navigation
         return {};
     }
 
-    AZStd::vector<AZ::Vector3> DynamicNavigationMeshComponent::FindPathToPosition(
-        const AZ::Vector3& fromWorldPosition, const AZ::Vector3& targetWorldPosition)
+    AZStd::vector<AZ::Vector3> DynamicNavigationMeshComponent::FindPathToPosition(const AZ::Vector3& from, const AZ::Vector3& to)
     {
         if (!_navigationMesh->IsNavigationMeshReady())
             return {};
 
         AZStd::vector<AZ::Vector3> pathPoints;
         {
-            dtNavMeshQuery* const navMeshQuery = _navigationMesh->GetNavigationMeshQuery();
-            dtNavMesh* const navMesh = _navigationMesh->GetNavigationMesh();
+            const dtNavMeshQuery* navMeshQuery = _navigationMesh->GetNavigationMeshQuery();
+            const dtNavMesh* navMesh = _navigationMesh->GetNavigationMesh();
 
-            RecastVector3 startRecast{ fromWorldPosition }, endRecast{ targetWorldPosition };
+            RecastVector3 startRecast{ from }, endRecast{ to };
             constexpr float halfExtents[3] = { 1.0f, 1.0f, 1.0f };
 
             dtPolyRef startPoly = 0, endPoly = 0;

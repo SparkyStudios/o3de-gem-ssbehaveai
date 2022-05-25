@@ -20,10 +20,10 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class RecastDebugDraw : public duDebugDraw
+    class RecastNavMeshDebugDraw final : public duDebugDraw
     {
     public:
-        ~RecastDebugDraw() override = default;
+        ~RecastNavMeshDebugDraw() override = default;
 
         void depthMask(bool state) override;
 

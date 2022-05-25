@@ -15,8 +15,10 @@
 #pragma once
 
 #include <AzCore/Component/ComponentBus.h>
-#include <AzCore/Math/Aabb.h>
+#include <AzCore/Math/PolygonPrism.h>
 #include <AzCore/Math/Vector3.h>
+
+#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
 
 class dtNavMeshQuery;
 class dtNavMesh;
@@ -28,7 +30,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     public:
         virtual bool UpdateNavigationMesh() = 0;
 
-        virtual AZStd::vector<AZ::Vector3> FindPathToEntity(AZ::EntityId from, AZ::EntityId to) = 0;
+        virtual AZStd::vector<AZ::Vector3> FindPathToEntity(const AZ::EntityId& from, const AZ::EntityId& to) = 0;
         virtual AZStd::vector<AZ::Vector3> FindPathToPosition(const AZ::Vector3& from, const AZ::Vector3& target) = 0;
     };
 
@@ -48,12 +50,48 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ_RTTI(BehaveWalkableInterface, "{0F974E8D-7601-47D1-B557-E771E4A83DEF}");
 
         //! Overrides the default AZ::EBusTraits handler policy to allow one listener only.
-        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Single;
+        static constexpr AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Single;
 
+        /**
+         * @brief Checks if the given entity is walkable.
+         *
+         * @param navigationMeshEntity A valid entity that is a part of a navigation mesh.
+         *
+         * @return true if the entity is walkable, false otherwise.
+         */
         virtual bool IsWalkable(AZ::EntityId navigationMeshEntity) = 0;
     };
 
     // Use to mark objects as walkable
     using BehaveWalkableRequestBus = AZ::EBus<BehaveWalkableInterface>;
 
+    class BehaveNavigationMeshAreaInterface : public AZ::ComponentBus
+    {
+    public:
+        AZ_RTTI(BehaveNavigationMeshAreaInterface, "{371E595C-D631-4E61-8EC5-24431A1B26FF}");
+
+        //! Overrides the default AZ::EBusTraits handler policy to allow one listener only.
+        static constexpr AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Single;
+
+        /**
+         * @brief Checks if the given entity is a navigation mesh area.
+         *
+         * @param navigationMeshEntityId A valid entity ID that is a part of a navigation mesh.
+         *
+         * @return true if the entity is a navigation mesh area, false otherwise.
+         */
+        virtual bool IsNavigationMeshArea(AZ::EntityId navigationMeshEntityId) = 0;
+
+        /**
+         * @brief Gets the navigation mesh area asset of the given entity.
+         *
+         * @return A valid navigation mesh area asset if the entity is a navigation mesh area, the default area otherwise.
+         */
+        virtual BehaveNavigationMeshArea GetNavigationMeshArea() = 0;
+
+        virtual AZ::PolygonPrism GetNavigationMeshAreaPolygon() = 0;
+    };
+
+    // Use to mark objects as walkable
+    using BehaveNavigationMeshAreaRequestBus = AZ::EBus<BehaveNavigationMeshAreaInterface>;
 } // namespace SparkyStudios::AI::Behave::Navigation

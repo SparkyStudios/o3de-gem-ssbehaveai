@@ -6,6 +6,24 @@
           "pattern": ".*bhbtree",
           "params": "copy",
           "productAssetType": "{7F72EE8B-0B82-40AE-BD9B-CF34EAF35377}"
+        },
+        "RC Behave AI - Navigation Agent Asset": {
+          "glob": "*.bhnavagent",
+          "params": "copy",
+          "critical": true,
+          "productAssetType": "{F47AEB2C-909C-4095-ACA8-6B896BB09CC7}"
+        },
+        "RC Behave AI - Navigation Mesh Area Asset": {
+          "glob": "*.bhnavmesharea",
+          "params": "copy",
+          "critical": true,
+          "productAssetType": "{E9F8F8E0-F8E0-4D7D-A8E0-F8E0E9F8F8E0}"
+        },
+        "RC Behave AI - Navigation Mesh Settings Asset": {
+          "glob": "*.bhnavmeshconfig",
+          "params": "copy",
+          "critical": true,
+          "productAssetType": "{E59EBE08-1A42-4A9F-82E9-C7156CE72034}"
         }
       }
     }

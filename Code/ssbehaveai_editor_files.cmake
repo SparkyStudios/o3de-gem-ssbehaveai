@@ -31,8 +31,10 @@ set(FILES
     Source/Navigation/Components/DynamicNavigationMeshEditorComponent.cpp
     Source/Navigation/Components/WalkableEditorComponent.h
     Source/Navigation/Components/WalkableEditorComponent.cpp
-    Source/Navigation/Utils/RecastDebugDraw.h
-    Source/Navigation/Utils/RecastDebugDraw.cpp
+
+    Source/Navigation/Utils/Constants.h
+    Source/Navigation/Utils/RecastNavMeshDebugDraw.h
+    Source/Navigation/Utils/RecastNavMeshDebugDraw.cpp
 
     # Recast Navigation SDK
     # ==============================

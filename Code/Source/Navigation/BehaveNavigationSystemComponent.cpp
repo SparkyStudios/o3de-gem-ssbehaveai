@@ -12,30 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h>
+
+#include <Navigation/Assets/BehaveNavigationAgentAsset.h>
+#include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
 #include <Navigation/BehaveNavigationSystemComponent.h>
 
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/EditContextConstants.inl>
 #include <AzCore/Serialization/SerializeContext.h>
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h>
-
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    void BehaveNavigationSystemComponent::Reflect(AZ::ReflectContext* context)
+    void BehaveNavigationSystemComponent::Reflect(AZ::ReflectContext* rc)
     {
-        if (AZ::SerializeContext* serialize = azrtti_cast<AZ::SerializeContext*>(context))
+        if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            serialize->Class<BehaveNavigationSystemComponent, AZ::Component>()->Version(0);
+            sc->Class<BehaveNavigationSystemComponent, AZ::Component>()->Version(0);
 
-            if (AZ::EditContext* ec = serialize->GetEditContext())
-            {
-                ec->Class<BehaveNavigationSystemComponent>(
-                      "BehaveNavigation", "2D navigation meshes and path finding powered by Recast Navigation.")
-                    ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("System"))
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true);
-            }
+            BehaveNavigationAgentAsset::Reflect(rc);
+            BehaveNavigationMeshAreaAsset::Reflect(rc);
+            BehaveNavigationMeshSettingsAsset::Reflect(rc);
         }
     }
 

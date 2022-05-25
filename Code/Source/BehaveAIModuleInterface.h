@@ -14,8 +14,13 @@
 
 #pragma once
 
-#include <BehaviorTree/SSBehaviorTreeComponent.h>
-#include <BehaviorTree/SSBehaviorTreeSystemComponent.h>
+#include <BehaviorTree/BehaviorTreeComponent.h>
+#include <BehaviorTree/BehaviorTreeSystemComponent.h>
+
+#include <Navigation/BehaveNavigationSystemComponent.h>
+#include <Navigation/Components/DynamicNavigationMeshComponent.h>
+#include <Navigation/Components/NavigationMeshAreaComponent.h>
+#include <Navigation/Components/WalkableComponent.h>
 
 #include <AzCore/Memory/SystemAllocator.h>
 #include <AzCore/Module/Module.h>
@@ -33,18 +38,25 @@ namespace SparkyStudios::AI::Behave
             m_descriptors.insert(
                 m_descriptors.end(),
                 {
-                    BehaviorTree::SSBehaviorTreeSystemComponent::CreateDescriptor(),
-                    BehaviorTree::SSBehaviorTreeComponent::CreateDescriptor(),
+                    BehaviorTree::BehaviorTreeSystemComponent::CreateDescriptor(),
+                    BehaviorTree::BehaviorTreeComponent::CreateDescriptor(),
+
+                    Navigation::BehaveNavigationSystemComponent::CreateDescriptor(),
+                    Navigation::NavigationMeshAreaComponent::CreateDescriptor(),
+                    Navigation::DynamicNavigationMeshComponent::CreateDescriptor(),
+                    Navigation::WalkableComponent::CreateDescriptor(),
                 });
         }
 
         /**
          * Add required SystemComponents to the SystemEntity.
          */
-        AZ::ComponentTypeList GetRequiredSystemComponents() const override
+        [[nodiscard]] AZ::ComponentTypeList GetRequiredSystemComponents() const override
         {
             return AZ::ComponentTypeList{
-                azrtti_typeid<BehaviorTree::SSBehaviorTreeSystemComponent>(),
+                azrtti_typeid<BehaviorTree::BehaviorTreeSystemComponent>(),
+
+                azrtti_typeid<Navigation::BehaveNavigationSystemComponent>(),
             };
         }
     };

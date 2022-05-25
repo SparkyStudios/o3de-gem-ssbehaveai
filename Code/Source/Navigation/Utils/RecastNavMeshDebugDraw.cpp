@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <Navigation/Utils/RecastDebugDraw.h>
+#include <Navigation/Utils/RecastNavMeshDebugDraw.h>
+#include <Navigation/Utils/RecastMath.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    void RecastDebugDraw::depthMask([[maybe_unused]] bool state)
+    void RecastNavMeshDebugDraw::depthMask([[maybe_unused]] bool state)
     {
         if (!m_depthTest)
             return;
@@ -27,14 +28,14 @@ namespace SparkyStudios::AI::Behave::Navigation
             m_debugDisplay->DepthTestOff();
     }
 
-    void RecastDebugDraw::begin(duDebugDrawPrimitives primitives, float size)
+    void RecastNavMeshDebugDraw::begin(duDebugDrawPrimitives primitives, float size)
     {
         m_currentPrim = primitives;
         m_currentSize = size;
         m_verticesToDraw.clear();
     }
 
-    void RecastDebugDraw::end()
+    void RecastNavMeshDebugDraw::end()
     {
         if (m_debugDisplay == nullptr)
             return;
@@ -97,17 +98,17 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
-    void RecastDebugDraw::SetDebugDisplayRequestsHandler(AzFramework::DebugDisplayRequests* debugDisplay)
+    void RecastNavMeshDebugDraw::SetDebugDisplayRequestsHandler(AzFramework::DebugDisplayRequests* debugDisplay)
     {
         m_debugDisplay = debugDisplay;
     }
 
-    void RecastDebugDraw::SetEnableDepthTest(bool depthTest)
+    void RecastNavMeshDebugDraw::SetEnableDepthTest(bool depthTest)
     {
         m_depthTest = depthTest;
     }
 
-    void RecastDebugDraw::AddVertex(float x, float y, float z, unsigned int color)
+    void RecastNavMeshDebugDraw::AddVertex(float x, float y, float z, unsigned int color)
     {
         const float temp[3] = { x, y, z };
         const RecastVector3 v(temp);
