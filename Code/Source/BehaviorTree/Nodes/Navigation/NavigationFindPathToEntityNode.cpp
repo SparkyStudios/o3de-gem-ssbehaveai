@@ -267,7 +267,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Navigation
                     ->Value("Complete", NavigationState::Complete);
 
                 ec->Class<BlackboardPropertyNavigationFindPathToEntityNavigationState>(
-                      "[BehaveAI] Behavior Tree Blackboard Property (NavigationState)", "A blackboard property.")
+                      "[BehaveAI] BehaviorTree Blackboard Property (NavigationState)", "A blackboard property.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, &BlackboardProperty::mVisibility)
                     ->DataElement(

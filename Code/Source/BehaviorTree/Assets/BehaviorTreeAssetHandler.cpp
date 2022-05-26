@@ -61,7 +61,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
             size_t dataLength = stream->GetLength();
             if (dataLength == 0)
             {
-                AZ_Error("SSBehaviorTree", false, "Error loading asset file. The file is empty.");
+                AZ_Error("BehaveAI [BehaviorTree]", false, "Error loading asset file. The file is empty.");
                 return AZ::Data::AssetHandler::LoadResult::Error;
             }
 
@@ -72,7 +72,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
             return AZ::Data::AssetHandler::LoadResult::LoadComplete;
         }
 
-        AZ_Error("SSBehaviorTree", false, "Error loading asset file.");
+        AZ_Error("BehaveAI [BehaviorTree]", false, "Error loading asset file.");
         return AZ::Data::AssetHandler::LoadResult::Error;
     }
 
@@ -106,7 +106,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
         if (!AZ::IO::RetryOpenStream(stream))
         {
             AZ_Warning(
-                "SSBehaviorTree", false, "Asset loading for \"%s\" failed because the source file could not be opened.",
+                "BehaveAI [BehaviorTree]", false, "Asset loading for \"%s\" failed because the source file could not be opened.",
                 fullAssetPath.data());
 
             return AZ::Data::AssetHandler::LoadResult::Error;
@@ -118,7 +118,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
             if (!ioStream.Open(fullAssetPath.data(), AZ::IO::OpenMode::ModeRead))
             {
                 AZ_Warning(
-                    "SSBehaviorTree", false, "Asset loading for \"%s\" failed because the source file could not be opened.",
+                    "BehaveAI [BehaviorTree]", false, "Asset loading for \"%s\" failed because the source file could not be opened.",
                     fullAssetPath.data());
 
                 return AZ::Data::AssetHandler::LoadResult::Error;
@@ -129,7 +129,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
             if (bytesRead != ioStream.GetLength())
             {
                 AZ_Warning(
-                    "SSBehaviorTree", false, AZStd::string::format("File failed to read completely: %s", fullAssetPath.data()).c_str());
+                    "BehaveAI [BehaviorTree]", false, AZStd::string::format("File failed to read completely: %s", fullAssetPath.data()).c_str());
 
                 return AZ::Data::AssetHandler::LoadResult::Error;
             }
@@ -142,7 +142,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
             return LoadAssetData(asset, assetDataStream, assetLoadFilterCB);
         }
 
-        AZ_Error("SSBehaviorTree", false, "Unable to open behavior tree asset with relative path %s", assetPath);
+        AZ_Error("BehaveAI [BehaviorTree]", false, "Unable to open behavior tree asset with relative path %s", assetPath);
         return AZ::Data::AssetHandler::LoadResult::Error;
     }
 
@@ -195,7 +195,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Assets
 
     const char* BehaviorTreeAssetHandler::GetAssetTypeDisplayName() const
     {
-        return "SS BehaviorTree";
+        return "Behave AI - BehaviorTree";
     }
 
     const char* BehaviorTreeAssetHandler::GetGroup() const

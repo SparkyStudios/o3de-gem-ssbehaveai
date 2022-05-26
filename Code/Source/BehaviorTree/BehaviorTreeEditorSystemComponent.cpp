@@ -155,7 +155,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
                         menu->addSeparator();
                     }
 
-                    ssBehaviorTreeMenu = menu->addMenu(QObject::tr("Edit Behavior Tree"));
+                    ssBehaviorTreeMenu = menu->addMenu(QObject::tr("Edit BehaviorTree"));
                     ssBehaviorTreeMenu->setEnabled(false);
                     menu->addSeparator();
                 }
@@ -231,7 +231,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
         if (AZStd::wildcard_match("*.bhbtree", fullSourceFileName))
         {
             AZStd::string fullName(fullSourceFileName);
-            openers.push_back({ "SparkyStudios_AI_Behave_BehaviorTree_Editor", "Open in Behavior Tree Editor...",
+            openers.push_back({ "SparkyStudios_AI_Behave_BehaviorTree_Editor", "Open in BehaviorTree Editor...",
                                 QIcon(":/Menu/ss_behaviortree_editor.svg"),
                                 [&](const char* fullSourceFileNameInCallback, const AZ::Uuid& /*sourceUUID*/)
                                 {

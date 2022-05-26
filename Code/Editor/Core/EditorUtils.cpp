@@ -270,7 +270,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
             Node* node = abs_node.graphicNode;
             if (node == nullptr)
             {
-                AZ_Error("SSBehaviorTree", false, "one or more nodes haven't been created yet");
+                AZ_Error("BehaveAI [BehaviorTree]", false, "one or more nodes haven't been created yet");
                 return;
             }
         }
@@ -363,7 +363,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Core
             auto model_it = models.find(modelID);
             if (model_it == models.end())
             {
-                AZ_Error("SSBehaviorTree", false, (QString("This model has not been registered: ") + modelID).toStdString().c_str());
+                AZ_Error("BehaveAI [BehaviorTree]", false, (QString("This model has not been registered: ") + modelID).toStdString().c_str());
                 return;
             }
             tree_node.model = model_it->second;

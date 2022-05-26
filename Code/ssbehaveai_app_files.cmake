@@ -33,7 +33,7 @@ set(FILES
     Editor/Core/Models/SubTreeNodeModel.h
 
     Editor/Resources/icons.qrc
-    Editor/Resources/SSBehaviorTree.Editor.App.rc
+    Editor/Resources/SSBehaveAI_BehaviorTree.Editor.App.rc
     Editor/Resources/application-icon.ico
 
     Editor/Widgets/BlackboardProperties.cpp

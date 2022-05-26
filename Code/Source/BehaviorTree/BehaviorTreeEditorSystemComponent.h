@@ -35,7 +35,7 @@
 
 namespace SparkyStudios::AI::Behave::BehaviorTree
 {
-    /// System component for SSBehaviorTree editor
+    /// System component for Behave's BehaviorTree editor
     class BehaviorTreeEditorSystemComponent
         : public BehaviorTreeSystemComponent
         , public AzToolsFramework::EditorMenuNotificationBus::Handler

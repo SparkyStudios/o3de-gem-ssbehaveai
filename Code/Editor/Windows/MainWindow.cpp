@@ -43,7 +43,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         , _currentLayout(QtNodes::PortLayout::Vertical)
         , _dirtyFile(false)
     {
-        setWindowTitle(tr("Behave AI - Behavior Tree Editor"));
+        setWindowTitle(tr("Behave AI - BehaviorTree Editor"));
         setMinimumSize(800, 600);
 
         _modelRegistry = CreateDataModelRegistry();
@@ -459,7 +459,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         const QString directoryPath = settings.value("MainWindow.lastLoadDirectory", _projectPath).toString();
 
         const QString fileName =
-            QFileDialog::getOpenFileName(this, tr("Load Behavior Tree from file"), directoryPath, tr("Behavior Tree files (*.bhbtree)"));
+            QFileDialog::getOpenFileName(this, tr("Load BehaviorTree from file"), directoryPath, tr("BehaviorTree files (*.bhbtree)"));
         if (!QFileInfo::exists(fileName))
         {
             return;
@@ -509,7 +509,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         {
             bool ok = false;
             newName = QInputDialog::getText(
-                this, tr("Change Behavior Tree Name"), tr("Insert the new name of this Behavior Tree"), QLineEdit::Normal, oldName, &ok);
+                this, tr("Change BehaviorTree Name"), tr("Insert the new name of this BehaviorTree"), QLineEdit::Normal, oldName, &ok);
 
             if (!ok)
             {
@@ -526,7 +526,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
         {
             QMessageBox::warning(
                 this, "Tab name already is use",
-                tr("There is already a Behavior Tree called [%1].\n"
+                tr("There is already a BehaviorTree called [%1].\n"
                    "Use another name.")
                     .arg(newName),
                 QMessageBox::Ok);
@@ -1118,7 +1118,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Editor::Windows
 
         if (overwrite || _openedFile.isNull())
         {
-            fileName = QFileDialog::getSaveFileName(this, "Save Behavior Tree to file", directoryPath, "Behavior Tree files (*.bhbtree)");
+            fileName = QFileDialog::getSaveFileName(this, "Save BehaviorTree to file", directoryPath, "BehaviorTree files (*.bhbtree)");
             if (fileName.isEmpty())
             {
                 return false;

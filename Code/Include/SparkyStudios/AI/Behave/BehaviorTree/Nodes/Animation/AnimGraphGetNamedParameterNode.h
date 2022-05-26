@@ -76,7 +76,7 @@ namespace SparkyStudios::AI::Behave::BehaviorTree::Nodes::Animation
                 if (m_parameterIndex == INVALID_PARAMETER_INDEX)
                 {
                     AZ_Warning(
-                        "SSBehaviorTree", false, "[%s:%s] The named parameter \"%s\" was not found in the animation graph.",
+                        "BehaveAI [BehaviorTree]", false, "[%s:%s] The named parameter \"%s\" was not found in the animation graph.",
                         RegisteredNodeName(), NodeName(), parameter.value().c_str());
                 }
             }

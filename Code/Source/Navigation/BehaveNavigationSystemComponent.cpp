@@ -15,10 +15,10 @@
 #include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h>
 
 #include <Navigation/Assets/BehaveNavigationAgentAsset.h>
+#include <Navigation/Assets/BehaveNavigationMeshAreaAsset.h>
 #include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
 #include <Navigation/BehaveNavigationSystemComponent.h>
 
-#include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/EditContextConstants.inl>
 #include <AzCore/Serialization/SerializeContext.h>
 
@@ -38,12 +38,12 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void BehaveNavigationSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
-        provided.push_back(AZ_CRC_CE("BehaveNavigationService"));
+        provided.push_back(AZ_CRC_CE("BehaveAI_NavigationService"));
     }
 
     void BehaveNavigationSystemComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
-        incompatible.push_back(AZ_CRC_CE("BehaveNavigationService"));
+        incompatible.push_back(AZ_CRC_CE("BehaveAI_NavigationService"));
     }
 
     void BehaveNavigationSystemComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)

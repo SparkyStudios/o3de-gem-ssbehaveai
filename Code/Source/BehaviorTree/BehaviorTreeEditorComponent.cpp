@@ -522,10 +522,10 @@ namespace SparkyStudios::AI::Behave::BehaviorTree
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, &BehaviorTreeEditorComponent::_customName)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->Attribute(AZ::Edit::Attributes::PrimaryAssetType, Assets::BehaviorTreeAssetHandler::GetAssetTypeStatic())
-                    ->Attribute(AZ::Edit::Attributes::Icon, "Editor/Icons/Components/SSBehaviorTree.svg")
-                    ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Editor/Icons/Viewport/SSBehaviorTree.png")
+                    ->Attribute(AZ::Edit::Attributes::Icon, "Editor/Icons/Components/SSBehaveAI_BehaviorTree.svg")
+                    ->Attribute(AZ::Edit::Attributes::ViewportIcon, "Editor/Icons/Viewport/SSBehaveAI_BehaviorTree.png")
                     ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaviorTreeEditorComponent::_behaviorTreeAsset, "Behavior Tree",
+                        AZ::Edit::UIHandlers::Default, &BehaviorTreeEditorComponent::_behaviorTreeAsset, "BehaviorTree",
                         "The behavior tree to execute.")
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaviorTreeEditorComponent::BehaviorTreeHasChanged)
                     ->DataElement(

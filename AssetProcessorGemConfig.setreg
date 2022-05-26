@@ -2,7 +2,7 @@
   "Amazon": {
     "AssetProcessor": {
       "Settings": {
-        "RC Behave AI - Behavior Tree Asset": {
+        "RC Behave AI - BehaviorTree Asset": {
           "pattern": ".*bhbtree",
           "params": "copy",
           "productAssetType": "{7F72EE8B-0B82-40AE-BD9B-CF34EAF35377}"
