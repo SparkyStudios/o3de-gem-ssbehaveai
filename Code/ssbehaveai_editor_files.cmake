@@ -29,6 +29,8 @@ set(FILES
 
     Source/Navigation/Components/DynamicNavigationMeshEditorComponent.h
     Source/Navigation/Components/DynamicNavigationMeshEditorComponent.cpp
+    Source/Navigation/Components/NavigationMeshAreaEditorComponent.h
+    Source/Navigation/Components/NavigationMeshAreaEditorComponent.cpp
     Source/Navigation/Components/WalkableEditorComponent.h
     Source/Navigation/Components/WalkableEditorComponent.cpp
 

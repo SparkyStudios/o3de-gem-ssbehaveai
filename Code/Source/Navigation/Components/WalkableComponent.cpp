@@ -1,6 +1,5 @@
 #include <Navigation/Components/WalkableComponent.h>
 
-#include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 
 namespace SparkyStudios::AI::Behave::Navigation

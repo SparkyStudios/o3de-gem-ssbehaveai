@@ -70,15 +70,15 @@ namespace SparkyStudios::AI::Behave::Navigation
         for (int i = 0; i < aznumeric_cast<int>(poly->vertCount); ++i)
         {
             const float* v = &tile->verts[poly->verts[i] * 3];
-            center.m_x += v[0];
-            center.m_y += v[1];
-            center.m_z += v[2];
+            center.mX += v[0];
+            center.mY += v[1];
+            center.mZ += v[2];
         }
 
         const float s = 1.0f / aznumeric_cast<float>(poly->vertCount);
-        center.m_x *= s;
-        center.m_y *= s;
-        center.m_z *= s;
+        center.mX *= s;
+        center.mY *= s;
+        center.mZ *= s;
 
         return center;
     }
@@ -104,9 +104,14 @@ namespace SparkyStudios::AI::Behave::Navigation
                 EBUS_EVENT_ID_RESULT(isWalkable, hitEntityId, BehaveWalkableRequestBus, IsWalkable, _entityId);
                 EBUS_EVENT_ID_RESULT(isArea, hitEntityId, BehaveNavigationMeshAreaRequestBus, IsNavigationMeshArea, _entityId);
 
+                AZ_Printf("Navigation", "Collider %s is part of the navigation mesh generation", hitEntityId.ToString().c_str());
+
                 // If this collider is not a part of the navigation mesh generation, skip it
                 if (!isWalkable && !isArea)
                     continue;
+
+                AZ::Transform t = AZ::Transform::CreateIdentity();
+                EBUS_EVENT_ID_RESULT(t, hitEntityId, AZ::TransformBus, GetWorldTM);
 
                 if (isArea)
                 {
@@ -117,8 +122,8 @@ namespace SparkyStudios::AI::Behave::Navigation
                     AZ::PolygonPrism areaPolygon;
                     EBUS_EVENT_ID_RESULT(areaPolygon, hitEntityId, BehaveNavigationMeshAreaRequestBus, GetNavigationMeshAreaPolygon);
 
-                    area = RecastAreaConvexVolume(areaPolygon);
-                    area.m_area = AZ::u32(areaSettings);
+                    area = RecastAreaConvexVolume(areaPolygon, t);
+                    area.mArea = AZ::u32(areaSettings);
 
                     _areaConvexVolume.push_back(area);
                 }
@@ -126,11 +131,6 @@ namespace SparkyStudios::AI::Behave::Navigation
                 {
                     // Most physics bodies just have world transforms, but some also have local transforms including terrain.
                     // We are not applying the local orientation because it causes terrain geometry to be oriented incorrectly
-
-                    AZ::Transform t = AZ::Transform::CreateIdentity();
-                    EBUS_EVENT_ID_RESULT(t, hitEntityId, AZ::TransformBus, GetWorldTM);
-
-                    const AZ::Transform worldTransform = t;
 
                     vertices.clear();
                     indices.clear();
@@ -142,16 +142,16 @@ namespace SparkyStudios::AI::Behave::Navigation
                         {
                             for (const AZ::Vector3& vertex : vertices)
                             {
-                                const AZ::Vector3 translated = worldTransform.TransformPoint(vertex);
+                                const AZ::Vector3 translated = t.TransformPoint(vertex);
 
-                                geom.m_vertices.push_back(RecastVector3(translated));
+                                geom.mVertices.push_back(RecastVector3(translated));
                             }
 
                             for (size_t i = 2; i < indices.size(); i += 3)
                             {
-                                geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 0]));
-                                geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 1]));
-                                geom.m_indices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 2]));
+                                geom.mIndices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 0]));
+                                geom.mIndices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 1]));
+                                geom.mIndices.push_back(aznumeric_cast<AZ::u32>(indicesCount + indices[i - 2]));
                             }
 
                             indicesCount += vertices.size();
@@ -216,13 +216,13 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     bool RecastNavigationMesh::BuildNavigationMeshInternal()
     {
-        if (_geom.m_vertices.empty())
+        if (_geom.mVertices.empty())
             return false;
 
-        const float* vertices = _geom.m_vertices.front().data();
-        const int vertexCount = static_cast<int>(_geom.m_vertices.size());
-        const int* triangleData = _geom.m_indices.data();
-        const int triangleCount = static_cast<int>(_geom.m_indices.size()) / 3;
+        const float* vertices = _geom.mVertices.front().data();
+        const int vertexCount = static_cast<int>(_geom.mVertices.size());
+        const int* triangleData = _geom.mIndices.data();
+        const int triangleCount = static_cast<int>(_geom.mIndices.size()) / 3;
 
         //
         // Step 1. Initialize build config.
@@ -234,10 +234,10 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         config.cs = _settings->m_cellSize;
         config.ch = _settings->m_cellHeight;
-        config.walkableSlopeAngle = 45; // TODO
-        config.walkableHeight = static_cast<int>(std::ceil(2.0f / config.ch)); // TODO
-        config.walkableClimb = static_cast<int>(std::floor(0.9f / config.ch)); // TODO
-        config.walkableRadius = static_cast<int>(std::ceil(0.75f / config.cs)); // TODO
+        config.walkableSlopeAngle = _settings->m_agent->m_slopAngle;
+        config.walkableHeight = static_cast<int>(std::ceil(_settings->m_agent->m_height / config.ch));
+        config.walkableClimb = static_cast<int>(std::floor(_settings->m_agent->m_climb / config.ch));
+        config.walkableRadius = static_cast<int>(std::ceil(_settings->m_agent->m_radius / config.cs));
         config.maxEdgeLen = static_cast<int>(_settings->m_edgeMaxLength / _settings->m_cellSize);
         config.maxSimplificationError = _settings->m_edgeMaxError;
         config.minRegionArea = static_cast<int>(rcSqr(_settings->m_regionMinSize)); // Note: area = size*size
@@ -253,8 +253,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         const RecastVector3 worldMin(_aabb.GetMin());
         const RecastVector3 worldMax(_aabb.GetMax());
 
-        rcVcopy(config.bmin, &worldMin.m_x);
-        rcVcopy(config.bmax, &worldMax.m_x);
+        rcVcopy(config.bmin, &worldMin.mX);
+        rcVcopy(config.bmax, &worldMax.mX);
         rcCalcGridSize(config.bmin, config.bmax, config.cs, &config.width, &config.height);
 
         // Reset build times gathering.
@@ -346,6 +346,15 @@ namespace SparkyStudios::AI::Behave::Navigation
             return false;
         }
 
+        // (Optional) Mark areas.
+        for (size_t i = 0, l = _areaConvexVolume.size(); i < l; ++i)
+        {
+            rcMarkConvexPolyArea(
+                _context.get(), _areaConvexVolume[i].mVertices.front().data(), static_cast<int>(_areaConvexVolume[i].mVertices.size()),
+                _areaConvexVolume[i].mHMin, _areaConvexVolume[i].mHMax, static_cast<unsigned char>(_areaConvexVolume[i].mArea),
+                *_compactHeightField);
+        }
+
         if (_settings->m_partitionType == NavigationMeshPartitionType::Watershed)
         {
             // Prepare for region partitioning, by calculating distance field along the walkable surface.
@@ -365,7 +374,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         else if (_settings->m_partitionType == NavigationMeshPartitionType::Monotone)
         {
             // Partition the walkable surface into simple regions without holes.
-            // Monotone partitioning does not need distancefield.
+            // Monotone partitioning does not need distance field.
             if (!rcBuildRegionsMonotone(_context.get(), *_compactHeightField, 0, config.minRegionArea, config.mergeRegionArea))
             {
                 _context->log(RC_LOG_ERROR, "buildNavigation: Could not build monotone regions.");

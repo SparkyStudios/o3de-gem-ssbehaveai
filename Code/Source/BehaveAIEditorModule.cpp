@@ -21,6 +21,7 @@
 
 #include <Navigation/BehaveNavigationEditorSystemComponent.h>
 #include <Navigation/Components/DynamicNavigationMeshEditorComponent.h>
+#include <Navigation/Components/NavigationMeshAreaEditorComponent.h>
 #include <Navigation/Components/WalkableEditorComponent.h>
 
 namespace SparkyStudios::AI::Behave
@@ -42,6 +43,7 @@ namespace SparkyStudios::AI::Behave
 
                     Navigation::BehaveNavigationEditorSystemComponent::CreateDescriptor(),
                     Navigation::DynamicNavigationMeshEditorComponent::CreateDescriptor(),
+                    Navigation::NavigationMeshAreaEditorComponent::CreateDescriptor(),
                     Navigation::WalkableEditorComponent::CreateDescriptor(),
                 });
         }

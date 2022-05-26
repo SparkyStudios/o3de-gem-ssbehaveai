@@ -15,7 +15,6 @@
 #pragma once
 
 #include <AzCore/Math/PolygonPrism.h>
-#include <AzCore/Math/Vector3.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
@@ -32,12 +31,7 @@ namespace SparkyStudios::AI::Behave::Navigation
          *
          * @param in The O3DE vector.
          */
-        explicit RecastVector3(const AZ::Vector3& in)
-        {
-            m_x = in.GetX();
-            m_y = in.GetZ();
-            m_z = in.GetY();
-        }
+        explicit RecastVector3(const AZ::Vector3& in);
 
         /**
          * @brief Create a new instance from an array pointer.
@@ -45,12 +39,7 @@ namespace SparkyStudios::AI::Behave::Navigation
          * @param in The pointer containing vector components.
          * Mostly coming from recast itself.
          */
-        explicit RecastVector3(const float* in)
-        {
-            m_x = in[0];
-            m_y = in[1];
-            m_z = in[2];
-        }
+        explicit RecastVector3(const float* in);
 
         /**
          * @brief Create a new instance from a set of values.
@@ -59,38 +48,24 @@ namespace SparkyStudios::AI::Behave::Navigation
          * @param y The y coordinate.
          * @param z The z coordinate.
          */
-        RecastVector3(float x, float y, float z)
-        {
-            m_x = x;
-            m_y = y;
-            m_z = z;
-        }
+        RecastVector3(float x, float y, float z);
 
         /**
          * @brief Returns the pointer to the first vector component.
          */
-        float* data()
-        {
-            return &m_x;
-        }
+        float* data();
 
         /**
          * @brief Returns the pointer to the first vector component.
          */
-        [[nodiscard]] const float* data() const
-        {
-            return &m_x;
-        }
+        [[nodiscard]] const float* data() const;
 
         /**
          * @brief Returns the vector as an O3DE vector.
          */
-        [[nodiscard]] AZ::Vector3 AsVector3() const
-        {
-            return { m_x, m_z, m_y };
-        }
+        [[nodiscard]] AZ::Vector3 AsVector3() const;
 
-        float m_x = 0, m_y = 0, m_z = 0;
+        float mX = 0, mY = 0, mZ = 0;
     };
 
     /**
@@ -98,20 +73,53 @@ namespace SparkyStudios::AI::Behave::Navigation
      */
     struct RecastGeometry
     {
-        AZStd::vector<RecastVector3> m_vertices;
-        AZStd::vector<AZ::s32> m_indices;
+        /**
+         * @brief The geometry's vertex buffer.
+         */
+        AZStd::vector<RecastVector3> mVertices;
 
+        /**
+         * @brief The geometry's index buffer.
+         */
+        AZStd::vector<AZ::s32> mIndices;
+
+        /**
+         * @brief Clear the geometry data.
+         */
         void Clear();
     };
 
+    /**
+     * @brief Stores a polygon prism to send to Recast as a convex volume.
+     */ 
     struct RecastAreaConvexVolume
     {
-        AZStd::vector<RecastVector3> m_vertices;
-        float m_hMin, m_hMax;
-        AZ::u32 m_area;
+        /**
+         * @brief The convex volume's vertices.
+         */
+        AZStd::vector<RecastVector3> mVertices;
+
+        /**
+         * @brief The convex volume's minimum height.
+         *
+         * This is the distance from the ground to the bottom of the convex volume.
+         */
+        float mHMin;
+
+        /**
+         * @brief The convex volume's maximum height.
+         *
+         * This is the distance from the ground to the top of the convex volume.
+         */
+        float mHMax;
+
+        /**
+         * @brief The navigation area's ID associated to this volume.
+         */
+        AZ::u32 mArea;
 
         RecastAreaConvexVolume();
 
-        explicit RecastAreaConvexVolume(const AZ::PolygonPrism& prism);
+        explicit RecastAreaConvexVolume(const AZ::PolygonPrism& prism, const AZ::Transform& transform);
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

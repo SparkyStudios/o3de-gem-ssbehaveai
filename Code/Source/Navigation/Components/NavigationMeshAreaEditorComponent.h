@@ -1,4 +1,4 @@
-// Copyright (c) 2021-present Sparky Studios. All rights reserved.
+﻿// Copyright (c) 2021-present Sparky Studios. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,36 +16,57 @@
 
 #include <AzCore/Component/Component.h>
 
-#include <Navigation/Utils/RecastMath.h>
+#include <AzToolsFramework/ToolsComponents/EditorComponentBase.h>
+
+#include <LmbrCentral/Shape/ShapeComponentBus.h>
+
+#include <Navigation/Components/NavigationMeshAreaComponent.h>
 
 #include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
 #include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class NavigationMeshAreaComponent
-        : public AZ::Component
+    class NavigationMeshAreaEditorComponent
+        : public AzToolsFramework::Components::EditorComponentBase
         , public BehaveNavigationMeshAreaRequestBus::Handler
+        , private LmbrCentral::ShapeComponentNotificationsBus::Handler
+        , private AZ::TransformNotificationBus::Handler
     {
-        friend class NavigationMeshAreaEditorComponent;
-
     public:
-        AZ_COMPONENT(NavigationMeshAreaComponent, "{2D8C08DA-9A0B-4644-AA1E-D71C5A08F46D}");
+        AZ_EDITOR_COMPONENT(NavigationMeshAreaEditorComponent, "{0087E9C7-7C09-4C81-A489-D46A436F31EE}");
 
         static void Reflect(AZ::ReflectContext* rc);
 
+        static void GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided);
+        static void GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible);
+        static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
+
         // AZ::Component
-        void Init() override;
         void Activate() override;
         void Deactivate() override;
+
+        // AzToolsFramework::Components::EditorComponentBase
+        void BuildGameEntity(AZ::Entity* gameEntity) override;
 
         // BehaveNavigationMeshAreaRequestBus
         bool IsNavigationMeshArea(AZ::EntityId navigationMeshEntityId) override;
         BehaveNavigationMeshArea GetNavigationMeshArea() override;
         AZ::PolygonPrism GetNavigationMeshAreaPolygon() override;
 
+        // LmbrCentral::ShapeComponentNotificationsBus
+        void OnShapeChanged(ShapeChangeReasons changeReason) override;
+
+        // AZ::TransformNotificationBus
+        void OnTransformChanged(const AZ::Transform& /*local*/, const AZ::Transform& /*world*/) override;
+
     private:
+        void SyncComponent();
+        void UpdatePolygonPrism();
+
         BehaveNavigationMeshArea _area;
         AZ::PolygonPrism _polygonPrism;
+
+        NavigationMeshAreaComponent _component;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation
