@@ -35,8 +35,17 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         /**
          * @brief Gets all the registered navigation mesh area names.
+         *
+         * @param[out] names The names of the registered navigation mesh areas.
          */
         virtual void GetRegisteredNavigationMeshAreaNames(BehaveNavigationMeshAreaNameSet& names) const = 0;
+
+        /**
+         * @brief Gets all the registered navigation mesh area names.
+         *
+         * @param[out] areas The registered navigation mesh areas.
+         */
+        virtual void GetRegisteredNavigationMeshAreas(BehaveNavigationMeshAreaVector& areas) const = 0;
 
         /**
          * @brief Gets the navigation mesh area with the given name.

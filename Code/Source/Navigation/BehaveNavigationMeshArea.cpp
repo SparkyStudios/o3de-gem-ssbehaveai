@@ -55,8 +55,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ_PROFILE_FUNCTION(Entity);
 
         BehaveNavigationMeshAreaNameSet labels;
-        BehaveNavigationMeshAreaProviderRequestBus::Broadcast(
-            &BehaveNavigationMeshAreaProviderRequestBus::Events::GetRegisteredNavigationMeshAreaNames, labels);
+        EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreaNames, labels);
 
         AZStd::vector<AZStd::pair<AZ::u32, AZStd::string>> registeredAgents;
         registeredAgents.reserve(labels.size());

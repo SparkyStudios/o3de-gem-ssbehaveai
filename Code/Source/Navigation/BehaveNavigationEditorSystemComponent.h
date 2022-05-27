@@ -71,6 +71,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         // BehaveNavigationMeshAreaProviderRequestBus
         void GetRegisteredNavigationMeshAreaNames(BehaveNavigationMeshAreaNameSet& names) const override;
+        void GetRegisteredNavigationMeshAreas(BehaveNavigationMeshAreaVector& areas) const override;
         [[nodiscard]] BehaveNavigationMeshArea GetNavigationMeshArea(const AZStd::string& name) const override;
 
         AZStd::unordered_map<AZ::Data::AssetId, AZ::Data::Asset<BehaveNavigationAgentAsset>> m_navigationAgentAssets;

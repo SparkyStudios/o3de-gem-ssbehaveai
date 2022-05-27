@@ -314,6 +314,20 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
+    void BehaveNavigationEditorSystemComponent::GetRegisteredNavigationMeshAreas(BehaveNavigationMeshAreaVector& areas) const
+    {
+        areas.clear();
+        areas.push_back(BehaveNavigationMeshArea::Default());
+
+        for (auto&& assetPair : m_navigationMeshAreaAssets)
+        {
+            if (const auto& asset = assetPair.second; asset.IsReady())
+            {
+                areas.push_back(BehaveNavigationMeshArea(asset->m_name, asset->m_cost));
+            }
+        }
+    }
+
     BehaveNavigationMeshArea BehaveNavigationEditorSystemComponent::GetNavigationMeshArea(const AZStd::string& name) const
     {
         for (auto&& assetPair : m_navigationMeshAreaAssets)
