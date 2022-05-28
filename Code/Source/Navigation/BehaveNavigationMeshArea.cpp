@@ -14,33 +14,81 @@
 
 #include "Utils/Constants.h"
 
-#include <Source/Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
 #include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
 
 #include <AzCore/Debug/Profiler.h>
 #include <AzCore/Serialization/EditContext.h>
-#include <AzCore/std/sort.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    static BehaveNavigationMeshArea gDefaultNavigationAgent = BehaveNavigationMeshArea();
+    static BehaveNavigationMeshArea gDefaultNavigationAgent =
+        BehaveNavigationMeshArea(kDefaultNavigationMeshAreaId, kDefaultNavigationMeshAreaName, kDefaultNavigationMeshAreaCost, eNMAF_ALL);
 
     void BehaveNavigationMeshArea::Reflect(AZ::ReflectContext* rc)
     {
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Class<BehaveNavigationMeshArea>()->Version(0)->Field("AreaCRC", &BehaveNavigationMeshArea::_areaCrc);
+            sc->Enum<NavigationMeshAreaFlag>()
+                ->Version(0)
+                ->Value("Walk", NavigationMeshAreaFlag::eNMAF_WALK)
+                ->Value("Swim", NavigationMeshAreaFlag::eNMAF_SWIM)
+                ->Value("Jump", NavigationMeshAreaFlag::eNMAF_JUMP)
+                ->Value("Fly", NavigationMeshAreaFlag::eNMAF_FLY)
+                ->Value("Door", NavigationMeshAreaFlag::eNMAF_DOOR)
+                ->Value("Disabled", NavigationMeshAreaFlag::eNMAF_DISABLED)
+                ->Value("All", NavigationMeshAreaFlag::eNMAF_ALL);
+
+            sc->Class<BehaveNavigationMeshArea>()
+                ->Version(0)
+                ->Field("Id", &BehaveNavigationMeshArea::_id)
+                ->Field("Name", &BehaveNavigationMeshArea::_name)
+                ->Field("Cost", &BehaveNavigationMeshArea::_cost)
+                ->Field("Flags", &BehaveNavigationMeshArea::_flags);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
+                ec->Enum<NavigationMeshAreaFlag>("Navigation Mesh Area Flags", "Flags for the navigation mesh area")
+                    ->Value("Walk", NavigationMeshAreaFlag::eNMAF_WALK)
+                    ->Value("Swim", NavigationMeshAreaFlag::eNMAF_SWIM)
+                    ->Value("Jump", NavigationMeshAreaFlag::eNMAF_JUMP)
+                    ->Value("Fly", NavigationMeshAreaFlag::eNMAF_FLY)
+                    ->Value("Door", NavigationMeshAreaFlag::eNMAF_DOOR)
+                    ->Value("Disabled", NavigationMeshAreaFlag::eNMAF_DISABLED)
+                    ->Value("All", NavigationMeshAreaFlag::eNMAF_ALL);
+
                 ec->Class<BehaveNavigationMeshArea>("Behave AI - Navigation Mesh Area", "Configures a navigation mesh area.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::ComboBox, &BehaveNavigationMeshArea::_areaCrc, "Area", "The navigation mesh area name.")
-                    ->Attribute(AZ::Edit::Attributes::EnumValues, &BehaveNavigationMeshArea::BuildSelectableNavigationMeshAreaList)
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues);
+                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshArea::_name, "Name", "The name of the navigation mesh area.")
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshArea::_cost, "Cost",
+                        "The traversal cost of the navigation mesh area.")
+
+                    ->ClassElement(AZ::Edit::ClassElements::Group, "Flags")
+                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Walk", "Mark the area as accessible by agents with the ability to walk.")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnWalkFlagChanged)
+                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckWalkFlag)
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Swim", "Mark the area as accessible by agents with the ability to swim.")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnSwimFlagChanged)
+                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckSwimFlag)
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Jump", "Mark the area as accessible by agents with the ability to jump.")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnJumpFlagChanged)
+                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckJumpFlag)
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Fly", "Mark the area as accessible by agents with the ability to fly.")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnFlyFlagChanged)
+                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckFlyFlag)
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Door", "Mark the area as accessible by agents with the ability to door.")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnDoorFlagChanged)
+                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckDoorFlag)
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Disabled", "Disable the navigation on this area for all agents.")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnDisabledFlagChanged)
+                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckDisabledFlag);
             }
         }
     }
@@ -50,60 +98,30 @@ namespace SparkyStudios::AI::Behave::Navigation
         return gDefaultNavigationAgent;
     }
 
-    BehaveNavigationMeshArea::List BehaveNavigationMeshArea::GetRegisteredNavigationAgents()
-    {
-        AZ_PROFILE_FUNCTION(Entity);
-
-        BehaveNavigationMeshAreaNameSet labels;
-        EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreaNames, labels);
-
-        AZStd::vector<AZStd::pair<AZ::u32, AZStd::string>> registeredAgents;
-        registeredAgents.reserve(labels.size());
-        for (auto&& label : labels)
-        {
-            const AZ::u32 crc = AZ::Crc32(label.data());
-
-            // warn when two areas have the same crc
-            if (const auto entryIt = AZStd::find_if(
-                    registeredAgents.begin(), registeredAgents.end(),
-                    [crc](const auto& entry)
-                    {
-                        return entry.first == crc;
-                    });
-                entryIt != registeredAgents.end())
-            {
-                AZ_Warning(
-                    "[BehaveAI] Navigation", false, "Navigation Mesh Area CRC collision between \"%s\" and \"%s\"!  \"%s\" not added.",
-                    entryIt->second.data(), label.data(), label.data());
-                continue;
-            }
-
-            registeredAgents.push_back({ crc, label });
-        }
-
-        return registeredAgents;
-    }
-
     BehaveNavigationMeshArea::BehaveNavigationMeshArea()
-        : BehaveNavigationMeshArea(kDefaultNavigationMeshAreaName)
+        : _id(kDefaultNavigationMeshAreaId)
+        , _name() // Set name to empty string
+        , _cost(kDefaultNavigationMeshAreaCost)
+        , _flags(0)
     {
     }
 
-    BehaveNavigationMeshArea::BehaveNavigationMeshArea(const AZStd::string& name, float cost)
-        : _areaCrc(AZ::Crc32(name.data()))
+    BehaveNavigationMeshArea::BehaveNavigationMeshArea(AZ::u8 id, AZStd::string name, float cost, AZ::u16 flags)
+        : _id(id)
+        , _name(AZStd::move(name))
         , _cost(cost)
+        , _flags(flags)
     {
     }
 
-    BehaveNavigationMeshArea::BehaveNavigationMeshArea(const AZ::Crc32& value, float cost)
-        : _areaCrc(value)
-        , _cost(cost)
+    void BehaveNavigationMeshArea::SetId(AZ::u8 value)
     {
+        _id = value;
     }
 
     void BehaveNavigationMeshArea::SetName(const AZStd::string& name)
     {
-        _areaCrc = AZ::Crc32(name.data());
+        _name = name;
     }
 
     void BehaveNavigationMeshArea::SetCost(float cost)
@@ -111,14 +129,19 @@ namespace SparkyStudios::AI::Behave::Navigation
         _cost = cost;
     }
 
-    AZStd::string BehaveNavigationMeshArea::GetDisplayName() const
+    void BehaveNavigationMeshArea::SetFlags(AZ::u16 flags)
     {
-        AZ_PROFILE_FUNCTION(Entity);
+        _flags = flags;
+    }
 
-        AZStd::string name;
-        FindDisplayName(GetRegisteredNavigationAgents(), name);
+    AZ::u8 BehaveNavigationMeshArea::GetId() const
+    {
+        return _id;
+    }
 
-        return name;
+    const AZStd::string& BehaveNavigationMeshArea::GetName() const
+    {
+        return _name;
     }
 
     float BehaveNavigationMeshArea::GetCost() const
@@ -126,47 +149,122 @@ namespace SparkyStudios::AI::Behave::Navigation
         return _cost;
     }
 
-    bool BehaveNavigationMeshArea::FindDisplayName(
-        const AZStd::vector<AZStd::pair<AZ::u32, AZStd::string>>& selectableAreas, AZStd::string& name) const
+    AZ::u16 BehaveNavigationMeshArea::GetFlags() const
     {
-        const auto it = AZStd::find_if(
-            selectableAreas.begin(), selectableAreas.end(),
-            [this](const auto& entry)
-            {
-                return _areaCrc == entry.first;
-            });
-
-        if (it == selectableAreas.end())
-        {
-            // if a match was not found, generate a name using the crc
-            name = AZStd::string::format("(unregistered %u)", _areaCrc);
-            return false;
-        }
-
-        name = it->second;
-        return true;
+        return _flags;
     }
 
-    BehaveNavigationMeshArea::List BehaveNavigationMeshArea::BuildSelectableNavigationMeshAreaList() const
+    bool BehaveNavigationMeshArea::CheckWalkFlag() const
     {
-        AZ_PROFILE_FUNCTION(Entity);
+        return (_flags & eNMAF_WALK) == eNMAF_WALK;
+    }
 
-        AZStd::vector<AZStd::pair<AZ::u32, AZStd::string>> selectableAreas = GetRegisteredNavigationAgents();
+    bool BehaveNavigationMeshArea::CheckSwimFlag() const
+    {
+        return (_flags & eNMAF_SWIM) == eNMAF_SWIM;
+    }
 
-        if (AZStd::string name; !FindDisplayName(selectableAreas, name))
+    bool BehaveNavigationMeshArea::CheckJumpFlag() const
+    {
+        return (_flags & eNMAF_JUMP) == eNMAF_JUMP;
+    }
+
+    bool BehaveNavigationMeshArea::CheckFlyFlag() const
+    {
+        return (_flags & eNMAF_FLY) == eNMAF_FLY;
+    }
+
+    bool BehaveNavigationMeshArea::CheckDoorFlag() const
+    {
+        return (_flags & eNMAF_DOOR) == eNMAF_DOOR;
+    }
+
+    bool BehaveNavigationMeshArea::CheckDisabledFlag() const
+    {
+        return (_flags & eNMAF_DISABLED) == eNMAF_DISABLED;
+    }
+
+    AZ::Crc32 BehaveNavigationMeshArea::OnWalkFlagChanged()
+    {
+        if (CheckWalkFlag())
         {
-            // if a match was not found, add the generated name to the selectable set
-            selectableAreas.push_back({ _areaCrc, name });
-            AZ_Warning("[BehaveAI] Navigation", false, "Navigation Mesh Area CRC %u is not a registered area.", _areaCrc);
+            _flags ^= eNMAF_WALK;
+        }
+        else
+        {
+            _flags |= eNMAF_WALK;
         }
 
-        AZStd::sort(
-            selectableAreas.begin(), selectableAreas.end(),
-            [](const auto& lhs, const auto& rhs)
-            {
-                return lhs.second < rhs.second;
-            });
+        return AZ::Edit::PropertyRefreshLevels::ValuesOnly;
+    }
 
-        return selectableAreas;
+    AZ::Crc32 BehaveNavigationMeshArea::OnSwimFlagChanged()
+    {
+        if (CheckSwimFlag())
+        {
+            _flags ^= eNMAF_SWIM;
+        }
+        else
+        {
+            _flags |= eNMAF_SWIM;
+        }
+
+        return AZ::Edit::PropertyRefreshLevels::ValuesOnly;
+    }
+
+    AZ::Crc32 BehaveNavigationMeshArea::OnJumpFlagChanged()
+    {
+        if (CheckJumpFlag())
+        {
+            _flags ^= eNMAF_JUMP;
+        }
+        else
+        {
+            _flags |= eNMAF_JUMP;
+        }
+
+        return AZ::Edit::PropertyRefreshLevels::ValuesOnly;
+    }
+
+    AZ::Crc32 BehaveNavigationMeshArea::OnFlyFlagChanged()
+    {
+        if (CheckFlyFlag())
+        {
+            _flags ^= eNMAF_FLY;
+        }
+        else
+        {
+            _flags |= eNMAF_FLY;
+        }
+
+        return AZ::Edit::PropertyRefreshLevels::ValuesOnly;
+    }
+
+    AZ::Crc32 BehaveNavigationMeshArea::OnDoorFlagChanged()
+    {
+        if (CheckDoorFlag())
+        {
+            _flags ^= eNMAF_DOOR;
+        }
+        else
+        {
+            _flags |= eNMAF_DOOR;
+        }
+
+        return AZ::Edit::PropertyRefreshLevels::ValuesOnly;
+    }
+
+    AZ::Crc32 BehaveNavigationMeshArea::OnDisabledFlagChanged()
+    {
+        if (CheckDisabledFlag())
+        {
+            _flags ^= eNMAF_DISABLED;
+        }
+        else
+        {
+            _flags |= eNMAF_DISABLED;
+        }
+
+        return AZ::Edit::PropertyRefreshLevels::EntireTree;
     }
 } // namespace SparkyStudios::AI::Behave::Navigation

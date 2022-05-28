@@ -19,7 +19,17 @@ namespace SparkyStudios::AI::Behave::Navigation
     static constexpr char kDefaultNavigationMeshAgentName[] = "Default Agent";
 
     /**
+     * @brief The ID of the default navigation mesh area.
+     */
+    static constexpr AZ::u8 kDefaultNavigationMeshAreaId = 0;
+
+    /**
      * @brief The name of the default navigation mesh area.
      */
     static constexpr char kDefaultNavigationMeshAreaName[] = "Default Area";
+
+    /**
+     * @brief The cost of the default navigation mesh area.
+     */
+    static constexpr float kDefaultNavigationMeshAreaCost = 1.0f;
 } // namespace SparkyStudios::AI::Behave::Navigation

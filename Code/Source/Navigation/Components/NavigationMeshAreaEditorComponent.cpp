@@ -13,26 +13,31 @@
 // limitations under the License.
 
 #include <AzCore/Component/TransformBus.h>
+#include <AzCore/Debug/Profiler.h>
 #include <AzCore/EBus/Internal/BusContainer.h>
 #include <AzCore/Math/PolygonPrism.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
+#include <AzCore/std/sort.h>
 
 #include <LmbrCentral/Shape/PolygonPrismShapeComponentBus.h>
 
+#include <Navigation/Components/NavigationMeshAreaComponent.h>
 #include <Navigation/Components/NavigationMeshAreaEditorComponent.h>
+
+#include <Source/Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
     void NavigationMeshAreaEditorComponent::Reflect(AZ::ReflectContext* rc)
     {
+        NavigationMeshAreaComponent::Reflect(rc);
+
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            NavigationMeshAreaComponent::Reflect(rc);
-
             sc->Class<NavigationMeshAreaEditorComponent, EditorComponentBase>()
                 ->Version(0)
-                ->Field("Area", &NavigationMeshAreaEditorComponent::_area)
+                ->Field("Area", &NavigationMeshAreaEditorComponent::_areaId)
                 ->Field("Volume", &NavigationMeshAreaEditorComponent::_polygonPrism);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
@@ -42,9 +47,11 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Attribute(AZ::Edit::Attributes::Category, "Behave AI")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("Game", 0x232b318c))
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationMeshAreaEditorComponent::_area, "Area", "Area")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::EntireTree)
-                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly);
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::ComboBox, &NavigationMeshAreaEditorComponent::_areaId, "Area",
+                        "The navigation mesh area name.")
+                    ->Attribute(AZ::Edit::Attributes::EnumValues, &NavigationMeshAreaEditorComponent::BuildSelectableNavigationMeshAreaList)
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues);
             }
         }
     }
@@ -71,7 +78,6 @@ namespace SparkyStudios::AI::Behave::Navigation
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusConnect(GetEntityId());
         BehaveNavigationMeshAreaRequestBus::Handler::BusConnect(GetEntityId());
 
-        _component.Init();
         UpdatePolygonPrism();
     }
 
@@ -84,17 +90,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void NavigationMeshAreaEditorComponent::BuildGameEntity(AZ::Entity* gameEntity)
     {
-        AZ::SerializeContext* context = nullptr;
-        AZ::ComponentApplicationBus::BroadcastResult(context, &AZ::ComponentApplicationBus::Events::GetSerializeContext);
-
-        if (!context)
-        {
-            AZ_Error("BehaveAI", false, "Unable to get a serialize context from component application.");
-            return;
-        }
-
-        SyncComponent();
-        gameEntity->AddComponent(context->CloneObject(&_component));
+        gameEntity->CreateComponent<NavigationMeshAreaComponent>(GetNavigationMeshArea(), GetNavigationMeshAreaPolygon());
     }
 
     bool NavigationMeshAreaEditorComponent::IsNavigationMeshArea([[maybe_unused]] AZ::EntityId navigationMeshEntityId)
@@ -105,7 +101,18 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     BehaveNavigationMeshArea NavigationMeshAreaEditorComponent::GetNavigationMeshArea()
     {
-        return _area;
+        BehaveNavigationMeshAreaVector areas;
+        EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
+
+        for (const auto& area : areas)
+        {
+            if (area.GetId() == _areaId)
+            {
+                return area;
+            }
+        }
+
+        return BehaveNavigationMeshArea::Default();
     }
 
     AZ::PolygonPrism NavigationMeshAreaEditorComponent::GetNavigationMeshAreaPolygon()
@@ -127,12 +134,6 @@ namespace SparkyStudios::AI::Behave::Navigation
         UpdatePolygonPrism();
     }
 
-    void NavigationMeshAreaEditorComponent::SyncComponent()
-    {
-        _component._area = _area;
-        _component._polygonPrism = _polygonPrism;
-    }
-
     void NavigationMeshAreaEditorComponent::UpdatePolygonPrism()
     {
         AZ::PolygonPrismPtr polygonPrismPtr = nullptr;
@@ -145,7 +146,29 @@ namespace SparkyStudios::AI::Behave::Navigation
 
             _polygonPrism = *polygonPrismPtr;
         }
+    }
 
-        SyncComponent();
+    BehaveNavigationMeshArea::List NavigationMeshAreaEditorComponent::BuildSelectableNavigationMeshAreaList() const
+    {
+        AZ_PROFILE_FUNCTION(Entity);
+
+        BehaveNavigationMeshAreaVector areas;
+        EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
+
+        BehaveNavigationMeshArea::List selectableAreas;
+        selectableAreas.reserve(areas.size());
+        for (const auto& area : areas)
+        {
+            selectableAreas.push_back({ area.GetId(), area.GetName() });
+        }
+
+        AZStd::sort(
+            selectableAreas.begin(), selectableAreas.end(),
+            [](const auto& lhs, const auto& rhs)
+            {
+                return lhs.second < rhs.second;
+            });
+
+        return selectableAreas;
     }
 } // namespace SparkyStudios::AI::Behave::Navigation

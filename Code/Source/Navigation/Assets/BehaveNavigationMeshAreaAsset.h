@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
+
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/RTTI/RTTI.h>
 
@@ -28,18 +30,18 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
     public:
         AZ_RTTI(BehaveNavigationMeshAreaAsset, "{E9F8F8E0-F8E0-4D7D-A8E0-F8E0E9F8F8E0}", AZ::Data::AssetData);
-        AZ_CLASS_ALLOCATOR(BehaveNavigationAgentAsset, AZ::SystemAllocator, 0);
+        AZ_CLASS_ALLOCATOR(BehaveNavigationMeshAreaAsset, AZ::SystemAllocator, 0);
 
         static void Reflect(AZ::ReflectContext* rc);
 
         /**
-         * @brief Name of the navigation mesh area.
+         * @brief Navigation mesh areas.
          */
-        AZStd::string m_name;
-
-        /**
-         * @brief The cost of traversing this area.
-         */
-        float m_cost;
+        AZStd::vector<BehaveNavigationMeshArea> mAreas;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation
+
+namespace AZ
+{
+    AZ_TYPE_INFO_SPECIALIZE(SparkyStudios::AI::Behave::Navigation::NavigationMeshAreaFlag, "{D220378C-9F2B-4756-AF88-6E4B4ED876E0}");
+} // namespace AZ

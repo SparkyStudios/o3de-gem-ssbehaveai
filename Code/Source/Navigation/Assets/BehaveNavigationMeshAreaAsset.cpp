@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <AzCore/Serialization/EditContext.h>
+#include <AzCore/Serialization/SerializeContext.h>
+
 #include <Navigation/Assets/BehaveNavigationMeshAreaAsset.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-
     void BehaveNavigationMeshAreaAsset::Reflect(AZ::ReflectContext* rc)
     {
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Class<BehaveNavigationMeshAreaAsset, AZ::Data::AssetData>()
+            sc->Class<BehaveNavigationMeshAreaAsset, AssetData>()
                 ->Version(0)
                 ->Attribute(AZ::Edit::Attributes::EnableForAssetEditor, true)
-                ->Field("Name", &BehaveNavigationMeshAreaAsset::m_name)
-                ->Field("Cost", &BehaveNavigationMeshAreaAsset::m_cost);
+                ->Field("Areas", &BehaveNavigationMeshAreaAsset::mAreas);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
@@ -34,9 +35,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::m_name, "Name", "The navigation mesh area name.")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshAreaAsset::m_cost, "Cost", "The navigation mesh area cost.");
+                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshAreaAsset::mAreas, "Areas", "The navigation mesh area name.");
             }
         }
     }

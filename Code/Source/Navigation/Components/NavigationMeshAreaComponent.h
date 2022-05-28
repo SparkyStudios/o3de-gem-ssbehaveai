@@ -34,6 +34,9 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         static void Reflect(AZ::ReflectContext* rc);
 
+        NavigationMeshAreaComponent() = default;
+        explicit NavigationMeshAreaComponent(BehaveNavigationMeshArea area, AZ::PolygonPrism polygon);
+
         // AZ::Component
         void Init() override;
         void Activate() override;

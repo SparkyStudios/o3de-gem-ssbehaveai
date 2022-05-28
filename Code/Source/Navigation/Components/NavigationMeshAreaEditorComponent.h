@@ -20,8 +20,6 @@
 
 #include <LmbrCentral/Shape/ShapeComponentBus.h>
 
-#include <Navigation/Components/NavigationMeshAreaComponent.h>
-
 #include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
 #include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h>
 
@@ -61,12 +59,10 @@ namespace SparkyStudios::AI::Behave::Navigation
         void OnTransformChanged(const AZ::Transform& /*local*/, const AZ::Transform& /*world*/) override;
 
     private:
-        void SyncComponent();
         void UpdatePolygonPrism();
+        [[nodiscard]] BehaveNavigationMeshArea::List BuildSelectableNavigationMeshAreaList() const;
 
-        BehaveNavigationMeshArea _area;
+        AZ::u8 _areaId;
         AZ::PolygonPrism _polygonPrism;
-
-        NavigationMeshAreaComponent _component;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

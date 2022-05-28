@@ -308,8 +308,10 @@ namespace SparkyStudios::AI::Behave::Navigation
         {
             if (const auto& asset = assetPair.second; asset.IsReady())
             {
-                const auto& name = asset->m_name;
-                names.insert(name);
+                for (const auto& area : asset->mAreas)
+                {
+                    names.insert(area.GetName());
+                }
             }
         }
     }
@@ -319,11 +321,17 @@ namespace SparkyStudios::AI::Behave::Navigation
         areas.clear();
         areas.push_back(BehaveNavigationMeshArea::Default());
 
+        AZ::u8 id = kDefaultNavigationMeshAreaId;
+
         for (auto&& assetPair : m_navigationMeshAreaAssets)
         {
             if (const auto& asset = assetPair.second; asset.IsReady())
             {
-                areas.push_back(BehaveNavigationMeshArea(asset->m_name, asset->m_cost));
+                for (BehaveNavigationMeshArea area : asset->mAreas)
+                {
+                    area.SetId(++id);
+                    areas.push_back(area);
+                }
             }
         }
     }
@@ -332,9 +340,15 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
         for (auto&& assetPair : m_navigationMeshAreaAssets)
         {
-            if (const auto& asset = assetPair.second; asset.IsReady() && asset->m_name == name)
+            if (const auto& asset = assetPair.second; asset.IsReady())
             {
-                return BehaveNavigationMeshArea(asset->m_name, asset->m_cost);
+                for (const auto& area : asset->mAreas)
+                {
+                    if (area.GetName() == name)
+                    {
+                        return area;
+                    }
+                }
             }
         }
 

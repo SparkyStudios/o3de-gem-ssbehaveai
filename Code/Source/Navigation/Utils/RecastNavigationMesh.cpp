@@ -104,8 +104,6 @@ namespace SparkyStudios::AI::Behave::Navigation
                 EBUS_EVENT_ID_RESULT(isWalkable, hitEntityId, BehaveWalkableRequestBus, IsWalkable, _entityId);
                 EBUS_EVENT_ID_RESULT(isArea, hitEntityId, BehaveNavigationMeshAreaRequestBus, IsNavigationMeshArea, _entityId);
 
-                AZ_Printf("Navigation", "Collider %s is part of the navigation mesh generation", hitEntityId.ToString().c_str());
-
                 // If this collider is not a part of the navigation mesh generation, skip it
                 if (!isWalkable && !isArea)
                     continue;
@@ -123,7 +121,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                     EBUS_EVENT_ID_RESULT(areaPolygon, hitEntityId, BehaveNavigationMeshAreaRequestBus, GetNavigationMeshAreaPolygon);
 
                     area = RecastAreaConvexVolume(areaPolygon, t);
-                    area.mArea = AZ::u32(areaSettings);
+                    area.mArea = static_cast<AZ::u8>(areaSettings);
 
                     _areaConvexVolume.push_back(area);
                 }

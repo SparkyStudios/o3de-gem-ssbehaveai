@@ -29,11 +29,21 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Class<NavigationMeshAreaComponent, Component>()
-                ->Version(0)
-                ->Field("Area", &NavigationMeshAreaComponent::_area)
-                ->Field("Volume", &NavigationMeshAreaComponent::_polygonPrism);
+            // We may have been reflected by NavigationMeshAreaEditorComponent already, so check first
+            if (sc->FindClassData(azrtti_typeid<NavigationMeshAreaComponent>()) == nullptr)
+            {
+                sc->Class<NavigationMeshAreaComponent, Component>()
+                    ->Version(0)
+                    ->Field("Area", &NavigationMeshAreaComponent::_area)
+                    ->Field("Volume", &NavigationMeshAreaComponent::_polygonPrism);
+            }
         }
+    }
+
+    NavigationMeshAreaComponent::NavigationMeshAreaComponent(BehaveNavigationMeshArea area, AZ::PolygonPrism polygon)
+        : _area(AZStd::move(area))
+        , _polygonPrism(AZStd::move(polygon))
+    {
     }
 
     void NavigationMeshAreaComponent::Init()
