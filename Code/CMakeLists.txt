@@ -30,6 +30,23 @@ if(NOT PAL_TRAIT_SSBEHAVEAI_SUPPORTED)
     return()
 endif()
 
+# Add the Behave.API target
+#  That target will expose the punlic API of Behave.
+ly_add_target(
+    NAME Behave.API HEADERONLY
+    NAMESPACE SparkyStudios::AI
+    OUTPUT_NAME SparkyStudios.AI.Behave.API
+    FILES_CMAKE
+        ssbehaveai_api_files.cmake
+    INCLUDE_DIRECTORIES
+        INTERFACE
+            Include
+            ../External/RecastNavigation/Detour/Include
+            ../External/RecastNavigation/DetourCrowd/Include
+            ../External/RecastNavigation/DetourTileCache/Include
+            ../External/RecastNavigation/Recast/Include
+)
+
 # Add the Behave.Static target
 # Note: We include the common files and the platform specific files which are set in ssbehaveai_files.cmake
 # and in ${pal_dir}/ssbehaveai_${PAL_PLATFORM_NAME_LOWERCASE}_files.cmake
@@ -38,6 +55,7 @@ ly_add_target(
     NAMESPACE SparkyStudios::AI
     OUTPUT_NAME SparkyStudios.AI.Behave.Static
     FILES_CMAKE
+        ssbehaveai_api_files.cmake
         ssbehaveai_files.cmake
     INCLUDE_DIRECTORIES
         PUBLIC
