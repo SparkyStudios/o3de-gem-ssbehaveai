@@ -91,7 +91,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     /**
      * @brief Stores a polygon prism to send to Recast as a convex volume.
-     */ 
+     */
     struct RecastAreaConvexVolume
     {
         /**
@@ -116,7 +116,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         /**
          * @brief The navigation area's ID associated to this volume.
          */
-        AZ::u32 mArea;
+        AZ::u8 mArea;
 
         RecastAreaConvexVolume();
 

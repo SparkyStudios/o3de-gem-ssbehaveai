@@ -96,8 +96,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         void UpdateNavMeshAABB();
         void SyncSettings();
 
-        AZ::Crc32 OnBuildNavigationMesh();
-        AZ::Crc32 GetBuildButtonState();
+        AZ::Crc32 OnBuildNavigationMesh() const;
+        AZ::Crc32 GetBuildButtonState() const;
 
         AZ::Transform _currentEntityTransform{};
 

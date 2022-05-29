@@ -29,15 +29,15 @@ namespace SparkyStudios::AI::Behave::Navigation
             {
             default:
             case RC_LOG_PROGRESS:
-                AZ_Printf("[BehaveAI] NavMesh", "%s", message);
+                AZ_Printf("BehaveAI [Navigation]", "%s", message);
                 break;
 
             case RC_LOG_WARNING:
-                AZ_Warning("[BehaveAI] NavMesh", false, "%s", message);
+                AZ_Warning("BehaveAI [Navigation]", false, "%s", message);
                 break;
 
             case RC_LOG_ERROR:
-                AZ_Error("[BehaveAI] NavMesh", false, "%s", message);
+                AZ_Error("BehaveAI [Navigation]", false, "%s", message);
                 break;
             }
         }

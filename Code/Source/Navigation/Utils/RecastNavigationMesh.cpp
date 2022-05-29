@@ -24,8 +24,6 @@
 
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/Jobs/JobFunction.h>
-#include <AzCore/Serialization/EditContext.h>
-#include <AzCore/Serialization/SerializeContext.h>
 
 #include <AzFramework/Physics/Common/PhysicsSceneQueries.h>
 #include <AzFramework/Physics/PhysicsScene.h>
@@ -202,10 +200,10 @@ namespace SparkyStudios::AI::Behave::Navigation
         auto* job = AZ::CreateJobFunction(
             [this]()
             {
-                _navMeshReady = BuildNavigationMeshInternal();
-
-                BehaveNavigationMeshNotificationBus::Event(
-                    _entityId, &BehaveNavigationMeshNotificationBus::Events::OnNavigationMeshUpdated);
+                if ((_navMeshReady = BuildNavigationMeshInternal()))
+                {
+                    EBUS_EVENT_ID(_entityId, BehaveNavigationMeshNotificationBus, OnNavigationMeshUpdated);
+                }
             },
             true);
 
@@ -224,9 +222,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         const int* triangleData = _geom.mIndices.data();
         const int triangleCount = static_cast<int>(_geom.mIndices.size()) / 3;
 
-        //
         // Step 1. Initialize build config.
-        //
+        // --------------------------------
 
         // Init build configuration from settings
         rcConfig config{};
@@ -240,15 +237,15 @@ namespace SparkyStudios::AI::Behave::Navigation
         config.walkableRadius = static_cast<int>(std::ceil(_settings->m_agent->m_radius / config.cs));
         config.maxEdgeLen = static_cast<int>(_settings->m_edgeMaxLength / _settings->m_cellSize);
         config.maxSimplificationError = _settings->m_edgeMaxError;
-        config.minRegionArea = static_cast<int>(rcSqr(_settings->m_regionMinSize)); // Note: area = size*size
-        config.mergeRegionArea = static_cast<int>(rcSqr(_settings->m_regionMergedSize)); // Note: area = size*size
+        config.minRegionArea = rcSqr<int>(_settings->m_regionMinSize); // Note: area = size*size
+        config.mergeRegionArea = rcSqr<int>(_settings->m_regionMergedSize); // Note: area = size*size
         config.maxVertsPerPoly = static_cast<int>(_settings->m_maxVerticesPerPoly);
         config.detailSampleDist = _settings->m_detailSampleDist < 0.9f ? 0 : _settings->m_cellSize * _settings->m_detailSampleDist;
         config.detailSampleMaxError = _settings->m_cellHeight * _settings->m_detailSampleMaxError;
 
         // Set the area where the navigation will be build.
         // Here the bounds of the input mesh are used, but the
-        // area could be specified by an user defined box, etc.
+        // area could be specified by an user defined bounding box, etc.
 
         const RecastVector3 worldMin(_aabb.GetMin());
         const RecastVector3 worldMax(_aabb.GetMax());
@@ -267,82 +264,86 @@ namespace SparkyStudios::AI::Behave::Navigation
         _context->log(RC_LOG_PROGRESS, " - %d x %d cells", config.width, config.height);
         _context->log(RC_LOG_PROGRESS, " - %d verts, %d triangles", vertexCount, triangleCount);
 
-        //
         // Step 2. Rasterize input polygon soup.
-        //
+        // -------------------------------------
 
         // Allocate voxel height field where we rasterize our input data to.
         _solidHeightField.reset(rcAllocHeightfield());
+
         if (!_solidHeightField)
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'solid'.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Out of memory 'solid'.");
             return false;
         }
+
         if (!rcCreateHeightfield(
                 _context.get(), *_solidHeightField, config.width, config.height, config.bmin, config.bmax, config.cs, config.ch))
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Could not create solid height field.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not create solid height field.");
             return false;
         }
 
         // Allocate array that can hold triangle area types.
-        // If you have multiple meshes you need to process, allocate
-        // and array which can hold the max number of triangles you need to process.
+        // If we have multiple meshes we need to process, allocate
+        // an array which can hold the max number of triangles we need to process.
         _trianglesArea.resize(triangleCount, 0);
 
         // Find triangles which are walkable based on their slope and rasterize them.
-        // If your input data is multiple meshes, you can transform them here, calculate
-        // the are type for each of the meshes and rasterize them.
+        // If our input data is multiple meshes, you can transform them here, calculate
+        // the type for each of the meshes and rasterize them.
         rcMarkWalkableTriangles(
             _context.get(), config.walkableSlopeAngle, vertices, vertexCount, triangleData, triangleCount, _trianglesArea.data());
+
         if (!rcRasterizeTriangles(
                 _context.get(), vertices, vertexCount, triangleData, _trianglesArea.data(), triangleCount,
                 *_solidHeightField /*, config.walkableClimb*/))
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Could not rasterize triangles.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not rasterize triangles.");
             return false;
         }
 
         _trianglesArea.clear();
 
-        //
         // Step 3. Filter walkable surfaces.
-        //
+        // ---------------------------------
 
         // Once all geometry is rasterized, we do initial pass of filtering to
         // remove unwanted overhangs caused by the conservative rasterization
         // as well as filter spans where the character cannot possibly stand.
         if (_settings->m_filterLowHangingObstacles)
             rcFilterLowHangingWalkableObstacles(_context.get(), config.walkableClimb, *_solidHeightField);
+
         if (_settings->m_filterLedgeSpans)
             rcFilterLedgeSpans(_context.get(), config.walkableHeight, config.walkableClimb, *_solidHeightField);
+
         if (_settings->m_filterWalkableLowHeightSpans)
             rcFilterWalkableLowHeightSpans(_context.get(), config.walkableHeight, *_solidHeightField);
 
-        //
         // Step 4. Partition walkable surface to simple regions.
-        //
+        // -----------------------------------------------------
 
         // Compact the height field so that it is faster to handle from now on.
         // This will result more cache coherent data as well as the neighbors
         // between walkable cells will be calculated.
         _compactHeightField.reset(rcAllocCompactHeightfield());
+
         if (!_compactHeightField)
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'chf'.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Out of memory 'chf'.");
             return false;
         }
+
         if (!rcBuildCompactHeightfield(
                 _context.get(), config.walkableHeight, config.walkableClimb, *_solidHeightField, *_compactHeightField))
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Could not build compact data.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build compact data.");
             return false;
         }
 
         // Erode the walkable area by agent radius.
         if (!rcErodeWalkableArea(_context.get(), config.walkableRadius, *_compactHeightField))
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Could not erode.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not erode.");
             return false;
         }
 
@@ -359,14 +360,14 @@ namespace SparkyStudios::AI::Behave::Navigation
             // Prepare for region partitioning, by calculating distance field along the walkable surface.
             if (!rcBuildDistanceField(_context.get(), *_compactHeightField))
             {
-                _context->log(RC_LOG_ERROR, "buildNavigation: Could not build distance field.");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build distance field.");
                 return false;
             }
 
             // Partition the walkable surface into simple regions without holes.
             if (!rcBuildRegions(_context.get(), *_compactHeightField, 0, config.minRegionArea, config.mergeRegionArea))
             {
-                _context->log(RC_LOG_ERROR, "buildNavigation: Could not build watershed regions.");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build watershed regions.");
                 return false;
             }
         }
@@ -376,82 +377,79 @@ namespace SparkyStudios::AI::Behave::Navigation
             // Monotone partitioning does not need distance field.
             if (!rcBuildRegionsMonotone(_context.get(), *_compactHeightField, 0, config.minRegionArea, config.mergeRegionArea))
             {
-                _context->log(RC_LOG_ERROR, "buildNavigation: Could not build monotone regions.");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build monotone regions.");
                 return false;
             }
         }
-        else // SAMPLE_PARTITION_LAYERS
+        else // NavigationMeshPartitionType::Layers
         {
             // Partition the walkable surface into simple regions without holes.
             if (!rcBuildLayerRegions(_context.get(), *_compactHeightField, 0, config.minRegionArea))
             {
-                _context->log(RC_LOG_ERROR, "buildNavigation: Could not build layer regions.");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build layer regions.");
                 return false;
             }
         }
 
-        //
         // Step 5. Trace and simplify region contours.
-        //
+        // -------------------------------------------
 
         // Create contours.
         _contourSet.reset(rcAllocContourSet());
+
         if (!_contourSet)
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Out of memory while allocating contours.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Out of memory while allocating contours.");
             return false;
         }
+
         if (!rcBuildContours(_context.get(), *_compactHeightField, config.maxSimplificationError, config.maxEdgeLen, *_contourSet))
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Could not create contours.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not create contours.");
             return false;
         }
 
-        //
         // Step 6. Build polygons mesh from contours.
-        //
+        // ------------------------------------------
 
-        // Build polygon navmesh from the contours.
+        // Build polygon nav mesh from the contours.
         _polyMesh.reset(rcAllocPolyMesh());
+
         if (!_polyMesh)
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'pmesh'.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Out of memory while allocating polygon nav mesh.");
             return false;
         }
 
         if (!rcBuildPolyMesh(_context.get(), *_contourSet, config.maxVertsPerPoly, *_polyMesh))
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Could not triangulate contours.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not triangulate contours.");
             return false;
         }
 
-        //
         // Step 7. Create detail mesh which allows to access approximate height on each polygon.
-        //
+        // -------------------------------------------------------------------------------------
 
         _detailMesh.reset(rcAllocPolyMeshDetail());
+
         if (!_detailMesh)
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Out of memory while allocating detail mesh.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Out of memory while allocating detail mesh.");
             return false;
         }
 
         if (!rcBuildPolyMeshDetail(
                 _context.get(), *_polyMesh, *_compactHeightField, config.detailSampleDist, config.detailSampleMaxError, *_detailMesh))
         {
-            _context->log(RC_LOG_ERROR, "buildNavigation: Could not build detail mesh.");
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build detail mesh.");
             return false;
         }
 
-        // At this point the navigation mesh data is ready, you can access it from _polyMesh.
-        // See duDebugDrawPolyMesh or dtCreateNavMeshData as examples how to access the data.
-
-        //
-        // (Optional) Step 8. Create Detour data from Recast poly mesh.
-        //
+        // Step 8. Create Detour data from Recast poly mesh.
+        // -------------------------------------------------
 
         // The GUI may allow more max points per polygon than Detour can handle.
-        // Only build the detour navmesh if we do not exceed the limit.
+        // Only build the detour nav mesh if we do not exceed the limit.
         if (config.maxVertsPerPoly <= DT_VERTS_PER_POLYGON)
         {
             BehaveNavigationMeshAreaVector areas;
@@ -478,6 +476,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
             dtNavMeshCreateParams params{};
 
+            // Poly Mesh
             params.verts = _polyMesh->verts;
             params.vertCount = _polyMesh->nverts;
             params.polys = _polyMesh->polys;
@@ -485,12 +484,15 @@ namespace SparkyStudios::AI::Behave::Navigation
             params.polyFlags = _polyMesh->flags;
             params.polyCount = _polyMesh->npolys;
             params.nvp = _polyMesh->nvp;
+
+            // Detail Mesh
             params.detailMeshes = _detailMesh->meshes;
             params.detailVerts = _detailMesh->verts;
             params.detailVertsCount = _detailMesh->nverts;
             params.detailTris = _detailMesh->tris;
             params.detailTriCount = _detailMesh->ntris;
 
+            // Off-Mesh Connections
             params.offMeshConVerts = nullptr;
             params.offMeshConRad = nullptr;
             params.offMeshConDir = nullptr;
@@ -499,9 +501,12 @@ namespace SparkyStudios::AI::Behave::Navigation
             params.offMeshConUserID = nullptr;
             params.offMeshConCount = 0;
 
-            params.walkableHeight = 2.0f; // TODO
-            params.walkableRadius = 0.75f; // TODO
-            params.walkableClimb = 0.9f; // TODO
+            // Agent
+            params.walkableHeight = _settings->m_agent->m_height;
+            params.walkableRadius = _settings->m_agent->m_radius;
+            params.walkableClimb = _settings->m_agent->m_climb;
+
+            // World
             rcVcopy(params.bmin, _polyMesh->bmin);
             rcVcopy(params.bmax, _polyMesh->bmax);
             params.cs = config.cs;
@@ -510,7 +515,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
             if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
             {
-                _context->log(RC_LOG_ERROR, "Could not build Detour navmesh.");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build Detour nav mesh.");
                 return false;
             }
 
@@ -518,7 +523,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             if (!_navMesh)
             {
                 dtFree(navData);
-                _context->log(RC_LOG_ERROR, "Could not create Detour navmesh");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not create Detour nav mesh");
                 return false;
             }
 
@@ -526,7 +531,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             if (dtStatusFailed(status))
             {
                 dtFree(navData);
-                _context->log(RC_LOG_ERROR, "Could not init Detour navmesh");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not init Detour nav mesh");
                 return false;
             }
 
@@ -535,7 +540,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             status = _navQuery->init(_navMesh.get(), 2048);
             if (dtStatusFailed(status))
             {
-                _context->log(RC_LOG_ERROR, "Could not init Detour navmesh query");
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not init Detour nav mesh query");
                 return false;
             }
 

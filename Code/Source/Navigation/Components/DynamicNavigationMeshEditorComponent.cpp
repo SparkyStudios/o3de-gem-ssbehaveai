@@ -287,7 +287,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         _navMeshComponent._aabb = _aabb;
     }
 
-    AZ::Crc32 DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh()
+    AZ::Crc32 DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh() const
     {
         if (_waitingOnNavMeshBuild)
             return AZ::Edit::PropertyRefreshLevels::None;
@@ -298,7 +298,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         return AZ::Edit::PropertyRefreshLevels::EntireTree;
     }
 
-    AZ::Crc32 DynamicNavigationMeshEditorComponent::GetBuildButtonState()
+    AZ::Crc32 DynamicNavigationMeshEditorComponent::GetBuildButtonState() const
     {
         return _waitingOnNavMeshBuild ? AZ::Edit::PropertyVisibility::Hide : AZ::Edit::PropertyVisibility::Show;
     }
