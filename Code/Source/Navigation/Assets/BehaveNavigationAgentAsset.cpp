@@ -21,45 +21,22 @@ namespace SparkyStudios::AI::Behave::Navigation
 {
     void BehaveNavigationAgentAsset::Reflect(AZ::ReflectContext* rc)
     {
+        NavigationAgent::Reflect(rc);
+
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
             sc->Class<BehaveNavigationAgentAsset, AssetData>()
                 ->Version(0)
                 ->Attribute(AZ::Edit::Attributes::EnableForAssetEditor, true)
-                ->Field("Name", &BehaveNavigationAgentAsset::m_name)
-                ->Field("MaxClimb", &BehaveNavigationAgentAsset::m_climb)
-                ->Field("Height", &BehaveNavigationAgentAsset::m_height)
-                ->Field("Radius", &BehaveNavigationAgentAsset::m_radius)
-                ->Field("MaxSlopAngle", &BehaveNavigationAgentAsset::m_slopAngle);
+                ->Field("Agents", &BehaveNavigationAgentAsset::mAgents);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
-                ec->Class<BehaveNavigationAgentAsset>("Behave AI - Navigation Agent Asset", "An asset to setup a navigation agent.")
+                ec->Class<BehaveNavigationAgentAsset>("Behave AI - Navigation Agents Asset", "An asset to setup navigation agents.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::m_name, "Name", "The navigation agent name.")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::m_height, "Height",
-                        "Minimum floor to 'ceiling' height that will still allow the floor area to be considered walkable.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0.1)
-                    ->Attribute(AZ::Edit::Attributes::Decimals, 2)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::m_climb, "Max Climb",
-                        "Maximum ledge height that is considered to still be traversable.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::m_radius, "Radius",
-                        "The distance to erode/shrink the walkable area of the heightfield away from obstructions.")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->Attribute(AZ::Edit::Attributes::Decimals, 2)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::m_slopAngle, "Max Slop",
-                        "The maximum slope that is considered walkable.")
-                    ->Attribute(AZ::Edit::Attributes::Suffix, " degrees")
-                    ->Attribute(AZ::Edit::Attributes::Min, 0)
-                    ->Attribute(AZ::Edit::Attributes::Max, 90);
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::mAgents, "Agents", "Navigation agents.");
             }
         }
     }

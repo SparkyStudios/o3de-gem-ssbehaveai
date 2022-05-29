@@ -20,12 +20,11 @@
 #include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
 #include <Navigation/Utils/RecastNavigationMesh.h>
 
+#include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/Component/Component.h>
 #include <AzCore/Component/TickBus.h>
 #include <AzFramework/Entity/GameEntityContextBus.h>
 #include <AzFramework/Input/Events/InputChannelEventListener.h>
-
-#include <AzFramework/Physics/Common/PhysicsSceneQueries.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
@@ -43,6 +42,9 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ_COMPONENT(DynamicNavigationMeshComponent, "{A7F61BD8-0BAD-453A-ABEF-9A893CBE9AFF}");
 
         static void Reflect(AZ::ReflectContext* rc);
+
+        DynamicNavigationMeshComponent() = default;
+        explicit DynamicNavigationMeshComponent(AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb);
 
         // IBehaveNavigationMesh
         [[nodiscard]] const BehaveNavigationMeshSettingsAsset* GetSettings() const override;

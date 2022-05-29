@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
 #include <Navigation/Components/DynamicNavigationMeshComponent.h>
 
+#include <AzCore/Asset/AssetSerializer.h>
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/Jobs/JobFunction.h>
 #include <AzCore/Serialization/SerializeContext.h>
@@ -36,6 +38,13 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Field("Bounds", &DynamicNavigationMeshComponent::_aabb);
             }
         }
+    }
+
+    DynamicNavigationMeshComponent::DynamicNavigationMeshComponent(
+        AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb)
+        : _settings(AZStd::move(settings))
+        , _aabb(AZStd::move(aabb))
+    {
     }
 
     const BehaveNavigationMeshSettingsAsset* DynamicNavigationMeshComponent::GetSettings() const

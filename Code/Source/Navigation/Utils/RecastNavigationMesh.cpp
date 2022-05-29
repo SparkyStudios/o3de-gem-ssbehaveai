@@ -231,10 +231,10 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         config.cs = _settings->m_cellSize;
         config.ch = _settings->m_cellHeight;
-        config.walkableSlopeAngle = _settings->m_agent->m_slopAngle;
-        config.walkableHeight = static_cast<int>(std::ceil(_settings->m_agent->m_height / config.ch));
-        config.walkableClimb = static_cast<int>(std::floor(_settings->m_agent->m_climb / config.ch));
-        config.walkableRadius = static_cast<int>(std::ceil(_settings->m_agent->m_radius / config.cs));
+        config.walkableSlopeAngle = _settings->m_agent.GetMaxSlopeAngle();
+        config.walkableHeight = static_cast<int>(std::ceil(_settings->m_agent.GetHeight() / config.ch));
+        config.walkableClimb = static_cast<int>(std::floor(_settings->m_agent.GetMaxClimb() / config.ch));
+        config.walkableRadius = static_cast<int>(std::ceil(_settings->m_agent.GetRadius() / config.cs));
         config.maxEdgeLen = static_cast<int>(_settings->m_edgeMaxLength / _settings->m_cellSize);
         config.maxSimplificationError = _settings->m_edgeMaxError;
         config.minRegionArea = rcSqr<int>(_settings->m_regionMinSize); // Note: area = size*size
@@ -502,9 +502,9 @@ namespace SparkyStudios::AI::Behave::Navigation
             params.offMeshConCount = 0;
 
             // Agent
-            params.walkableHeight = _settings->m_agent->m_height;
-            params.walkableRadius = _settings->m_agent->m_radius;
-            params.walkableClimb = _settings->m_agent->m_climb;
+            params.walkableHeight = _settings->m_agent.GetHeight();
+            params.walkableRadius = _settings->m_agent.GetRadius();
+            params.walkableClimb = _settings->m_agent.GetMaxClimb();
 
             // World
             rcVcopy(params.bmin, _polyMesh->bmin);

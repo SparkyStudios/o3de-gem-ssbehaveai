@@ -72,8 +72,10 @@ set(FILES
     Source/Navigation/Assets/BehaveNavigationMeshSettingsAsset.h
     Source/Navigation/Assets/BehaveNavigationMeshSettingsAsset.cpp
 
+    Source/Navigation/NavigationAgent.cpp
     Source/Navigation/BehaveNavigationMeshArea.cpp
     Source/Navigation/BehaveNavigationMeshAreaProviderRequestBus.h
+    Source/Navigation/NavigationAgentProviderRequestBus.h
     Source/Navigation/BehaveNavigationSystemComponent.h
     Source/Navigation/BehaveNavigationSystemComponent.cpp
 

@@ -14,12 +14,12 @@
 
 #pragma once
 
-#include <Source/Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
-
 #include <Navigation/Assets/BehaveNavigationAgentAsset.h>
 #include <Navigation/Assets/BehaveNavigationMeshAreaAsset.h>
 #include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
+#include <Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
 #include <Navigation/BehaveNavigationSystemComponent.h>
+#include <Navigation/NavigationAgentProviderRequestBus.h>
 
 #include <AzFramework/Asset/AssetCatalogBus.h>
 
@@ -34,6 +34,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         , private AzFramework::AssetCatalogEventBus::Handler
         , private AZ::Data::AssetBus::MultiHandler
         , private BehaveNavigationMeshAreaProviderRequestBus::Handler
+        , private NavigationAgentProviderRequestBus::Handler
     {
         using BaseSystemComponent = BehaveNavigationSystemComponent;
 
@@ -51,10 +52,10 @@ namespace SparkyStudios::AI::Behave::Navigation
         ~BehaveNavigationEditorSystemComponent() override = default;
 
     private:
-        void LoadNavigationAgentAsset(const AZ::Data::AssetId& assetId);
         void LoadNavigationMeshSettingsAsset(const AZ::Data::AssetId& assetId);
         void AddAsset(const AZ::Data::Asset<AZ::Data::AssetData>& asset);
         AZStd::optional<AZ::Data::Asset<AZ::Data::AssetData>> RetrieveNavigationMeshAreas();
+        AZStd::optional<AZ::Data::Asset<AZ::Data::AssetData>> RetrieveNavigationAgents();
 
         // AZ::Component
         void Activate() override;
@@ -74,7 +75,12 @@ namespace SparkyStudios::AI::Behave::Navigation
         void GetRegisteredNavigationMeshAreas(BehaveNavigationMeshAreaVector& areas) const override;
         [[nodiscard]] BehaveNavigationMeshArea GetNavigationMeshArea(const AZStd::string& name) const override;
 
-        AZStd::unordered_map<AZ::Data::AssetId, AZ::Data::Asset<BehaveNavigationAgentAsset>> m_navigationAgentAssets;
+        // NavigationAgentProviderRequests
+        void GetRegisteredNavigationAgentNames(NavigationAgentNameSet& names) const override;
+        void GetRegisteredNavigationAgents(NavigationAgentList& agents) const override;
+        [[nodiscard]] NavigationAgent GetNavigationAgent(const AZStd::string& name) const override;
+
+        AZ::Data::Asset<BehaveNavigationAgentAsset> m_navigationAgentsAsset;
         AZ::Data::Asset<BehaveNavigationMeshAreaAsset> m_navigationMeshAreasAsset;
         AZStd::unordered_map<AZ::Data::AssetId, AZ::Data::Asset<BehaveNavigationMeshSettingsAsset>> m_navigationMeshSettingsAssets;
     };

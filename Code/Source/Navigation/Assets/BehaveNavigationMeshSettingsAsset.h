@@ -1,6 +1,20 @@
-﻿#pragma once
+﻿// Copyright (c) 2021-present Sparky Studios. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-#include <Navigation/Assets/BehaveNavigationAgentAsset.h>
+#pragma once
+
+#include <SparkyStudios/AI/Behave/Navigation/NavigationAgent.h>
 
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/RTTI/RTTI.h>
@@ -32,7 +46,7 @@ namespace SparkyStudios::AI::Behave::Navigation
          */
         AZStd::string m_name;
 
-        AZ::Data::Asset<BehaveNavigationAgentAsset> m_agent;
+        NavigationAgent m_agent;
 
         int m_borderPadding = 0;
 
@@ -57,5 +71,18 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         bool m_enableTiling = true;
         int m_tileSize = 16;
+
+        private:
+        typedef AZStd::vector<AZStd::pair<AZ::u32, AZStd::string>> NavigationAgentComboBoxEntries;
+
+        [[nodiscard]] NavigationAgentComboBoxEntries BuildSelectableNavigationAgentList() const;
+        AZ::Crc32 OnNavigationAgentChanged();
+
+        AZ::u32 _agentId;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation
+
+namespace AZ
+{
+    AZ_TYPE_INFO_SPECIALIZE(SparkyStudios::AI::Behave::Navigation::NavigationMeshPartitionType, "{4DEE04E5-0F7E-4442-86CE-5D996B13E3F7}");
+} // namespace AZ

@@ -13,20 +13,21 @@
 // limitations under the License.
 
 #include <Navigation/Components/DynamicNavigationMeshEditorComponent.h>
-#include <Navigation/Utils/Constants.h>
 
 #include <DetourDebugDraw.h>
+
+#include <AzCore/Serialization/DynamicSerializableField.h>
+#include <AzCore/Serialization/EditContext.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
     void DynamicNavigationMeshEditorComponent::Reflect(AZ::ReflectContext* rc)
     {
+        DynamicNavigationMeshComponent::Reflect(rc);
+
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            DynamicNavigationMeshComponent::Reflect(rc);
-
             sc->Class<DynamicNavigationMeshEditorComponent, EditorComponentBase>()
-                ->Field("Component", &DynamicNavigationMeshEditorComponent::_navMeshComponent)
                 ->Field("DebugDraw", &DynamicNavigationMeshEditorComponent::_enableDebug)
                 ->Field("DebugDepthTest", &DynamicNavigationMeshEditorComponent::_depthTest)
                 ->Field("Settings", &DynamicNavigationMeshEditorComponent::_settings)
@@ -53,20 +54,16 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_settings, "Settings",
                         "Settings to use when building the navigation mesh.")
+                    ->Attribute(AZ::Edit::Attributes::DisplayOrder, 0)
 
                     ->ClassElement(AZ::Edit::ClassElements::Group, "Debug")
+                    ->Attribute(AZ::Edit::Attributes::DisplayOrder, 1)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_enableDebug, "Enable",
                         "Draw the navigation mesh.")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_depthTest, "Depth Test",
                         "Enable the depth test while drawing the navigation mesh.")
-
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_navMeshComponent,
-                        "Navigation Mesh Properties", "The Navigation Mesh Component that will be used to build the navigation mesh.")
-                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::Hide)
-
                     ->UIElement(AZ::Edit::UIHandlers::Button, "", "Build the navigation mesh with the current settings.")
                     ->Attribute(AZ::Edit::Attributes::ButtonText, "Build")
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh);
@@ -111,8 +108,6 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         if (_settings.GetId().IsValid())
         {
-            SyncSettings();
-
             AZ::Data::AssetBus::Handler::BusConnect(_settings.GetId());
             _settings.QueueLoad();
         }
@@ -148,8 +143,6 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::TransformNotificationBus::Handler::BusConnect(GetEntityId());
         AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(GetEntityId());
 
-        _navMeshComponent.Init();
-
         if (_settings.GetId().IsValid())
         {
             // Re-retrieve the asset in case it was reloaded while we were inactive.
@@ -170,27 +163,17 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
         AZ::Data::AssetBus::Handler::BusDisconnect();
 
-        AzFramework::EntityDebugDisplayEventBus::Handler::BusDisconnect();
-        AZ::TransformNotificationBus::Handler::BusDisconnect();
-        LmbrCentral::ShapeComponentNotificationsBus::Handler::BusDisconnect();
-        BehaveNavigationMeshNotificationBus::Handler::BusDisconnect();
+        AzFramework::EntityDebugDisplayEventBus::Handler::BusDisconnect(GetEntityId());
+        AZ::TransformNotificationBus::Handler::BusDisconnect(GetEntityId());
+        LmbrCentral::ShapeComponentNotificationsBus::Handler::BusDisconnect(GetEntityId());
+        BehaveNavigationMeshNotificationBus::Handler::BusDisconnect(GetEntityId());
 
         delete _navigationMesh;
     }
 
-    void DynamicNavigationMeshEditorComponent::BuildGameEntity(AZ::Entity* entity)
+    void DynamicNavigationMeshEditorComponent::BuildGameEntity(AZ::Entity* gameEntity)
     {
-        AZ::SerializeContext* context = nullptr;
-        AZ::ComponentApplicationBus::BroadcastResult(context, &AZ::ComponentApplicationBus::Events::GetSerializeContext);
-
-        if (!context)
-        {
-            AZ_Error("BehaveAI", false, "Unable to get a serialize context from component application.");
-            return;
-        }
-
-        SyncSettings();
-        entity->AddComponent(context->CloneObject(&_navMeshComponent));
+        gameEntity->CreateComponent<DynamicNavigationMeshComponent>(_settings, _aabb);
     }
 
     void DynamicNavigationMeshEditorComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
@@ -266,7 +249,6 @@ namespace SparkyStudios::AI::Behave::Navigation
     void DynamicNavigationMeshEditorComponent::SetSettings(const AZ::Data::Asset<AZ::Data::AssetData>& settings)
     {
         _settings = settings;
-        SyncSettings();
     }
 
     void DynamicNavigationMeshEditorComponent::UpdateNavMeshAABB()
@@ -278,13 +260,6 @@ namespace SparkyStudios::AI::Behave::Navigation
             GetEntityId(), &LmbrCentral::ShapeComponentRequestsBus::Events::GetTransformAndLocalBounds, transform, aabb);
 
         _aabb = AZStd::move(aabb);
-        SyncSettings();
-    }
-
-    void DynamicNavigationMeshEditorComponent::SyncSettings()
-    {
-        _navMeshComponent._settings = _settings;
-        _navMeshComponent._aabb = _aabb;
     }
 
     AZ::Crc32 DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh() const

@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <SparkyStudios/AI/Behave/Navigation/NavigationAgent.h>
+
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/RTTI/RTTI.h>
 
@@ -27,7 +29,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     /**
      * @brief Asset containing data about a navigation agent configuration.
      */
-    class BehaveNavigationAgentAsset : public AZ::Data::AssetData
+    class BehaveNavigationAgentAsset final : public AZ::Data::AssetData
     {
     public:
         AZ_RTTI(BehaveNavigationAgentAsset, "{F47AEB2C-909C-4095-ACA8-6B896BB09CC7}", AZ::Data::AssetData);
@@ -35,31 +37,6 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         static void Reflect(AZ::ReflectContext* rc);
 
-        /**
-         * @brief Navigation agent name.
-         */
-        AZStd::string m_name;
-
-        /**
-         * @brief Minimum floor to 'ceiling' height that will still allow
-         * the floor area to be considered walkable.
-         */
-        float m_height = 2.0f;
-
-        /**
-         * @brief Maximum ledge height that is considered to still be traversable.
-         */
-        float m_climb = 0.9f;
-
-        /**
-         * @brief The distance to erode/shrink the walkable area of the
-         * heightfield away from obstructions.
-         */
-        float m_radius = 0.6f;
-
-        /**
-         * @brief The maximum slope that is considered walkable.
-         */
-        float m_slopAngle = 45.0f;
+        AZStd::vector<NavigationAgent> mAgents;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

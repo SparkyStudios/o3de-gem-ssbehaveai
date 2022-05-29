@@ -1,8 +1,23 @@
-﻿#include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
-#include <Navigation/Utils/RecastMath.h>
+﻿// Copyright (c) 2021-present Sparky Studios. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
+#include <Navigation/NavigationAgentProviderRequestBus.h>
 
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
+#include <AzCore/std/sort.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
@@ -14,6 +29,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                 ->Version(0)
                 ->Attribute(AZ::Edit::Attributes::EnableForAssetEditor, true)
                 ->Field("Name", &BehaveNavigationMeshSettingsAsset::m_name)
+                ->Field("AgentId", &BehaveNavigationMeshSettingsAsset::_agentId)
                 ->Field("Agent", &BehaveNavigationMeshSettingsAsset::m_agent)
                 ->Field("CellSize", &BehaveNavigationMeshSettingsAsset::m_cellSize)
                 ->Field("CellHeight", &BehaveNavigationMeshSettingsAsset::m_cellHeight)
@@ -35,11 +51,15 @@ namespace SparkyStudios::AI::Behave::Navigation
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
                 ec->Class<BehaveNavigationMeshSettingsAsset>(
-                      "Dynamic Navigation Mesh Settings", "Settings to use when building the navigation mesh.")
+                      "Navigation Mesh Settings", "Settings to use when building the navigation mesh.")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshSettingsAsset::m_name, "Name",
                         "The name of the navigation mesh.")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshSettingsAsset::m_agent, "Agent", "The navigation agent for this settings.")
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::ComboBox, &BehaveNavigationMeshSettingsAsset::_agentId, "Agent",
+                        "The navigation agent for this settings.")
+                    ->Attribute(AZ::Edit::Attributes::EnumValues, &BehaveNavigationMeshSettingsAsset::BuildSelectableNavigationAgentList)
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshSettingsAsset::OnNavigationAgentChanged)
 
                     ->ClassElement(AZ::Edit::ClassElements::Group, "Rasterization")
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
@@ -136,5 +156,45 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Attribute(AZ::Edit::Attributes::Step, 16);
             }
         }
+    }
+
+    BehaveNavigationMeshSettingsAsset::NavigationAgentComboBoxEntries BehaveNavigationMeshSettingsAsset::
+        BuildSelectableNavigationAgentList() const
+    {
+        NavigationAgentList agents;
+        EBUS_EVENT(NavigationAgentProviderRequestBus, GetRegisteredNavigationAgents, agents);
+
+        NavigationAgentComboBoxEntries selectableAreas;
+        selectableAreas.reserve(agents.size());
+        for (const auto& area : agents)
+        {
+            selectableAreas.push_back({ area.GetId(), area.GetName() });
+        }
+
+        AZStd::sort(
+            selectableAreas.begin(), selectableAreas.end(),
+            [](const auto& lhs, const auto& rhs)
+            {
+                return lhs.second < rhs.second;
+            });
+
+        return selectableAreas;
+    }
+
+    AZ::Crc32 BehaveNavigationMeshSettingsAsset::OnNavigationAgentChanged()
+    {
+        NavigationAgentList agents;
+        EBUS_EVENT(NavigationAgentProviderRequestBus, GetRegisteredNavigationAgents, agents);
+
+        for (const auto& agent : agents)
+        {
+            if (agent.GetId() == _agentId)
+            {
+                m_agent = agent;
+                break;
+            }
+        }
+
+        return AZ::Edit::PropertyRefreshLevels::ValuesOnly;
     }
 } // namespace SparkyStudios::AI::Behave::Navigation

@@ -14,14 +14,11 @@
 
 #pragma once
 
-#include <Navigation/Assets/BehaveNavigationAgentAsset.h>
 #include <Navigation/Components/DynamicNavigationMeshComponent.h>
 #include <Navigation/Utils/RecastNavMeshDebugDraw.h>
 #include <Navigation/Utils/RecastNavigationMesh.h>
 
 #include <AzCore/Component/TransformBus.h>
-#include <AzCore/Serialization/DynamicSerializableField.h>
-#include <AzCore/Serialization/EditContext.h>
 
 #include <AzFramework/Entity/EntityDebugDisplayBus.h>
 
@@ -45,7 +42,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ_EDITOR_COMPONENT(DynamicNavigationMeshEditorComponent, "{819CE185-5738-406A-AADB-E5B0177B1D05}");
 
         // Perform reflection for this component. The context parameter is the reflection context.
-        static void Reflect(AZ::ReflectContext* context);
+        static void Reflect(AZ::ReflectContext* rc);
 
         static void GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided);
         static void GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible);
@@ -94,18 +91,15 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         void SetSettings(const AZ::Data::Asset<AZ::Data::AssetData>& settings = {});
         void UpdateNavMeshAABB();
-        void SyncSettings();
 
-        AZ::Crc32 OnBuildNavigationMesh() const;
-        AZ::Crc32 GetBuildButtonState() const;
+        [[nodiscard]] AZ::Crc32 OnBuildNavigationMesh() const;
+        [[nodiscard]] AZ::Crc32 GetBuildButtonState() const;
 
         AZ::Transform _currentEntityTransform{};
 
         bool _enableDebug = false;
         bool _depthTest = false;
         RecastNavMeshDebugDraw _debugDraw{};
-
-        DynamicNavigationMeshComponent _navMeshComponent;
 
         AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> _settings{};
         AZ::Aabb _aabb = AZ::Aabb::CreateNull();

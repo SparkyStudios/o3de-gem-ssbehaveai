@@ -26,13 +26,13 @@ namespace SparkyStudios::AI::Behave::Navigation
 {
     void BehaveNavigationSystemComponent::Reflect(AZ::ReflectContext* rc)
     {
+        BehaveNavigationAgentAsset::Reflect(rc);
+        BehaveNavigationMeshAreaAsset::Reflect(rc);
+        BehaveNavigationMeshSettingsAsset::Reflect(rc);
+
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
             sc->Class<BehaveNavigationSystemComponent, AZ::Component>()->Version(0);
-
-            BehaveNavigationAgentAsset::Reflect(rc);
-            BehaveNavigationMeshAreaAsset::Reflect(rc);
-            BehaveNavigationMeshSettingsAsset::Reflect(rc);
         }
     }
 

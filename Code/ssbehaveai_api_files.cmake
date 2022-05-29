@@ -60,6 +60,7 @@ set(FILES
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
 
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h
+    Include/SparkyStudios/AI/Behave/Navigation/NavigationAgent.h
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h
     Include/SparkyStudios/AI/Behave/Navigation/IBehaveNavigationMesh.h
