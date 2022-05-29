@@ -23,6 +23,8 @@ namespace SparkyStudios::AI::Behave::Navigation
 {
     void BehaveNavigationMeshAreaAsset::Reflect(AZ::ReflectContext* rc)
     {
+        BehaveNavigationMeshArea::Reflect(rc);
+
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
             sc->Class<BehaveNavigationMeshAreaAsset, AssetData>()
@@ -37,7 +39,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshAreaAsset::mAreas, "Areas", "The navigation mesh area name.")
+                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshAreaAsset::mAreas, "Areas", "Navigation areas.")
                     ->Attribute(AZ::Edit::Attributes::MaxLength, RC_WALKABLE_AREA);
             }
         }

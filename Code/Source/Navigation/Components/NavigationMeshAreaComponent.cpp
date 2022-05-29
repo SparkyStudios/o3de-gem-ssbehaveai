@@ -30,8 +30,6 @@ namespace SparkyStudios::AI::Behave::Navigation
             // We may have been reflected by NavigationMeshAreaEditorComponent already, so check first
             if (sc->FindClassData(azrtti_typeid<NavigationMeshAreaComponent>()) == nullptr)
             {
-                BehaveNavigationMeshArea::Reflect(rc);
-
                 sc->Class<NavigationMeshAreaComponent, Component>()
                     ->Version(0)
                     ->Field("Area", &NavigationMeshAreaComponent::_area)

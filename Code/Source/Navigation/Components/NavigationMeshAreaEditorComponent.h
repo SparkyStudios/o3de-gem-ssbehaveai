@@ -59,8 +59,10 @@ namespace SparkyStudios::AI::Behave::Navigation
         void OnTransformChanged(const AZ::Transform& /*local*/, const AZ::Transform& /*world*/) override;
 
     private:
+        typedef AZStd::vector<AZStd::pair<AZ::u8, AZStd::string>> NavigationAreaComboBoxEntries;
+
         void UpdatePolygonPrism();
-        [[nodiscard]] BehaveNavigationMeshArea::List BuildSelectableNavigationMeshAreaList() const;
+        [[nodiscard]] NavigationAreaComboBoxEntries BuildSelectableNavigationMeshAreaList() const;
 
         AZ::u8 _areaId;
         AZ::PolygonPrism _polygonPrism;

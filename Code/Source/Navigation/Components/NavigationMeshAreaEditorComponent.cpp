@@ -148,14 +148,15 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
-    BehaveNavigationMeshArea::List NavigationMeshAreaEditorComponent::BuildSelectableNavigationMeshAreaList() const
+    NavigationMeshAreaEditorComponent::NavigationAreaComboBoxEntries NavigationMeshAreaEditorComponent::
+        BuildSelectableNavigationMeshAreaList() const
     {
         AZ_PROFILE_FUNCTION(Entity);
 
         BehaveNavigationMeshAreaVector areas;
         EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
 
-        BehaveNavigationMeshArea::List selectableAreas;
+        NavigationAreaComboBoxEntries selectableAreas;
         selectableAreas.reserve(areas.size());
         for (const auto& area : areas)
         {

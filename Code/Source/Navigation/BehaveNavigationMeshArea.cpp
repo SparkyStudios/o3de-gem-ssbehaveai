@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "Utils/Constants.h"
-
 #include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
+
+#include <Navigation/Utils/Constants.h>
 
 #include <AzCore/Debug/Profiler.h>
 #include <AzCore/Serialization/EditContext.h>
@@ -28,26 +28,11 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Enum<NavigationMeshAreaFlag>()
-                ->Version(0)
-                ->Value("Walk", NavigationMeshAreaFlag::eNMAF_WALK)
-                ->Value("Swim", NavigationMeshAreaFlag::eNMAF_SWIM)
-                ->Value("Jump", NavigationMeshAreaFlag::eNMAF_JUMP)
-                ->Value("Fly", NavigationMeshAreaFlag::eNMAF_FLY)
-                ->Value("Door", NavigationMeshAreaFlag::eNMAF_DOOR)
-                ->Value("Disabled", NavigationMeshAreaFlag::eNMAF_DISABLED)
-                ->Value("All", NavigationMeshAreaFlag::eNMAF_ALL);
-
-            sc->Class<BehaveNavigationMeshArea>()
-                ->Version(0)
-                ->Field("Id", &BehaveNavigationMeshArea::_id)
-                ->Field("Name", &BehaveNavigationMeshArea::_name)
-                ->Field("Cost", &BehaveNavigationMeshArea::_cost)
-                ->Field("Flags", &BehaveNavigationMeshArea::_flags);
-
-            if (AZ::EditContext* ec = sc->GetEditContext())
+            // This class can already been reflected, so check first
+            if (sc->FindClassData(azrtti_typeid<BehaveNavigationMeshArea>()) == nullptr)
             {
-                ec->Enum<NavigationMeshAreaFlag>("Navigation Mesh Area Flags", "Flags for the navigation mesh area")
+                sc->Enum<NavigationMeshAreaFlag>()
+                    ->Version(0)
                     ->Value("Walk", NavigationMeshAreaFlag::eNMAF_WALK)
                     ->Value("Swim", NavigationMeshAreaFlag::eNMAF_SWIM)
                     ->Value("Jump", NavigationMeshAreaFlag::eNMAF_JUMP)
@@ -56,39 +41,63 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Value("Disabled", NavigationMeshAreaFlag::eNMAF_DISABLED)
                     ->Value("All", NavigationMeshAreaFlag::eNMAF_ALL);
 
-                ec->Class<BehaveNavigationMeshArea>("Behave AI - Navigation Mesh Area", "Configures a navigation mesh area.")
-                    ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshArea::_name, "Name", "The name of the navigation mesh area.")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshArea::_cost, "Cost",
-                        "The traversal cost of the navigation mesh area.")
+                sc->Class<BehaveNavigationMeshArea>()
+                    ->Version(0)
+                    ->Field("Id", &BehaveNavigationMeshArea::_id)
+                    ->Field("Name", &BehaveNavigationMeshArea::_name)
+                    ->Field("Cost", &BehaveNavigationMeshArea::_cost)
+                    ->Field("Flags", &BehaveNavigationMeshArea::_flags);
 
-                    ->ClassElement(AZ::Edit::ClassElements::Group, "Flags")
-                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Walk", "Mark the area as accessible by agents with the ability to walk.")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnWalkFlagChanged)
-                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckWalkFlag)
-                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
-                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Swim", "Mark the area as accessible by agents with the ability to swim.")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnSwimFlagChanged)
-                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckSwimFlag)
-                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
-                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Jump", "Mark the area as accessible by agents with the ability to jump.")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnJumpFlagChanged)
-                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckJumpFlag)
-                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
-                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Fly", "Mark the area as accessible by agents with the ability to fly.")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnFlyFlagChanged)
-                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckFlyFlag)
-                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
-                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Door", "Mark the area as accessible by agents with the ability to door.")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnDoorFlagChanged)
-                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckDoorFlag)
-                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
-                    ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Disabled", "Disable the navigation on this area for all agents.")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnDisabledFlagChanged)
-                    ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckDisabledFlag);
+                if (AZ::EditContext* ec = sc->GetEditContext())
+                {
+                    ec->Enum<NavigationMeshAreaFlag>("Navigation Mesh Area Flags", "Flags for the navigation mesh area")
+                        ->Value("Walk", NavigationMeshAreaFlag::eNMAF_WALK)
+                        ->Value("Swim", NavigationMeshAreaFlag::eNMAF_SWIM)
+                        ->Value("Jump", NavigationMeshAreaFlag::eNMAF_JUMP)
+                        ->Value("Fly", NavigationMeshAreaFlag::eNMAF_FLY)
+                        ->Value("Door", NavigationMeshAreaFlag::eNMAF_DOOR)
+                        ->Value("Disabled", NavigationMeshAreaFlag::eNMAF_DISABLED)
+                        ->Value("All", NavigationMeshAreaFlag::eNMAF_ALL);
+
+                    ec->Class<BehaveNavigationMeshArea>("Behave AI - Navigation Mesh Area", "Configures a navigation mesh area.")
+                        ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                        ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
+                        ->DataElement(
+                            AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshArea::_name, "Name",
+                            "The name of the navigation mesh area.")
+                        ->DataElement(
+                            AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshArea::_cost, "Cost",
+                            "The traversal cost of the navigation mesh area.")
+
+                        ->ClassElement(AZ::Edit::ClassElements::Group, "Flags")
+                        ->UIElement(
+                            AZ::Edit::UIHandlers::CheckBox, "Walk", "Mark the area as accessible by agents with the ability to walk.")
+                        ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnWalkFlagChanged)
+                        ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckWalkFlag)
+                        ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                        ->UIElement(
+                            AZ::Edit::UIHandlers::CheckBox, "Swim", "Mark the area as accessible by agents with the ability to swim.")
+                        ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnSwimFlagChanged)
+                        ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckSwimFlag)
+                        ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                        ->UIElement(
+                            AZ::Edit::UIHandlers::CheckBox, "Jump", "Mark the area as accessible by agents with the ability to jump.")
+                        ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnJumpFlagChanged)
+                        ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckJumpFlag)
+                        ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                        ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Fly", "Mark the area as accessible by agents with the ability to fly.")
+                        ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnFlyFlagChanged)
+                        ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckFlyFlag)
+                        ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                        ->UIElement(
+                            AZ::Edit::UIHandlers::CheckBox, "Door", "Mark the area as accessible by agents with the ability to door.")
+                        ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnDoorFlagChanged)
+                        ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckDoorFlag)
+                        ->Attribute(AZ::Edit::Attributes::ReadOnly, &BehaveNavigationMeshArea::CheckDisabledFlag)
+                        ->UIElement(AZ::Edit::UIHandlers::CheckBox, "Disabled", "Disable the navigation on this area for all agents.")
+                        ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshArea::OnDisabledFlagChanged)
+                        ->Attribute(AZ::Edit::Attributes::CheckboxDefaultValue, &BehaveNavigationMeshArea::CheckDisabledFlag);
+                }
             }
         }
     }

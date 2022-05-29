@@ -33,6 +33,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         //! allows multiple threads to call
         using MutexType = AZStd::recursive_mutex;
 
+        virtual ~BehaveNavigationMeshAreaProviderRequests() = default;
+
         /**
          * @brief Gets all the registered navigation mesh area names.
          *

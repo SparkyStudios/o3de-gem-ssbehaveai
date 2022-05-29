@@ -30,11 +30,16 @@ namespace SparkyStudios::AI::Behave::Navigation
         eNMAF_ALL = 0xFFFF,
     };
 
+    /**
+     * @brief Defines a navigation area on the navigation mesh.
+     *
+     * A navigation area have a flag, specifying the type of movement that can be done on it, and therefore
+     * which agent can move across it. The agents allowed to move on this area are affected by the navigation
+     * cost of the area.
+     */
     class BehaveNavigationMeshArea final
     {
     public:
-        typedef AZStd::vector<AZStd::pair<AZ::u8, AZStd::string>> List;
-
         AZ_TYPE_INFO(BehaveNavigationMeshArea, "{06E238C1-E763-4344-B764-54F8EFBACDB3}");
         AZ_CLASS_ALLOCATOR(BehaveNavigationMeshArea, AZ::SystemAllocator, 0);
 
@@ -60,9 +65,11 @@ namespace SparkyStudios::AI::Behave::Navigation
          */
         explicit BehaveNavigationMeshArea(AZ::u8 id, AZStd::string name, float cost = 1.0f, AZ::u16 flags = eNMAF_ALL);
 
-        bool operator==(const BehaveNavigationMeshArea& other) const;
+        bool operator==(const BehaveNavigationMeshArea& rhs) const;
 
-        bool operator<(const BehaveNavigationMeshArea& other) const;
+        bool operator!=(const BehaveNavigationMeshArea& rhs) const;
+
+        bool operator<(const BehaveNavigationMeshArea& rhs) const;
 
         explicit operator AZ::u8() const;
 
@@ -83,12 +90,12 @@ namespace SparkyStudios::AI::Behave::Navigation
         [[nodiscard]] AZ::u16 GetFlags() const;
 
     private:
-        bool CheckWalkFlag() const;
-        bool CheckSwimFlag() const;
-        bool CheckJumpFlag() const;
-        bool CheckFlyFlag() const;
-        bool CheckDoorFlag() const;
-        bool CheckDisabledFlag() const;
+        [[nodiscard]] bool CheckWalkFlag() const;
+        [[nodiscard]] bool CheckSwimFlag() const;
+        [[nodiscard]] bool CheckJumpFlag() const;
+        [[nodiscard]] bool CheckFlyFlag() const;
+        [[nodiscard]] bool CheckDoorFlag() const;
+        [[nodiscard]] bool CheckDisabledFlag() const;
 
         AZ::Crc32 OnWalkFlagChanged();
         AZ::Crc32 OnSwimFlagChanged();
@@ -106,14 +113,19 @@ namespace SparkyStudios::AI::Behave::Navigation
     using BehaveNavigationMeshAreaNameSet = AZStd::unordered_set<AZStd::string>;
     using BehaveNavigationMeshAreaVector = AZStd::vector<BehaveNavigationMeshArea>;
 
-    AZ_INLINE bool BehaveNavigationMeshArea::operator==(const BehaveNavigationMeshArea& other) const
+    AZ_INLINE bool BehaveNavigationMeshArea::operator==(const BehaveNavigationMeshArea& rhs) const
     {
-        return other._id == _id;
+        return rhs._name == _name && rhs._cost == _cost && rhs._flags == _flags;
     }
 
-    AZ_INLINE bool BehaveNavigationMeshArea::operator<(const BehaveNavigationMeshArea& other) const
+    AZ_INLINE bool BehaveNavigationMeshArea::operator!=(const BehaveNavigationMeshArea& rhs) const
     {
-        return other._id < _id;
+        return !(*this == rhs);
+    }
+
+    AZ_INLINE bool BehaveNavigationMeshArea::operator<(const BehaveNavigationMeshArea& rhs) const
+    {
+        return rhs._id < _id;
     }
 
     AZ_INLINE BehaveNavigationMeshArea::operator AZ::u8() const
