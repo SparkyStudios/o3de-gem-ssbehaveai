@@ -21,8 +21,8 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    static BehaveNavigationMeshArea gDefaultNavigationAgent =
-        BehaveNavigationMeshArea(kDefaultNavigationMeshAreaId, kDefaultNavigationMeshAreaName, kDefaultNavigationMeshAreaCost, eNMAF_ALL);
+    static BehaveNavigationMeshArea gDefaultNavigationAgent = BehaveNavigationMeshArea(
+        kDefaultNavigationMeshAreaId, kDefaultNavigationMeshAreaName, kDefaultNavigationMeshAreaCost, eNMAF_ALL ^ eNMAF_DISABLED);
 
     void BehaveNavigationMeshArea::Reflect(AZ::ReflectContext* rc)
     {

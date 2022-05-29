@@ -42,19 +42,19 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         static void Reflect(AZ::ReflectContext* rc);
 
-        BehaveNavigationEditorSystemComponent();
-        ~BehaveNavigationEditorSystemComponent() override;
-
-    private:
         static void GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided);
         static void GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible);
         static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
+        BehaveNavigationEditorSystemComponent() = default;
+        ~BehaveNavigationEditorSystemComponent() override = default;
+
+    private:
         void LoadNavigationAgentAsset(const AZ::Data::AssetId& assetId);
-        void LoadNavigationMeshAreaAsset(const AZ::Data::AssetId& assetId);
         void LoadNavigationMeshSettingsAsset(const AZ::Data::AssetId& assetId);
         void AddAsset(const AZ::Data::Asset<AZ::Data::AssetData>& asset);
+        AZStd::optional<AZ::Data::Asset<AZ::Data::AssetData>> RetrieveNavigationMeshAreas();
 
         // AZ::Component
         void Activate() override;
@@ -75,7 +75,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         [[nodiscard]] BehaveNavigationMeshArea GetNavigationMeshArea(const AZStd::string& name) const override;
 
         AZStd::unordered_map<AZ::Data::AssetId, AZ::Data::Asset<BehaveNavigationAgentAsset>> m_navigationAgentAssets;
-        AZStd::unordered_map<AZ::Data::AssetId, AZ::Data::Asset<BehaveNavigationMeshAreaAsset>> m_navigationMeshAreaAssets;
+        AZ::Data::Asset<BehaveNavigationMeshAreaAsset> m_navigationMeshAreasAsset;
         AZStd::unordered_map<AZ::Data::AssetId, AZ::Data::Asset<BehaveNavigationMeshSettingsAsset>> m_navigationMeshSettingsAssets;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

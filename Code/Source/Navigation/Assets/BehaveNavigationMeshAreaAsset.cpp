@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <Recast.h>
+
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 
@@ -35,7 +37,8 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshAreaAsset::mAreas, "Areas", "The navigation mesh area name.");
+                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshAreaAsset::mAreas, "Areas", "The navigation mesh area name.")
+                    ->Attribute(AZ::Edit::Attributes::MaxLength, RC_WALKABLE_AREA);
             }
         }
     }

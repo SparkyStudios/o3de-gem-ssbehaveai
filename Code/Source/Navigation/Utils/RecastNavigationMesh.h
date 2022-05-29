@@ -60,7 +60,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZStd::atomic<bool> _navMeshReady = false;
 
         RecastGeometry _geom;
-        AZStd::vector<RecastAreaConvexVolume> _areaConvexVolume;
+        AZStd::vector<RecastAreaConvexVolume> _areaConvexVolumes;
 
         AZStd::unique_ptr<rcContext> _context;
         AZStd::vector<AZ::u8> _trianglesArea;

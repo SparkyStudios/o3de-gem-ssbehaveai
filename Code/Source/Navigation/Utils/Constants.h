@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <Recast.h>
+
 namespace SparkyStudios::AI::Behave::Navigation
 {
     static constexpr char kDefaultNavigationMeshAgentName[] = "Default Agent";
@@ -21,7 +23,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     /**
      * @brief The ID of the default navigation mesh area.
      */
-    static constexpr AZ::u8 kDefaultNavigationMeshAreaId = 0;
+    static constexpr AZ::u8 kDefaultNavigationMeshAreaId = RC_WALKABLE_AREA;
 
     /**
      * @brief The name of the default navigation mesh area.

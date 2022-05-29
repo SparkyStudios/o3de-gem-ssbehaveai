@@ -40,8 +40,3 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZStd::vector<BehaveNavigationMeshArea> mAreas;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation
-
-namespace AZ
-{
-    AZ_TYPE_INFO_SPECIALIZE(SparkyStudios::AI::Behave::Navigation::NavigationMeshAreaFlag, "{D220378C-9F2B-4756-AF88-6E4B4ED876E0}");
-} // namespace AZ

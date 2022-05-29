@@ -17,6 +17,8 @@
 #include <DetourNavMeshBuilder.h>
 
 #include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
+#include <Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
+#include <Navigation/Utils/Constants.h>
 #include <Navigation/Utils/RecastContext.h>
 #include <Navigation/Utils/RecastNavigationMesh.h>
 
@@ -34,7 +36,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     RecastNavigationMesh::RecastNavigationMesh(AZ::EntityId navigationMeshEntityId, bool isEditor)
         : _entityId(AZStd::move(navigationMeshEntityId))
         , _isEditor(isEditor)
-        , _areaConvexVolume()
+        , _areaConvexVolumes()
     {
         _context = AZStd::make_unique<RecastContext>();
     }
@@ -123,7 +125,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                     area = RecastAreaConvexVolume(areaPolygon, t);
                     area.mArea = static_cast<AZ::u8>(areaSettings);
 
-                    _areaConvexVolume.push_back(area);
+                    _areaConvexVolumes.push_back(area);
                 }
                 else if (isWalkable)
                 {
@@ -173,7 +175,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         _aabb = navMesh->GetBoundingBox();
 
         _geom.Clear();
-        _areaConvexVolume.clear();
+        _areaConvexVolumes.clear();
 
         AZ::Vector3 dimension = _aabb.GetExtents();
         AZ::Transform pose = AZ::Transform::CreateFromQuaternionAndTranslation(AZ::Quaternion::CreateIdentity(), _aabb.GetCenter());
@@ -344,12 +346,11 @@ namespace SparkyStudios::AI::Behave::Navigation
             return false;
         }
 
-        // (Optional) Mark areas.
-        for (size_t i = 0, l = _areaConvexVolume.size(); i < l; ++i)
+        // Mark navigation mesh areas.
+        for (const auto& v : _areaConvexVolumes)
         {
             rcMarkConvexPolyArea(
-                _context.get(), _areaConvexVolume[i].mVertices.front().data(), static_cast<int>(_areaConvexVolume[i].mVertices.size()),
-                _areaConvexVolume[i].mHMin, _areaConvexVolume[i].mHMax, static_cast<unsigned char>(_areaConvexVolume[i].mArea),
+                _context.get(), v.mVertices.front().data(), static_cast<int>(v.mVertices.size()), v.mHMin, v.mHMax, v.mArea,
                 *_compactHeightField);
         }
 
@@ -453,19 +454,30 @@ namespace SparkyStudios::AI::Behave::Navigation
         // Only build the detour navmesh if we do not exceed the limit.
         if (config.maxVertsPerPoly <= DT_VERTS_PER_POLYGON)
         {
-            unsigned char* navData = nullptr;
-            int navDataSize = 0;
+            BehaveNavigationMeshAreaVector areas;
+            EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
 
-            // Update poly flags from areas.
-            for (int i = 0; i < _polyMesh->npolys; ++i)
+            // Update poly flags from navigation mesh areas.
+            if (!areas.empty())
             {
-                if (_polyMesh->areas[i] == RC_WALKABLE_AREA)
+                for (int i = 0; i < _polyMesh->npolys; ++i)
                 {
-                    _polyMesh->flags[i] = RC_WALKABLE_AREA;
+                    for (const auto& area : areas)
+                    {
+                        if (_polyMesh->areas[i] == area.GetId())
+                        {
+                            _polyMesh->flags[i] = area.GetFlags();
+                            break;
+                        }
+                    }
                 }
             }
 
-            dtNavMeshCreateParams params = {};
+            unsigned char* navData = nullptr;
+            int navDataSize = 0;
+
+            dtNavMeshCreateParams params{};
+
             params.verts = _polyMesh->verts;
             params.vertCount = _polyMesh->nverts;
             params.polys = _polyMesh->polys;
