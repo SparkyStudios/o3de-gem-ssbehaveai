@@ -77,6 +77,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         [[nodiscard]] NavigationAgentComboBoxEntries BuildSelectableNavigationAgentList() const;
         AZ::Crc32 OnNavigationAgentChanged();
+        AZ::Crc32 OnClearAgent();
 
         AZ::u32 _agentId;
     };

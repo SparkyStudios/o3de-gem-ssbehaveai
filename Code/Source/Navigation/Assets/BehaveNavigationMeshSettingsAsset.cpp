@@ -52,6 +52,10 @@ namespace SparkyStudios::AI::Behave::Navigation
             {
                 ec->Class<BehaveNavigationMeshSettingsAsset>(
                       "Navigation Mesh Settings", "Settings to use when building the navigation mesh.")
+                    ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
+                    ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
+                    ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
+
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshSettingsAsset::m_name, "Name",
                         "The name of the navigation mesh.")
@@ -60,6 +64,10 @@ namespace SparkyStudios::AI::Behave::Navigation
                         "The navigation agent for this settings.")
                     ->Attribute(AZ::Edit::Attributes::EnumValues, &BehaveNavigationMeshSettingsAsset::BuildSelectableNavigationAgentList)
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshSettingsAsset::OnNavigationAgentChanged)
+
+                    ->UIElement(AZ::Edit::UIHandlers::Button, "", "Clears the selected agent.")
+                    ->Attribute(AZ::Edit::Attributes::ButtonText, "Clear")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &BehaveNavigationMeshSettingsAsset::OnClearAgent)
 
                     ->ClassElement(AZ::Edit::ClassElements::Group, "Rasterization")
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
@@ -166,9 +174,9 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         NavigationAgentComboBoxEntries selectableAreas;
         selectableAreas.reserve(agents.size());
-        for (const auto& area : agents)
+        for (const auto& agent : agents)
         {
-            selectableAreas.push_back({ area.GetId(), area.GetName() });
+            selectableAreas.push_back({ agent.GetId(), agent.GetName() });
         }
 
         AZStd::sort(
@@ -195,6 +203,14 @@ namespace SparkyStudios::AI::Behave::Navigation
             }
         }
 
-        return AZ::Edit::PropertyRefreshLevels::ValuesOnly;
+        return AZ::Edit::PropertyRefreshLevels::EntireTree;
+    }
+
+    AZ::Crc32 BehaveNavigationMeshSettingsAsset::OnClearAgent()
+    {
+        _agentId = AZ::Crc32();
+        OnNavigationAgentChanged();
+
+        return AZ::Edit::PropertyRefreshLevels::EntireTree;
     }
 } // namespace SparkyStudios::AI::Behave::Navigation
