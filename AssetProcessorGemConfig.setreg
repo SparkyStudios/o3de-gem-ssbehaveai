@@ -3,17 +3,18 @@
     "AssetProcessor": {
       "Settings": {
         "RC Behave AI - BehaviorTree Asset": {
-          "pattern": ".*bhbtree",
+          "glob": "*.bhbtree",
           "params": "copy",
+          "critical": true,
           "productAssetType": "{7F72EE8B-0B82-40AE-BD9B-CF34EAF35377}"
         },
-        "RC Behave AI - Navigation Agent Asset": {
+        "RC Behave AI - Navigation Agents Asset": {
           "glob": "*.bhnavagent",
           "params": "copy",
           "critical": true,
           "productAssetType": "{F47AEB2C-909C-4095-ACA8-6B896BB09CC7}"
         },
-        "RC Behave AI - Navigation Mesh Area Asset": {
+        "RC Behave AI - Navigation Mesh Areas Asset": {
           "glob": "*.bhnavmesharea",
           "params": "copy",
           "critical": true,
