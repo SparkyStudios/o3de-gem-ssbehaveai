@@ -11,7 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    else()
+    add_definitions(-Dnsel_CONFIG_NO_EXCEPTIONS)
+else()
     add_definitions(-Wpedantic)
 endif()
 
@@ -74,7 +75,7 @@ endif()
 set(BEHAVIOR_TREE_LIBRARY ${PROJECT_NAME})
 
 # Update the policy setting to avoid an error when loading the ament_cmake package
-# at the current cmake version level
+# at the current CMake version level
 if(POLICY CMP0057)
     cmake_policy(SET CMP0057 NEW)
 endif()
@@ -200,7 +201,8 @@ target_link_libraries(${BEHAVIOR_TREE_LIBRARY} PUBLIC
 
 target_link_libraries(${BEHAVIOR_TREE_LIBRARY} PRIVATE
     ${Boost_LIBRARIES}
-    ${cppzmq_LIBRARIES})
+    cppzmq
+    cppzmq-static)
 
 #get_target_property(my_libs ${BEHAVIOR_TREE_LIBRARY} INTERFACE_LINK_LIBRARIES)
 #list(REMOVE_ITEM _libs X)
@@ -239,6 +241,7 @@ endif()
 if(ament_cmake_FOUND)
     find_package(ament_index_cpp REQUIRED)
     ament_target_dependencies(${BEHAVIOR_TREE_LIBRARY} PUBLIC ament_index_cpp)
+    ament_export_dependencies(ament_index_cpp)
 
     set( BEHAVIOR_TREE_LIB_DESTINATION   "lib/${RUNTIME_OUTPUT_DIRECTORY}" )
     set( BEHAVIOR_TREE_INC_DESTINATION   include )
@@ -291,7 +294,7 @@ INSTALL(TARGETS ${BEHAVIOR_TREE_LIBRARY}
     RUNTIME DESTINATION ${BEHAVIOR_TREE_BIN_DESTINATION}
     )
 
-INSTALL( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     DESTINATION ${BEHAVIOR_TREE_INC_DESTINATION}
     FILES_MATCHING PATTERN "*.h*")
 

@@ -21,9 +21,10 @@
 #include "behaviortree_cpp_v3/basic_types.h"
 #include "behaviortree_cpp_v3/blackboard.h"
 #include "behaviortree_cpp_v3/utils/strcat.hpp"
+#include "behaviortree_cpp_v3/utils/wakeup_signal.hpp"
 
-#ifdef _MSC_VER 
-#pragma warning(disable : 4127) 
+#ifdef _MSC_VER
+#pragma warning(disable : 4127)
 #endif
 
 namespace BT
@@ -150,6 +151,9 @@ class TreeNode
 
     static Optional<StringView> getRemappedKey(StringView port_name, StringView remapping_value);
 
+    // Notify the tree should be ticked again()
+    void emitStateChanged();
+
   protected:
     /// Method to be implemented by the user
     virtual BT::NodeStatus tick() = 0;
@@ -164,6 +168,8 @@ class TreeNode
     {
         registration_ID_.assign(ID.data(), ID.size());
     }
+
+    void setWakeUpInstance(std::shared_ptr<WakeUpSignal> instance);
 
     void modifyPortsRemapping(const PortsRemapping& new_remapping);
 
@@ -185,6 +191,8 @@ class TreeNode
     NodeConfiguration config_;
 
     std::string registration_ID_;
+
+    std::shared_ptr<WakeUpSignal> wake_up_;
 };
 
 //-------------------------------------------------------

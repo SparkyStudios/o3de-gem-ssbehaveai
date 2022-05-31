@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <set>
 
-
 #include "behaviortree_cpp_v3/behavior_tree.h"
 
 namespace BT
@@ -151,7 +150,17 @@ public:
         nodes = std::move(other.nodes);
         blackboard_stack = std::move(other.blackboard_stack);
         manifests = std::move(other.manifests);
+        wake_up_ = other.wake_up_;
         return *this;
+    }
+
+    void initialize()
+    {
+        wake_up_ = std::make_shared<WakeUpSignal>();
+        for(auto& node: nodes)
+        {
+            node->setWakeUpInstance(wake_up_);
+        }
     }
 
     void haltTree()
@@ -180,6 +189,11 @@ public:
 
     NodeStatus tickRoot()
     {
+      if(!wake_up_)
+      {
+        initialize();
+      }
+
       if(!rootNode())
       {
         throw RuntimeError("Empty Tree");
@@ -191,11 +205,20 @@ public:
       return ret;
     }
 
+    /// Sleep for a certain amount of time.
+    /// This sleep could be interrupted by the method
+    /// TreeNode::emitStateChanged()
+    void sleep(std::chrono::system_clock::duration timeout);
+
     ~Tree();
 
     Blackboard::Ptr rootBlackboard();
 
+private:
+    std::shared_ptr<WakeUpSignal> wake_up_;
 };
+
+class Parser;
 
 /**
  * @brief The BehaviorTreeFactory is used to create instances of a
@@ -270,6 +293,12 @@ public:
      */
     void registerFromROSPlugins();
 
+    void registerBehaviorTreeFromFile(const std::string& filename);
+
+    void registerBehaviorTreeFromText(const std::string& xml_text);
+
+    std::vector<std::string> registeredBehaviorTrees() const;
+
     /**
      * @brief instantiateTreeNode creates an instance of a previously registered TreeNode.
      *
@@ -309,7 +338,8 @@ public:
         static_assert(default_constructable || param_constructable,
                       "[registerNode]: the registered class must have at least one of these two "
                       "constructors: "
-                      "  (const std::string&, const NodeConfiguration&) or (const std::string&).");
+                      "  (const std::string&, const NodeConfiguration&) or (const std::string&).\n"
+                      "Check also if the constructor is public!");
 
         static_assert(!(param_constructable && !has_static_ports_list),
                       "[registerNode]: you MUST implement the static method: "
@@ -374,11 +404,16 @@ public:
     Tree createTreeFromFile(const std::string& file_path,
                             Blackboard::Ptr blackboard = Blackboard::create());
 
+    Tree createdTree(const std::string& tree_name,
+                     Blackboard::Ptr blackboard = Blackboard::create());
+
 private:
     std::unordered_map<std::string, NodeBuilder> builders_;
     std::unordered_map<std::string, TreeNodeManifest> manifests_;
     std::set<std::string> builtin_IDs_;
+    std::unordered_map<std::string, Any> behavior_tree_definitions_;
 
+    std::shared_ptr<BT::Parser> parser_;
     // clang-format on
 };
 
