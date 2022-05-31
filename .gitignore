@@ -7,3 +7,5 @@ External/**/lib/
 [Bb]uild/
 [Cc]ache/
 [Uu]ser/
+
+cmake-build-*/
