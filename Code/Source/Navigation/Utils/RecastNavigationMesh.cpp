@@ -208,7 +208,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             }
 
             // TODO: Add CVars to control chunk size
-            if (!rcCreateChunkyTriMesh(
+            if (!rcCreateChunkedGeometry(
                     geom.mVertices.front().data(), geom.mIndices.data(), aznumeric_cast<int>(geom.mIndices.size() / 3), 256,
                     geom.mChunkedGeometry.get()))
             {
