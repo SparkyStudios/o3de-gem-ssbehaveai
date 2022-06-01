@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021-present Sparky Studios. All rights reserved.
+// Copyright (c) 2021-present Sparky Studios. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,9 +44,9 @@ namespace SparkyStudios::AI::Behave::Navigation
                 ->Field("MaxVerticesPerPolygon", &BehaveNavigationMeshSettingsAsset::m_maxVerticesPerPoly)
                 ->Field("DetailSampleDistance", &BehaveNavigationMeshSettingsAsset::m_detailSampleDist)
                 ->Field("MaxSampleError", &BehaveNavigationMeshSettingsAsset::m_detailSampleMaxError)
-                ->Field("BorderPadding", &BehaveNavigationMeshSettingsAsset::m_borderPadding)
                 ->Field("EnableTiling", &BehaveNavigationMeshSettingsAsset::m_enableTiling)
-                ->Field("TileSize", &BehaveNavigationMeshSettingsAsset::m_tileSize);
+                ->Field("TileSize", &BehaveNavigationMeshSettingsAsset::m_tileSize)
+                ->Field("BorderPadding", &BehaveNavigationMeshSettingsAsset::m_borderPadding);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
@@ -161,7 +161,13 @@ namespace SparkyStudios::AI::Behave::Navigation
                         "The width/height size of tile's on the xy-plane.")
                     ->Attribute(AZ::Edit::Attributes::Min, 16)
                     ->Attribute(AZ::Edit::Attributes::Max, 1024)
-                    ->Attribute(AZ::Edit::Attributes::Step, 16);
+                    ->Attribute(AZ::Edit::Attributes::Step, 16)
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Slider, &BehaveNavigationMeshSettingsAsset::m_borderPadding, "Border Padding",
+                        "The border padding of each tiles.")
+                    ->Attribute(AZ::Edit::Attributes::Min, 0)
+                    ->Attribute(AZ::Edit::Attributes::Max, 64)
+                    ->Attribute(AZ::Edit::Attributes::Step, 1);
             }
         }
     }

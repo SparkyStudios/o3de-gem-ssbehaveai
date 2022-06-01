@@ -48,7 +48,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         NavigationAgent m_agent;
 
-        int m_borderPadding = 0;
+        int m_borderPadding = 3;
 
         float m_cellSize = 0.3f;
         float m_cellHeight = 0.2f;
