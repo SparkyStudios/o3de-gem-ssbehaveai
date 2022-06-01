@@ -34,7 +34,6 @@ namespace SparkyStudios::AI::Behave::Navigation
         , public IBehaveNavigationMesh
         , protected BehaveNavigationMeshNotificationBus::Handler
         , private LmbrCentral::ShapeComponentNotificationsBus::Handler
-        , private AZ::TransformNotificationBus::Handler
         , private AzFramework::EntityDebugDisplayEventBus::Handler
         , private AZ::Data::AssetBus::Handler
     {
@@ -74,9 +73,6 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         // LmbrCentral::ShapeComponentNotificationsBus
         void OnShapeChanged(ShapeChangeReasons changeReason) override;
-
-        // AZ::TransformNotificationBus::Handler
-        void OnTransformChanged(const AZ::Transform& local, const AZ::Transform& world) override;
 
         // AzToolsFramework::EntityDebugDisplayEventBus
         void DisplayEntityViewport(const AzFramework::ViewportInfo& viewportInfo, AzFramework::DebugDisplayRequests& debugDisplay) override;

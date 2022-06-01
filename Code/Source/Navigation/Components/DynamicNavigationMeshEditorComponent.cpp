@@ -135,19 +135,20 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void DynamicNavigationMeshEditorComponent::Activate()
     {
-        _currentEntityTransform = AZ::Transform::CreateIdentity();
         _navigationMesh = new RecastNavigationMesh(GetEntityId(), true);
 
         BehaveNavigationMeshNotificationBus::Handler::BusConnect(GetEntityId());
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusConnect(GetEntityId());
-        AZ::TransformNotificationBus::Handler::BusConnect(GetEntityId());
         AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(GetEntityId());
 
         if (_settings.GetId().IsValid())
         {
+            AZ::Data::AssetBus::Handler::BusDisconnect(_settings.GetId());
+
             // Re-retrieve the asset in case it was reloaded while we were inactive.
             _settings = AZ::Data::AssetManager::Instance().GetAsset<BehaveNavigationMeshSettingsAsset>(
                 _settings.GetId(), AZ::Data::AssetLoadBehavior::Default);
+
             SetSettings(_settings);
 
             AZ::Data::AssetBus::Handler::BusConnect(_settings.GetId());
@@ -164,7 +165,6 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::Data::AssetBus::Handler::BusDisconnect();
 
         AzFramework::EntityDebugDisplayEventBus::Handler::BusDisconnect(GetEntityId());
-        AZ::TransformNotificationBus::Handler::BusDisconnect(GetEntityId());
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusDisconnect(GetEntityId());
         BehaveNavigationMeshNotificationBus::Handler::BusDisconnect(GetEntityId());
 
@@ -196,20 +196,11 @@ namespace SparkyStudios::AI::Behave::Navigation
             UpdateNavMeshAABB();
     }
 
-    void DynamicNavigationMeshEditorComponent::OnTransformChanged(const AZ::Transform& /*local*/, const AZ::Transform& world)
-    {
-        _currentEntityTransform = world;
-    }
-
     void DynamicNavigationMeshEditorComponent::DisplayEntityViewport(
         [[maybe_unused]] const AzFramework::ViewportInfo& viewportInfo, AzFramework::DebugDisplayRequests& debugDisplay)
     {
         if (_enableDebug && _navigationMesh->IsNavigationMeshReady() && _navigationMesh->GetNavigationMesh())
         {
-            // only uniform scale is supported in physics so the debug visuals reflect this fact
-            AZ::Transform worldFromLocalWithUniformScale = _currentEntityTransform;
-            worldFromLocalWithUniformScale.SetUniformScale(worldFromLocalWithUniformScale.GetUniformScale());
-
             debugDisplay.PushMatrix(AZ::Transform::Identity());
 
             _debugDraw.SetEnableDepthTest(_depthTest);
@@ -235,7 +226,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void DynamicNavigationMeshEditorComponent::OnAssetError(AZ::Data::Asset<AZ::Data::AssetData> asset)
     {
-        // only notify for asset errors for the asset we care about.
+        // Only notify for asset errors for the asset we care about.
 #if defined(AZ_ENABLE_TRACING)
         if ((asset.GetId().IsValid()) && (asset == _settings))
         {
@@ -256,8 +247,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::Transform transform;
         AZ::Aabb aabb;
 
-        LmbrCentral::ShapeComponentRequestsBus::Event(
-            GetEntityId(), &LmbrCentral::ShapeComponentRequestsBus::Events::GetTransformAndLocalBounds, transform, aabb);
+        EBUS_EVENT_ID(GetEntityId(), LmbrCentral::ShapeComponentRequestsBus, GetTransformAndLocalBounds, transform, aabb);
 
         _aabb = AZStd::move(aabb);
     }
