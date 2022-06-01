@@ -110,8 +110,6 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void RecastNavMeshDebugDraw::AddVertex(float x, float y, float z, unsigned int color)
     {
-        const float temp[3] = { x, y, z };
-        const RecastVector3 v(temp);
-        m_verticesToDraw.push_back(AZStd::make_pair(v.AsVector3(), color));
+        m_verticesToDraw.push_back(AZStd::make_pair(AZ::Vector3(x, z, y), color));
     }
 } // namespace SparkyStudios::AI::Behave::Navigation

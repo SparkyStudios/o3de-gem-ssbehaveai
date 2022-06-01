@@ -14,6 +14,9 @@
 
 #pragma once
 
+#include <Navigation/Utils/RecastChunkedGeometry.h>
+#include <Navigation/Utils/RecastSmartPointer.h>
+
 #include <AzCore/Math/PolygonPrism.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
@@ -21,23 +24,21 @@ namespace SparkyStudios::AI::Behave::Navigation
     /**
      * @brief Convert O3DE coordinate space (+Z up) into Recast coordinate space (+Y up).
      */
-    class RecastVector3
+    struct RecastVector3
     {
-    public:
         RecastVector3() = default;
 
         /**
-         * @brief Create a new instance from O3DE vector.
+         * @brief Create a new instance from an O3DE vector.
          *
          * @param in The O3DE vector.
          */
         explicit RecastVector3(const AZ::Vector3& in);
 
         /**
-         * @brief Create a new instance from an array pointer.
+         * @brief Create a new instance from an array pointer coming from Recast.
          *
          * @param in The pointer containing vector components.
-         * Mostly coming from recast itself.
          */
         explicit RecastVector3(const float* in);
 
@@ -65,14 +66,27 @@ namespace SparkyStudios::AI::Behave::Navigation
          */
         [[nodiscard]] AZ::Vector3 AsVector3() const;
 
-        float mX = 0, mY = 0, mZ = 0;
+        /**
+         * @brief Vectors components.
+         */
+        float mXYZ[3] = { 0.0f, 0.0f, 0.0f };
     };
 
     /**
-     * @brief Stores geometry data to send to Recast.
+     * @brief Stores geometry data for a single Recast navigation mesh tile.
      */
-    struct RecastGeometry
+    struct RecastNavigationMeshGeometry
     {
+        /**
+         * @brief The coordinate of this tile over the X-axis.
+         */
+        AZ::s32 mTileX = 0;
+
+        /**
+         * @brief The coordinate of this tile over the Y-axis.
+         */
+        AZ::s32 mTileY = 0;
+
         /**
          * @brief The geometry's vertex buffer.
          */
@@ -84,9 +98,21 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZStd::vector<AZ::s32> mIndices;
 
         /**
+         * @brief The chunked geometry. Used only if tiling is enabled.
+         */
+        RecastPointer<rcChunkedGeometry> mChunkedGeometry = nullptr;
+
+        /**
          * @brief Clear the geometry data.
          */
         void Clear();
+
+        /**
+         * @brief Checks if this tile is empty (has no vertices).
+         *
+         * @returns true if the tile has no vertices, false otherwise.
+         */
+        [[nodiscard]] bool IsEmpty() const;
     };
 
     /**

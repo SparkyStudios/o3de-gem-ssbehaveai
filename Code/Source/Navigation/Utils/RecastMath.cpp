@@ -8,44 +8,52 @@ namespace SparkyStudios::AI::Behave::Navigation
 {
     RecastVector3::RecastVector3(const AZ::Vector3& in)
     {
-        mX = in.GetX();
-        mY = in.GetZ();
-        mZ = in.GetY();
+        mXYZ[0] = in.GetX();
+        mXYZ[1] = in.GetZ();
+        mXYZ[2] = in.GetY();
     }
 
     RecastVector3::RecastVector3(const float* in)
     {
-        mX = in[0];
-        mY = in[1];
-        mZ = in[2];
+        mXYZ[0] = in[0];
+        mXYZ[1] = in[1];
+        mXYZ[2] = in[2];
     }
 
     RecastVector3::RecastVector3(float x, float y, float z)
     {
-        mX = x;
-        mY = y;
-        mZ = z;
+        mXYZ[0] = x;
+        mXYZ[1] = y;
+        mXYZ[2] = z;
     }
 
     float* RecastVector3::data()
     {
-        return &mX;
+        return &mXYZ[0];
     }
 
     const float* RecastVector3::data() const
     {
-        return &mX;
+        return &mXYZ[0];
     }
 
     AZ::Vector3 RecastVector3::AsVector3() const
     {
-        return { mX, mZ, mY };
+        return { mXYZ[0], mXYZ[2], mXYZ[1] };
     }
 
-    void RecastGeometry::Clear()
+    void RecastNavigationMeshGeometry::Clear()
     {
+        mChunkedGeometry.reset();
+        mChunkedGeometry = nullptr;
+
         mVertices.clear();
         mIndices.clear();
+    }
+
+    bool RecastNavigationMeshGeometry::IsEmpty() const
+    {
+        return mVertices.empty();
     }
 
     RecastAreaConvexVolume::RecastAreaConvexVolume()
