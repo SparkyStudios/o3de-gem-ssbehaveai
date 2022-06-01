@@ -47,9 +47,11 @@ namespace SparkyStudios::AI::Behave::Navigation
         static RecastVector3 GetPolyCenter(const dtNavMesh* navMesh, dtPolyRef ref);
 
     private:
-        RecastGeometry GetColliderGeometry(const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits);
+        RecastNavigationMeshGeometry GetColliderGeometry(const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits);
 
-        bool BuildNavigationMeshInternal();
+        bool Build();
+        bool BuildTile(int tileX, int tileY, float tileCellSize);
+        bool BuildNavigationMeshTile(const int tileX, const int tileY, const float* bMin, const float* bMax, int& dataSize, AZ::u8*& navData);
 
         AZ::EntityId _entityId;
         bool _isEditor;
@@ -59,7 +61,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         AZStd::atomic<bool> _navMeshReady = false;
 
-        RecastGeometry _geom;
+        RecastNavigationMeshGeometry _geometry;
         AZStd::vector<RecastAreaConvexVolume> _areaConvexVolumes;
 
         AZStd::unique_ptr<rcContext> _context;

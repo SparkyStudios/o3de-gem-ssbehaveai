@@ -31,10 +31,42 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
+    static unsigned int NextPow2(unsigned int v)
+    {
+        v--;
+        v |= v >> 1;
+        v |= v >> 2;
+        v |= v >> 4;
+        v |= v >> 8;
+        v |= v >> 16;
+        v++;
+        return v;
+    }
+
+    static unsigned int Log2(unsigned int v)
+    {
+        unsigned int r;
+        unsigned int shift;
+        r = (v > 0xffff) << 4;
+        v >>= r;
+        shift = (v > 0xff) << 3;
+        v >>= shift;
+        r |= shift;
+        shift = (v > 0xf) << 2;
+        v >>= shift;
+        r |= shift;
+        shift = (v > 0x3) << 1;
+        v >>= shift;
+        r |= shift;
+        r |= (v >> 1);
+        return r;
+    }
+
     RecastNavigationMesh::RecastNavigationMesh(AZ::EntityId navigationMeshEntityId, bool isEditor)
         : _entityId(AZStd::move(navigationMeshEntityId))
         , _isEditor(isEditor)
-        , _areaConvexVolumes()
+        , _settings(nullptr)
+        , _aabb()
     {
         _context = AZStd::make_unique<RecastContext>();
     }
@@ -70,22 +102,23 @@ namespace SparkyStudios::AI::Behave::Navigation
         for (int i = 0; i < aznumeric_cast<int>(poly->vertCount); ++i)
         {
             const float* v = &tile->verts[poly->verts[i] * 3];
-            center.mX += v[0];
-            center.mY += v[1];
-            center.mZ += v[2];
+            center.mXYZ[0] += v[0];
+            center.mXYZ[1] += v[1];
+            center.mXYZ[2] += v[2];
         }
 
         const float s = 1.0f / aznumeric_cast<float>(poly->vertCount);
-        center.mX *= s;
-        center.mY *= s;
-        center.mZ *= s;
+        center.mXYZ[0] *= s;
+        center.mXYZ[1] *= s;
+        center.mXYZ[2] *= s;
 
         return center;
     }
 
-    RecastGeometry RecastNavigationMesh::GetColliderGeometry(const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits)
+    RecastNavigationMeshGeometry RecastNavigationMesh::GetColliderGeometry(
+        const AZ::Aabb& aabb, const AzPhysics::SceneQueryHits& overlapHits)
     {
-        RecastGeometry geom{};
+        RecastNavigationMeshGeometry geom{};
 
         AZ::Aabb volumeAabb = aabb;
 
@@ -163,6 +196,28 @@ namespace SparkyStudios::AI::Behave::Navigation
             }
         }
 
+        if (_settings->m_enableTiling)
+        {
+            geom.mChunkedGeometry.reset(new rcChunkedGeometry());
+
+            if (!geom.mChunkedGeometry)
+            {
+                geom.Clear();
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Out of memory while building chunked geometry.");
+                return {};
+            }
+
+            // TODO: Add CVars to control chunk size
+            if (!rcCreateChunkyTriMesh(
+                    geom.mVertices.front().data(), geom.mIndices.data(), aznumeric_cast<int>(geom.mIndices.size() / 3), 256,
+                    geom.mChunkedGeometry.get()))
+            {
+                geom.Clear();
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Failed to build chunked geometry for tiled navigation mesh.");
+                return {};
+            }
+        }
+
         return geom;
     }
 
@@ -172,8 +227,10 @@ namespace SparkyStudios::AI::Behave::Navigation
         _settings = navMesh->GetSettings();
         _aabb = navMesh->GetBoundingBox();
 
-        _geom.Clear();
+        _geometry.Clear();
         _areaConvexVolumes.clear();
+
+        AzPhysics::SceneQueryHits results{};
 
         AZ::Vector3 dimension = _aabb.GetExtents();
         AZ::Transform pose = AZ::Transform::CreateFromQuaternionAndTranslation(AZ::Quaternion::CreateIdentity(), _aabb.GetCenter());
@@ -181,65 +238,238 @@ namespace SparkyStudios::AI::Behave::Navigation
         Physics::BoxShapeConfiguration shapeConfiguration;
         shapeConfiguration.m_dimensions = dimension;
 
+        AzPhysics::SceneQuery::UnboundedOverlapHitCallback unboundedOverlapHitCallback =
+            [&results](AZStd::optional<AzPhysics::SceneQueryHit>&& hit) -> bool
+        {
+            if (hit && ((hit->m_resultFlags & AzPhysics::SceneQuery::EntityId) != 0))
+            {
+                const AzPhysics::SceneQueryHit& sceneQueryHit = *hit;
+                results.m_hits.push_back(sceneQueryHit);
+            }
+
+            return true;
+        };
+
         AzPhysics::OverlapRequest request = AzPhysics::OverlapRequestHelpers::CreateBoxOverlapRequest(dimension, pose, nullptr);
         request.m_queryType = AzPhysics::SceneQuery::QueryType::Static;
         request.m_collisionGroup = AzPhysics::CollisionGroup::All;
+        // We need to use unbounded callback, otherwise the results will be limited to 32 or so objects.
+        request.m_unboundedOverlapHitCallback = unboundedOverlapHitCallback;
 
-        auto sceneInterface = AZ::Interface<AzPhysics::SceneInterface>::Get();
-        AzPhysics::SceneHandle sceneHandle =
-            sceneInterface->GetSceneHandle(_isEditor ? AzPhysics::EditorPhysicsSceneName : AzPhysics::DefaultPhysicsSceneName);
-        AzPhysics::SceneQueryHits results = sceneInterface->QueryScene(sceneHandle, &request);
+        if (auto* const sceneInterface = AZ::Interface<AzPhysics::SceneInterface>::Get())
+        {
+            AzPhysics::SceneHandle sceneHandle =
+                sceneInterface->GetSceneHandle(_isEditor ? AzPhysics::EditorPhysicsSceneName : AzPhysics::DefaultPhysicsSceneName);
+            sceneInterface->QueryScene(sceneHandle, &request);
 
-        if (results.m_hits.empty())
+            if (results.m_hits.empty())
+                return false;
+
+            AZ_Printf("DynamicNavigationMeshComponent", "Found %llu physx meshes", results.m_hits.size());
+
+            _geometry = GetColliderGeometry(_aabb, results);
+
+            auto* job = AZ::CreateJobFunction(
+                [this]() -> void
+                {
+                    if ((_navMeshReady = Build()))
+                    {
+                        EBUS_EVENT_ID(_entityId, BehaveNavigationMeshNotificationBus, OnNavigationMeshUpdated);
+                    }
+                },
+                true);
+
+            job->Start();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool RecastNavigationMesh::Build()
+    {
+        if (_geometry.mVertices.empty())
             return false;
 
-        AZ_Printf("DynamicNavigationMeshComponent", "found %llu physx meshes", results.m_hits.size());
+        _navMesh.reset(dtAllocNavMesh());
+        if (!_navMesh)
+        {
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not create nav mesh.");
+            return false;
+        }
 
-        _geom = GetColliderGeometry(_aabb, results);
+        _navQuery.reset(dtAllocNavMeshQuery());
+        if (!_navQuery)
+        {
+            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not create nav mesh query.");
+            return false;
+        }
 
-        auto* job = AZ::CreateJobFunction(
-            [this]()
+        const RecastVector3 worldMin(_aabb.GetMin());
+        const RecastVector3 worldMax(_aabb.GetMax());
+
+        if (_settings->m_enableTiling)
+        {
+            int gw = 0, gh = 0;
+            rcCalcGridSize(worldMin.data(), worldMax.data(), _settings->m_cellSize, &gw, &gh);
+            const int tileSize = _settings->m_tileSize;
+            const int tileWidth = (gw + tileSize - 1) / tileSize;
+            const int tileHeight = (gh + tileSize - 1) / tileSize;
+            const float tileCellSize = _settings->m_tileSize * _settings->m_cellSize;
+
+            int tileBits = rcMin(aznumeric_cast<int>(Log2(NextPow2(tileWidth * tileHeight))), 14);
+
+            if (tileBits > 14)
+                tileBits = 14;
+
+            int polyBits = 22 - tileBits;
+
+            const int maxTiles = 1 << tileBits;
+            const int maxPolysPerTile = 1 << polyBits;
+
+            dtNavMeshParams params{};
+            rcVcopy(params.orig, worldMin.data());
+            params.tileWidth = _settings->m_tileSize * _settings->m_cellSize;
+            params.tileHeight = _settings->m_tileSize * _settings->m_cellSize;
+            params.maxTiles = maxTiles;
+            params.maxPolys = maxPolysPerTile;
+
+            dtStatus status = _navMesh->init(&params);
+            if (dtStatusFailed(status))
             {
-                if ((_navMeshReady = BuildNavigationMeshInternal()))
-                {
-                    EBUS_EVENT_ID(_entityId, BehaveNavigationMeshNotificationBus, OnNavigationMeshUpdated);
-                }
-            },
-            true);
+                _context->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init nav mesh.");
+                return false;
+            }
 
-        job->Start();
+            // TODO: Add CVars to control max nodes
+            status = _navQuery->init(_navMesh.get(), 2048);
+            if (dtStatusFailed(status))
+            {
+                _context->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init Detour nav mesh query");
+                return false;
+            }
+
+            // Start the build process.
+            _context->startTimer(RC_TIMER_TEMP);
+
+            for (int y = 0; y < tileHeight; ++y)
+            {
+                for (int x = 0; x < tileWidth; ++x)
+                {
+                    BuildTile(x, y, tileCellSize);
+                }
+            }
+        }
+        else
+        {
+            // Start the build process.
+            _context->startTimer(RC_TIMER_TEMP);
+
+            int dataSize = 0;
+            AZ::u8* data;
+
+            if (!BuildNavigationMeshTile(0, 0, worldMin.data(), worldMax.data(), dataSize, data))
+            {
+                return false;
+            }
+
+            dtStatus status = _navMesh->init(data, dataSize, DT_TILE_FREE_DATA);
+            if (dtStatusFailed(status))
+            {
+                dtFree(data);
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not init Detour nav mesh");
+                return false;
+            }
+
+            // TODO: Add CVars to control max nodes
+            status = _navQuery->init(_navMesh.get(), 2048);
+            if (dtStatusFailed(status))
+            {
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not init Detour nav mesh query");
+                return false;
+            }
+        }
+
+        // Stop the build process.
+        _context->stopTimer(RC_TIMER_TEMP);
+
+        // TODO: Accumulated time
 
         return true;
     }
 
-    bool RecastNavigationMesh::BuildNavigationMeshInternal()
+    bool RecastNavigationMesh::BuildTile(const int tileX, const int tileY, const float tileCellSize)
     {
-        if (_geom.mVertices.empty())
+        if (_geometry.mVertices.empty())
             return false;
 
-        const float* vertices = _geom.mVertices.front().data();
-        const int vertexCount = static_cast<int>(_geom.mVertices.size());
-        const int* triangleData = _geom.mIndices.data();
-        const int triangleCount = static_cast<int>(_geom.mIndices.size()) / 3;
+        if (!_navMesh)
+            return false;
+
+        const RecastVector3 worldMin(_aabb.GetMin());
+        const RecastVector3 worldMax(_aabb.GetMax());
+
+        RecastVector3 bTileMin = worldMin;
+        RecastVector3 bTileMax = worldMax;
+
+        bTileMin.mXYZ[0] += tileX * tileCellSize;
+        bTileMin.mXYZ[2] += tileY * tileCellSize;
+
+        bTileMax.mXYZ[0] = bTileMin.mXYZ[0] + (tileX + 1.0f) * tileCellSize;
+        bTileMax.mXYZ[2] = bTileMin.mXYZ[2] + (tileY + 1.0f) * tileCellSize;
+
+        int dataSize = 0;
+        AZ::u8* data = nullptr;
+
+        BuildNavigationMeshTile(tileX, tileY, bTileMin.data(), bTileMax.data(), dataSize, data);
+
+        if (data != nullptr)
+        {
+            // Remove any previous data (the nav mesh owns and deletes the data).
+            _navMesh->removeTile(_navMesh->getTileRefAt(tileX, tileY, 0), 0, 0);
+
+            // Let the nav mesh own the data.
+            if (const dtStatus status = _navMesh->addTile(data, dataSize, DT_TILE_FREE_DATA, 0, 0); dtStatusFailed(status))
+            {
+                dtFree(data);
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool RecastNavigationMesh::BuildNavigationMeshTile(
+        const int tileX, const int tileY, const float* bMin, const float* bMax, int& dataSize, AZ::u8*& navData)
+    {
+        if (_geometry.mVertices.empty())
+            return false;
+
+        const float* vertices = _geometry.mVertices.front().data();
+        const int verticesCount = static_cast<int>(_geometry.mVertices.size());
+        const int* triangleData = _geometry.mIndices.data();
+        const int triangleCount = static_cast<int>(_geometry.mIndices.size()) / 3;
+        const rcChunkedGeometry* chunkedGeometry = _geometry.mChunkedGeometry.get();
 
         // Step 1. Initialize build config.
         // --------------------------------
 
         // Init build configuration from settings
         rcConfig config{};
-        memset(&config, 0, sizeof(config));
-
         config.cs = _settings->m_cellSize;
         config.ch = _settings->m_cellHeight;
         config.walkableSlopeAngle = _settings->m_agent.GetMaxSlopeAngle();
-        config.walkableHeight = static_cast<int>(std::ceil(_settings->m_agent.GetHeight() / config.ch));
-        config.walkableClimb = static_cast<int>(std::floor(_settings->m_agent.GetMaxClimb() / config.ch));
-        config.walkableRadius = static_cast<int>(std::ceil(_settings->m_agent.GetRadius() / config.cs));
-        config.maxEdgeLen = static_cast<int>(_settings->m_edgeMaxLength / _settings->m_cellSize);
+        config.walkableHeight = aznumeric_cast<int>(AZStd::ceil(_settings->m_agent.GetHeight() / config.ch));
+        config.walkableClimb = aznumeric_cast<int>(AZStd::floor(_settings->m_agent.GetMaxClimb() / config.ch));
+        config.walkableRadius = aznumeric_cast<int>(AZStd::ceil(_settings->m_agent.GetRadius() / config.cs));
+        config.maxEdgeLen = aznumeric_cast<int>(_settings->m_edgeMaxLength / _settings->m_cellSize);
         config.maxSimplificationError = _settings->m_edgeMaxError;
         config.minRegionArea = rcSqr<int>(_settings->m_regionMinSize); // Note: area = size*size
         config.mergeRegionArea = rcSqr<int>(_settings->m_regionMergedSize); // Note: area = size*size
-        config.maxVertsPerPoly = static_cast<int>(_settings->m_maxVerticesPerPoly);
+        config.maxVertsPerPoly = aznumeric_cast<int>(_settings->m_maxVerticesPerPoly);
         config.detailSampleDist = _settings->m_detailSampleDist < 0.9f ? 0 : _settings->m_cellSize * _settings->m_detailSampleDist;
         config.detailSampleMaxError = _settings->m_cellHeight * _settings->m_detailSampleMaxError;
 
@@ -247,12 +477,25 @@ namespace SparkyStudios::AI::Behave::Navigation
         // Here the bounds of the input mesh are used, but the
         // area could be specified by an user defined bounding box, etc.
 
-        const RecastVector3 worldMin(_aabb.GetMin());
-        const RecastVector3 worldMax(_aabb.GetMax());
+        rcVcopy(config.bmin, bMin);
+        rcVcopy(config.bmax, bMax);
 
-        rcVcopy(config.bmin, &worldMin.mX);
-        rcVcopy(config.bmax, &worldMax.mX);
-        rcCalcGridSize(config.bmin, config.bmax, config.cs, &config.width, &config.height);
+        if (_settings->m_enableTiling)
+        {
+            config.tileSize = aznumeric_cast<int>(_settings->m_tileSize);
+            config.borderSize = config.walkableRadius + _settings->m_borderPadding;
+            config.width = config.tileSize + config.borderSize * 2;
+            config.height = config.tileSize + config.borderSize * 2;
+
+            config.bmin[0] -= config.borderSize * config.cs;
+            config.bmin[2] -= config.borderSize * config.cs;
+            config.bmax[0] += config.borderSize * config.cs;
+            config.bmax[2] += config.borderSize * config.cs;
+        }
+        else
+        {
+            rcCalcGridSize(config.bmin, config.bmax, config.cs, &config.width, &config.height);
+        }
 
         // Reset build times gathering.
         _context->resetTimers();
@@ -262,7 +505,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         _context->log(RC_LOG_PROGRESS, "Building navigation:");
         _context->log(RC_LOG_PROGRESS, " - %d x %d cells", config.width, config.height);
-        _context->log(RC_LOG_PROGRESS, " - %d verts, %d triangles", vertexCount, triangleCount);
+        _context->log(RC_LOG_PROGRESS, " - %d verts, %d triangles", verticesCount, triangleCount);
 
         // Step 2. Rasterize input polygon soup.
         // -------------------------------------
@@ -286,20 +529,62 @@ namespace SparkyStudios::AI::Behave::Navigation
         // Allocate array that can hold triangle area types.
         // If we have multiple meshes we need to process, allocate
         // an array which can hold the max number of triangles we need to process.
-        _trianglesArea.resize(triangleCount, 0);
-
-        // Find triangles which are walkable based on their slope and rasterize them.
-        // If our input data is multiple meshes, you can transform them here, calculate
-        // the type for each of the meshes and rasterize them.
-        rcMarkWalkableTriangles(
-            _context.get(), config.walkableSlopeAngle, vertices, vertexCount, triangleData, triangleCount, _trianglesArea.data());
-
-        if (!rcRasterizeTriangles(
-                _context.get(), vertices, vertexCount, triangleData, _trianglesArea.data(), triangleCount,
-                *_solidHeightField /*, config.walkableClimb*/))
+        if (_settings->m_enableTiling)
         {
-            _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not rasterize triangles.");
-            return false;
+            _trianglesArea.resize(chunkedGeometry->maxTrisPerChunk, 0);
+
+            float tileBMin[2], timeBMax[2];
+            tileBMin[0] = config.bmin[0];
+            tileBMin[1] = config.bmin[2];
+            timeBMax[0] = config.bmax[0];
+            timeBMax[1] = config.bmax[2];
+
+            int chunkIds[512]; // TODO: Make grow when returning too many items.
+            const int chunksCount = rcGetChunksOverlappingRect(chunkedGeometry, tileBMin, timeBMax, chunkIds, 512);
+            if (chunksCount == 0)
+                return false;
+
+            // m_tileTriCount = 0;
+
+            for (int i = 0; i < chunksCount; ++i)
+            {
+                const rcChunkedGeometryNode& node = chunkedGeometry->nodes[chunkIds[i]];
+                const int* chunkIndices = &chunkedGeometry->tris[node.i * 3];
+                const int chunkIndicesCount = node.n;
+
+                // m_tileTriCount += nctris;
+
+                memset(_trianglesArea.data(), 0, chunkIndicesCount * sizeof(unsigned char));
+                rcMarkWalkableTriangles(
+                    _context.get(), config.walkableSlopeAngle, vertices, verticesCount, chunkIndices, chunkIndicesCount,
+                    _trianglesArea.data());
+
+                if (!rcRasterizeTriangles(
+                        _context.get(), vertices, verticesCount, chunkIndices, _trianglesArea.data(), chunkIndicesCount, *_solidHeightField,
+                        config.walkableClimb))
+                {
+                    _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not rasterize triangles.");
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            _trianglesArea.resize(triangleCount, 0);
+
+            // Find triangles which are walkable based on their slope and rasterize them.
+            // If our input data is multiple meshes, you can transform them here, calculate
+            // the type for each of the meshes and rasterize them.
+            rcMarkWalkableTriangles(
+                _context.get(), config.walkableSlopeAngle, vertices, verticesCount, triangleData, triangleCount, _trianglesArea.data());
+
+            if (!rcRasterizeTriangles(
+                    _context.get(), vertices, verticesCount, triangleData, _trianglesArea.data(), triangleCount, *_solidHeightField,
+                    config.walkableClimb))
+            {
+                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not rasterize triangles.");
+                return false;
+            }
         }
 
         _trianglesArea.clear();
@@ -365,7 +650,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             }
 
             // Partition the walkable surface into simple regions without holes.
-            if (!rcBuildRegions(_context.get(), *_compactHeightField, 0, config.minRegionArea, config.mergeRegionArea))
+            if (!rcBuildRegions(_context.get(), *_compactHeightField, config.borderSize, config.minRegionArea, config.mergeRegionArea))
             {
                 _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build watershed regions.");
                 return false;
@@ -375,7 +660,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         {
             // Partition the walkable surface into simple regions without holes.
             // Monotone partitioning does not need distance field.
-            if (!rcBuildRegionsMonotone(_context.get(), *_compactHeightField, 0, config.minRegionArea, config.mergeRegionArea))
+            if (!rcBuildRegionsMonotone(
+                    _context.get(), *_compactHeightField, config.borderSize, config.minRegionArea, config.mergeRegionArea))
             {
                 _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build monotone regions.");
                 return false;
@@ -384,7 +670,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         else // NavigationMeshPartitionType::Layers
         {
             // Partition the walkable surface into simple regions without holes.
-            if (!rcBuildLayerRegions(_context.get(), *_compactHeightField, 0, config.minRegionArea))
+            if (!rcBuildLayerRegions(_context.get(), *_compactHeightField, config.borderSize, config.minRegionArea))
             {
                 _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build layer regions.");
                 return false;
@@ -406,6 +692,11 @@ namespace SparkyStudios::AI::Behave::Navigation
         if (!rcBuildContours(_context.get(), *_compactHeightField, config.maxSimplificationError, config.maxEdgeLen, *_contourSet))
         {
             _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not create contours.");
+            return false;
+        }
+
+        if (_contourSet->nconts == 0)
+        {
             return false;
         }
 
@@ -452,6 +743,13 @@ namespace SparkyStudios::AI::Behave::Navigation
         // Only build the detour nav mesh if we do not exceed the limit.
         if (config.maxVertsPerPoly <= DT_VERTS_PER_POLYGON)
         {
+            if (_polyMesh->nverts >= 0xffff)
+            {
+                // The vertex indices are ushorts, and cannot point to more than 0xffff vertices.
+                _context->log(RC_LOG_ERROR, "Too many vertices per tile %d (max: %d).", _polyMesh->nverts, 0xffff);
+                return false;
+            }
+
             BehaveNavigationMeshAreaVector areas;
             EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
 
@@ -470,9 +768,6 @@ namespace SparkyStudios::AI::Behave::Navigation
                     }
                 }
             }
-
-            unsigned char* navData = nullptr;
-            int navDataSize = 0;
 
             dtNavMeshCreateParams params{};
 
@@ -506,6 +801,14 @@ namespace SparkyStudios::AI::Behave::Navigation
             params.walkableRadius = _settings->m_agent.GetRadius();
             params.walkableClimb = _settings->m_agent.GetMaxClimb();
 
+            // Tiling
+            if (_settings->m_enableTiling)
+            {
+                params.tileX = tileX;
+                params.tileY = tileY;
+                params.tileLayer = 0;
+            }
+
             // World
             rcVcopy(params.bmin, _polyMesh->bmin);
             rcVcopy(params.bmax, _polyMesh->bmax);
@@ -513,34 +816,9 @@ namespace SparkyStudios::AI::Behave::Navigation
             params.ch = config.ch;
             params.buildBvTree = true;
 
-            if (!dtCreateNavMeshData(&params, &navData, &navDataSize))
+            if (!dtCreateNavMeshData(&params, &navData, &dataSize))
             {
                 _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not build Detour nav mesh.");
-                return false;
-            }
-
-            _navMesh.reset(dtAllocNavMesh());
-            if (!_navMesh)
-            {
-                dtFree(navData);
-                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not create Detour nav mesh");
-                return false;
-            }
-
-            dtStatus status = _navMesh->init(navData, navDataSize, DT_TILE_FREE_DATA);
-            if (dtStatusFailed(status))
-            {
-                dtFree(navData);
-                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not init Detour nav mesh");
-                return false;
-            }
-
-            _navQuery.reset(dtAllocNavMeshQuery());
-
-            status = _navQuery->init(_navMesh.get(), 2048);
-            if (dtStatusFailed(status))
-            {
-                _context->log(RC_LOG_ERROR, "Navigation Mesh Builder: Could not init Detour nav mesh query");
                 return false;
             }
 
