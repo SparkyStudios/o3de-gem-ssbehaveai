@@ -75,6 +75,15 @@ namespace SparkyStudios::AI::Behave::Navigation
     };
 
     template<>
+    struct RecastDeleter<rcChunkedGeometry>
+    {
+        void operator()(rcChunkedGeometry* p) const
+        {
+            delete p;
+        }
+    };
+
+    template<>
     struct RecastDeleter<dtNavMesh>
     {
         void operator()(dtNavMesh* p) const

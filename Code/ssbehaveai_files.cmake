@@ -91,6 +91,8 @@ set(FILES
     Source/Navigation/Utils/RecastSmartPointer.h
     Source/Navigation/Utils/RecastNavigationMesh.h
     Source/Navigation/Utils/RecastNavigationMesh.cpp
+    Source/Navigation/Utils/RecastChunkedGeometry.h
+    Source/Navigation/Utils/RecastChunkedGeometry.cpp
 
     # Recast Navigation SDK
     # ==============================
