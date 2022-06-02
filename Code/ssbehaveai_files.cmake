@@ -78,6 +78,7 @@ set(FILES
     Source/Navigation/NavigationAgentProviderRequestBus.h
     Source/Navigation/BehaveNavigationSystemComponent.h
     Source/Navigation/BehaveNavigationSystemComponent.cpp
+    Source/Navigation/OffMeshConnection.cpp
 
     Source/Navigation/Components/DynamicNavigationMeshComponent.h
     Source/Navigation/Components/DynamicNavigationMeshComponent.cpp

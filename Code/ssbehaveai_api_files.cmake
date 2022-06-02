@@ -64,6 +64,7 @@ set(FILES
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h
     Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h
     Include/SparkyStudios/AI/Behave/Navigation/IBehaveNavigationMesh.h
+    Include/SparkyStudios/AI/Behave/Navigation/OffMeshConnection.h
 
     # Recast Navigation SDK
     # ==============================
