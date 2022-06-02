@@ -19,6 +19,8 @@
 #include <AzCore/Serialization/DynamicSerializableField.h>
 #include <AzCore/Serialization/EditContext.h>
 
+#include <AzToolsFramework/API/ToolsApplicationAPI.h>
+
 namespace SparkyStudios::AI::Behave::Navigation
 {
     void DynamicNavigationMeshEditorComponent::Reflect(AZ::ReflectContext* rc)
@@ -28,10 +30,11 @@ namespace SparkyStudios::AI::Behave::Navigation
         if (auto* sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
             sc->Class<DynamicNavigationMeshEditorComponent, EditorComponentBase>()
-                ->Field("DebugDraw", &DynamicNavigationMeshEditorComponent::_enableDebug)
-                ->Field("DebugDepthTest", &DynamicNavigationMeshEditorComponent::_depthTest)
                 ->Field("Settings", &DynamicNavigationMeshEditorComponent::_settings)
-                ->Field("Bounds", &DynamicNavigationMeshEditorComponent::_aabb);
+                ->Field("OffMeshConnections", &DynamicNavigationMeshEditorComponent::_offMeshConnections)
+                ->Field("Bounds", &DynamicNavigationMeshEditorComponent::_aabb)
+                ->Field("DebugDraw", &DynamicNavigationMeshEditorComponent::_enableDebug)
+                ->Field("DebugDepthTest", &DynamicNavigationMeshEditorComponent::_depthTest);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
@@ -54,10 +57,12 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_settings, "Settings",
                         "Settings to use when building the navigation mesh.")
-                    ->Attribute(AZ::Edit::Attributes::DisplayOrder, 0)
+
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_offMeshConnections, "Off-Mesh Connections",
+                        "Add additional connections between navigation mesh areas and tiles.")
 
                     ->ClassElement(AZ::Edit::ClassElements::Group, "Debug")
-                    ->Attribute(AZ::Edit::Attributes::DisplayOrder, 1)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &DynamicNavigationMeshEditorComponent::_enableDebug, "Enable",
                         "Draw the navigation mesh.")
@@ -66,15 +71,16 @@ namespace SparkyStudios::AI::Behave::Navigation
                         "Enable the depth test while drawing the navigation mesh.")
                     ->UIElement(AZ::Edit::UIHandlers::Button, "", "Build the navigation mesh with the current settings.")
                     ->Attribute(AZ::Edit::Attributes::ButtonText, "Build")
-                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh);
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, &DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh)
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &DynamicNavigationMeshEditorComponent::_waitingOnNavMeshBuild);
             }
         }
 
         if (auto* bc = azrtti_cast<AZ::BehaviorContext*>(rc))
         {
-            bc->Enum<static_cast<int>(NavigationMeshPartitionType::Watershed)>("eNMPT_Watershed")
-                ->Enum<static_cast<int>(NavigationMeshPartitionType::Monotone)>("eNMPT_Monotone")
-                ->Enum<static_cast<int>(NavigationMeshPartitionType::Layers)>("eNMPT_Layers");
+            bc->Enum<static_cast<int>(NavigationMeshPartitionType::Watershed), NavigationMeshPartitionType>("eNMPT_Watershed")
+                ->Enum<static_cast<int>(NavigationMeshPartitionType::Monotone), NavigationMeshPartitionType>("eNMPT_Monotone")
+                ->Enum<static_cast<int>(NavigationMeshPartitionType::Layers), NavigationMeshPartitionType>("eNMPT_Layers");
         }
     }
 
@@ -129,6 +135,11 @@ namespace SparkyStudios::AI::Behave::Navigation
         return _aabb;
     }
 
+    const OffMeshConnections& DynamicNavigationMeshEditorComponent::GetOffMeshConnections() const
+    {
+        return _offMeshConnections;
+    }
+
     void DynamicNavigationMeshEditorComponent::Init()
     {
     }
@@ -173,7 +184,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void DynamicNavigationMeshEditorComponent::BuildGameEntity(AZ::Entity* gameEntity)
     {
-        gameEntity->CreateComponent<DynamicNavigationMeshComponent>(_settings, _aabb);
+        gameEntity->CreateComponent<DynamicNavigationMeshComponent>(_settings, _aabb, _offMeshConnections);
     }
 
     void DynamicNavigationMeshEditorComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
@@ -188,6 +199,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     void DynamicNavigationMeshEditorComponent::OnNavigationMeshUpdated()
     {
         _waitingOnNavMeshBuild = false;
+        EBUS_EVENT(AzToolsFramework::ToolsApplicationEvents::Bus, InvalidatePropertyDisplay, AzToolsFramework::Refresh_AttributesAndValues);
     }
 
     void DynamicNavigationMeshEditorComponent::OnShapeChanged(ShapeChangeReasons changeReason)
@@ -252,19 +264,14 @@ namespace SparkyStudios::AI::Behave::Navigation
         _aabb = AZStd::move(aabb);
     }
 
-    AZ::Crc32 DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh() const
+    AZ::Crc32 DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh()
     {
         if (_waitingOnNavMeshBuild)
             return AZ::Edit::PropertyRefreshLevels::None;
 
-        //_waitingOnNavMeshBuild = true;
+        _waitingOnNavMeshBuild = true;
         _navigationMesh->BuildNavigationMesh(this);
 
-        return AZ::Edit::PropertyRefreshLevels::EntireTree;
-    }
-
-    AZ::Crc32 DynamicNavigationMeshEditorComponent::GetBuildButtonState() const
-    {
-        return _waitingOnNavMeshBuild ? AZ::Edit::PropertyVisibility::Hide : AZ::Edit::PropertyVisibility::Show;
+        return AZ::Edit::PropertyRefreshLevels::AttributesAndValues;
     }
 } // namespace SparkyStudios::AI::Behave::Navigation

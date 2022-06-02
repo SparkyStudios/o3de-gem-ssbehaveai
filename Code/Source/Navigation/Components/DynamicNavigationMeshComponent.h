@@ -44,11 +44,12 @@ namespace SparkyStudios::AI::Behave::Navigation
         static void Reflect(AZ::ReflectContext* rc);
 
         DynamicNavigationMeshComponent() = default;
-        explicit DynamicNavigationMeshComponent(AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb);
+        explicit DynamicNavigationMeshComponent(AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb, OffMeshConnections offMeshConnections);
 
         // IBehaveNavigationMesh
         [[nodiscard]] const BehaveNavigationMeshSettingsAsset* GetSettings() const override;
         [[nodiscard]] const AZ::Aabb& GetBoundingBox() const override;
+        [[nodiscard]] const OffMeshConnections& GetOffMeshConnections() const override;
 
         // BehaveNavigationMeshRequestBus
         bool UpdateNavigationMesh() override;
@@ -71,6 +72,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     private:
         AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> _settings;
         AZ::Aabb _aabb = AZ::Aabb::CreateNull();
+        OffMeshConnections _offMeshConnections;
 
         RecastNavigationMesh* _navigationMesh = nullptr;
     };

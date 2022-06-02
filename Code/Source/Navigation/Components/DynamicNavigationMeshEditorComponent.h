@@ -40,7 +40,6 @@ namespace SparkyStudios::AI::Behave::Navigation
     public:
         AZ_EDITOR_COMPONENT(DynamicNavigationMeshEditorComponent, "{819CE185-5738-406A-AADB-E5B0177B1D05}");
 
-        // Perform reflection for this component. The context parameter is the reflection context.
         static void Reflect(AZ::ReflectContext* rc);
 
         static void GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided);
@@ -55,6 +54,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         // SparkyStudios::AI::Behave::Navigation::IBehaveNavigationMesh
         [[nodiscard]] const BehaveNavigationMeshSettingsAsset* GetSettings() const override;
         [[nodiscard]] const AZ::Aabb& GetBoundingBox() const override;
+        [[nodiscard]] const OffMeshConnections& GetOffMeshConnections() const override;
 
         // AZ::Component
         void Init() override;
@@ -88,8 +88,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         void SetSettings(const AZ::Data::Asset<AZ::Data::AssetData>& settings = {});
         void UpdateNavMeshAABB();
 
-        [[nodiscard]] AZ::Crc32 OnBuildNavigationMesh() const;
-        [[nodiscard]] AZ::Crc32 GetBuildButtonState() const;
+        [[nodiscard]] AZ::Crc32 OnBuildNavigationMesh();
 
         AZ::Transform _currentEntityTransform{};
 
@@ -99,6 +98,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> _settings{};
         AZ::Aabb _aabb = AZ::Aabb::CreateNull();
+        OffMeshConnections _offMeshConnections;
 
         bool _waitingOnNavMeshBuild = false;
         RecastNavigationMesh* _navigationMesh = nullptr;

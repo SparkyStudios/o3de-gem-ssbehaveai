@@ -27,6 +27,8 @@ namespace SparkyStudios::AI::Behave::Navigation
 {
     void DynamicNavigationMeshComponent::Reflect(AZ::ReflectContext* rc)
     {
+        OffMeshConnections::Reflect(rc);
+
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
             // We may have been reflected by DynamicNavigationMeshEditorComponent already, so check first
@@ -35,15 +37,17 @@ namespace SparkyStudios::AI::Behave::Navigation
                 sc->Class<DynamicNavigationMeshComponent, AZ::Component>()
                     ->Version(0)
                     ->Field("Settings", &DynamicNavigationMeshComponent::_settings)
+                    ->Field("OffMeshConnections", &DynamicNavigationMeshComponent::_offMeshConnections)
                     ->Field("Bounds", &DynamicNavigationMeshComponent::_aabb);
             }
         }
     }
 
     DynamicNavigationMeshComponent::DynamicNavigationMeshComponent(
-        AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb)
+        AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb, OffMeshConnections offMeshConnections)
         : _settings(AZStd::move(settings))
         , _aabb(AZStd::move(aabb))
+        , _offMeshConnections(AZStd::move(offMeshConnections))
     {
     }
 
@@ -55,6 +59,11 @@ namespace SparkyStudios::AI::Behave::Navigation
     const AZ::Aabb& DynamicNavigationMeshComponent::GetBoundingBox() const
     {
         return _aabb;
+    }
+
+    const OffMeshConnections& DynamicNavigationMeshComponent::GetOffMeshConnections() const
+    {
+        return _offMeshConnections;
     }
 
     bool DynamicNavigationMeshComponent::UpdateNavigationMesh()
