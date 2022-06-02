@@ -51,7 +51,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         bool Build();
         bool BuildTile(int tileX, int tileY, float tileCellSize);
-        bool BuildNavigationMeshTile(const int tileX, const int tileY, const float* bMin, const float* bMax, int& dataSize, AZ::u8*& navData);
+        bool BuildTileEx(int tileX, int tileY, const float* bMin, const float* bMax, int& dataSize, AZ::u8*& navData);
 
         AZ::EntityId _entityId;
         bool _isEditor;
@@ -63,6 +63,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         RecastNavigationMeshGeometry _geometry;
         AZStd::vector<RecastAreaConvexVolume> _areaConvexVolumes;
+        RecastOffMeshConnections _offMeshConnections;
 
         AZStd::unique_ptr<rcContext> _context;
         AZStd::vector<AZ::u8> _trianglesArea;

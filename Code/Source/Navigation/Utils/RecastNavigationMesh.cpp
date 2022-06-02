@@ -67,6 +67,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         , _isEditor(isEditor)
         , _settings(nullptr)
         , _aabb()
+        , _offMeshConnections()
     {
         _context = AZStd::make_unique<RecastContext>();
     }
@@ -227,8 +228,12 @@ namespace SparkyStudios::AI::Behave::Navigation
         _settings = navMesh->GetSettings();
         _aabb = navMesh->GetBoundingBox();
 
+        _offMeshConnections.Clear();
         _geometry.Clear();
         _areaConvexVolumes.clear();
+
+        const auto& connections = navMesh->GetOffMeshConnections();
+        _offMeshConnections = RecastOffMeshConnections(connections);
 
         AzPhysics::SceneQueryHits results{};
 
@@ -369,7 +374,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             int dataSize = 0;
             AZ::u8* data;
 
-            if (!BuildNavigationMeshTile(0, 0, worldMin.data(), worldMax.data(), dataSize, data))
+            if (!BuildTileEx(0, 0, worldMin.data(), worldMax.data(), dataSize, data))
             {
                 return false;
             }
@@ -422,7 +427,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         int dataSize = 0;
         AZ::u8* data = nullptr;
 
-        BuildNavigationMeshTile(tileX, tileY, bTileMin.data(), bTileMax.data(), dataSize, data);
+        BuildTileEx(tileX, tileY, bTileMin.data(), bTileMax.data(), dataSize, data);
 
         if (data != nullptr)
         {
@@ -442,7 +447,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         return false;
     }
 
-    bool RecastNavigationMesh::BuildNavigationMeshTile(
+    bool RecastNavigationMesh::BuildTileEx(
         const int tileX, const int tileY, const float* bMin, const float* bMax, int& dataSize, AZ::u8*& navData)
     {
         if (_geometry.mVertices.empty())
@@ -788,13 +793,16 @@ namespace SparkyStudios::AI::Behave::Navigation
             params.detailTriCount = _detailMesh->ntris;
 
             // Off-Mesh Connections
-            params.offMeshConVerts = nullptr;
-            params.offMeshConRad = nullptr;
-            params.offMeshConDir = nullptr;
-            params.offMeshConAreas = nullptr;
-            params.offMeshConFlags = nullptr;
-            params.offMeshConUserID = nullptr;
-            params.offMeshConCount = 0;
+            if (!_offMeshConnections.mPoints.empty())
+            {
+                params.offMeshConVerts = _offMeshConnections.mPoints.front().data();
+                params.offMeshConRad = _offMeshConnections.mRadii.data();
+                params.offMeshConDir = _offMeshConnections.mDirections.data();
+                params.offMeshConAreas = _offMeshConnections.mAreas.data();
+                params.offMeshConFlags = _offMeshConnections.mFlags.data();
+                params.offMeshConUserID = _offMeshConnections.mIds.data();
+                params.offMeshConCount = aznumeric_cast<int>(_offMeshConnections.mIds.size());
+            }
 
             // Agent
             params.walkableHeight = _settings->m_agent.GetHeight();
@@ -814,7 +822,9 @@ namespace SparkyStudios::AI::Behave::Navigation
             rcVcopy(params.bmax, _polyMesh->bmax);
             params.cs = config.cs;
             params.ch = config.ch;
-            params.buildBvTree = true;
+
+            // Misc
+            params.buildBvTree = false;
 
             if (!dtCreateNavMeshData(&params, &navData, &dataSize))
             {
