@@ -14,6 +14,9 @@
 
 #pragma once
 
+#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
+#include <SparkyStudios/AI/Behave/Navigation/OffMeshConnection.h>
+
 #include <Navigation/Utils/RecastChunkedGeometry.h>
 #include <Navigation/Utils/RecastSmartPointer.h>
 
@@ -147,5 +150,21 @@ namespace SparkyStudios::AI::Behave::Navigation
         RecastAreaConvexVolume();
 
         explicit RecastAreaConvexVolume(const AZ::PolygonPrism& prism, const AZ::Transform& transform);
+    };
+
+    class RecastOffMeshConnections
+    {
+    public:
+        RecastOffMeshConnections() = default;
+        explicit RecastOffMeshConnections(const OffMeshConnections& connections);
+
+        void Clear();
+
+        AZStd::vector<RecastVector3> mPoints;
+        AZStd::vector<float> mRadii;
+        AZStd::vector<AZ::u8> mDirections;
+        AZStd::vector<NavigationAreaId> mAreas;
+        AZStd::vector<AZ::u16> mFlags;
+        AZStd::vector<AZ::u32> mIds;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

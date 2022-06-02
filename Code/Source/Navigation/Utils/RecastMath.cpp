@@ -2,6 +2,7 @@
 
 #include <AzCore/Math/Transform.h>
 
+#include <Navigation/Utils/Constants.h>
 #include <Navigation/Utils/RecastMath.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
@@ -76,5 +77,42 @@ namespace SparkyStudios::AI::Behave::Navigation
             AZ::Vector3 point = transform.TransformPoint(AZ::Vector3(vertex.GetX(), vertex.GetY(), 0.0f));
             mVertices.push_back(RecastVector3(point));
         }
+    }
+
+    RecastOffMeshConnections::RecastOffMeshConnections(const OffMeshConnections& connections)
+    {
+        mPoints.reserve(connections.mConnections.size());
+        mRadii.reserve(connections.mConnections.size());
+        mDirections.reserve(connections.mConnections.size());
+        mAreas.reserve(connections.mConnections.size());
+        mFlags.reserve(connections.mConnections.size());
+        mIds.reserve(connections.mConnections.size());
+
+        AZ::u32 id = 0;
+
+        for (const auto& connection : connections.mConnections)
+        {
+            mPoints.push_back(RecastVector3(connection.mStart));
+            mPoints.push_back(RecastVector3(connection.mEnd));
+
+            mRadii.push_back(connection.mRadius);
+
+            mDirections.push_back(static_cast<AZ::u8>(connection.mDirection));
+
+            mAreas.push_back(kDefaultNavigationMeshAreaId); // TODO: Add support for area IDs
+            mFlags.push_back(eNMAF_JUMP); // TODO: Add support for flags
+
+            mIds.push_back(1000 + id++);
+        }
+    }
+
+    void RecastOffMeshConnections::Clear()
+    {
+        mPoints.clear();
+        mRadii.clear();
+        mDirections.clear();
+        mAreas.clear();
+        mFlags.clear();
+        mIds.clear();
     }
 } // namespace SparkyStudios::AI::Behave::Navigation
