@@ -18,6 +18,8 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
+    typedef AZ::u8 NavigationAreaId;
+
     enum NavigationMeshAreaFlag : AZ::u16
     {
         eNMAF_NONE = 0x00,
@@ -63,7 +65,7 @@ namespace SparkyStudios::AI::Behave::Navigation
          * @param cost The cost of the navigation mesh area.
          * @param flags The flags of the navigation mesh area.
          */
-        explicit BehaveNavigationMeshArea(AZ::u8 id, AZStd::string name, float cost = 1.0f, AZ::u16 flags = eNMAF_ALL);
+        explicit BehaveNavigationMeshArea(NavigationAreaId id, AZStd::string name, float cost = 1.0f, AZ::u16 flags = eNMAF_ALL);
 
         bool operator==(const BehaveNavigationMeshArea& rhs) const;
 
@@ -71,9 +73,9 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         bool operator<(const BehaveNavigationMeshArea& rhs) const;
 
-        explicit operator AZ::u8() const;
+        explicit operator NavigationAreaId() const;
 
-        void SetId(AZ::u8 value);
+        void SetId(NavigationAreaId value);
 
         void SetName(const AZStd::string& name);
 
@@ -81,7 +83,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         void SetFlags(AZ::u16 flags);
 
-        [[nodiscard]] AZ::u8 GetId() const;
+        [[nodiscard]] NavigationAreaId GetId() const;
 
         [[nodiscard]] const AZStd::string& GetName() const;
 
@@ -104,7 +106,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::Crc32 OnDoorFlagChanged();
         AZ::Crc32 OnDisabledFlagChanged();
 
-        AZ::u8 _id;
+        NavigationAreaId _id;
         AZStd::string _name;
         float _cost;
         AZ::u16 _flags;
@@ -128,7 +130,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         return rhs._id < _id;
     }
 
-    AZ_INLINE BehaveNavigationMeshArea::operator AZ::u8() const
+    AZ_INLINE BehaveNavigationMeshArea::operator NavigationAreaId() const
     {
         return _id;
     }

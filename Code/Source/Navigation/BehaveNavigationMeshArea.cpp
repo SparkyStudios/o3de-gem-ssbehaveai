@@ -115,7 +115,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
     }
 
-    BehaveNavigationMeshArea::BehaveNavigationMeshArea(AZ::u8 id, AZStd::string name, float cost, AZ::u16 flags)
+    BehaveNavigationMeshArea::BehaveNavigationMeshArea(NavigationAreaId id, AZStd::string name, float cost, AZ::u16 flags)
         : _id(id)
         , _name(AZStd::move(name))
         , _cost(cost)
@@ -123,7 +123,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
     }
 
-    void BehaveNavigationMeshArea::SetId(AZ::u8 value)
+    void BehaveNavigationMeshArea::SetId(NavigationAreaId value)
     {
         _id = value;
     }
@@ -143,7 +143,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         _flags = flags;
     }
 
-    AZ::u8 BehaveNavigationMeshArea::GetId() const
+    NavigationAreaId BehaveNavigationMeshArea::GetId() const
     {
         return _id;
     }
