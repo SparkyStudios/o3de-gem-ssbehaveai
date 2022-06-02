@@ -199,7 +199,7 @@ static bool CheckOverlapSegment(const float p[2], const float q[2], const float 
     return true;
 }
 
-bool rcCreateChunkyTriMesh(const float* verts, const int* tris, int ntris, int trisPerChunk, rcChunkedGeometry* cm)
+bool rcCreateChunkedGeometry(const float* verts, const int* tris, int ntris, int trisPerChunk, rcChunkedGeometry* cm)
 {
     int nchunks = (ntris + trisPerChunk - 1) / trisPerChunk;
 
