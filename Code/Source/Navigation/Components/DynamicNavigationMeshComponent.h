@@ -14,10 +14,10 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h>
-#include <SparkyStudios/AI/Behave/Navigation/IBehaveNavigationMesh.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationMeshBus.h>
+#include <SparkyStudios/AI/Behave/Navigation/INavigationMesh.h>
 
-#include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
+#include <Navigation/Assets/NavigationMeshSettingsAsset.h>
 #include <Navigation/Utils/RecastNavigationMesh.h>
 
 #include <AzCore/Asset/AssetCommon.h>
@@ -31,9 +31,9 @@ namespace SparkyStudios::AI::Behave::Navigation
     class DynamicNavigationMeshComponent
         : public AZ::Component
         , public AZ::TickBus::Handler
-        , public IBehaveNavigationMesh
-        , protected BehaveNavigationMeshRequestBus::Handler
-        , protected BehaveNavigationMeshNotificationBus::Handler
+        , public INavigationMesh
+        , protected NavigationMeshRequestBus::Handler
+        , protected NavigationMeshNotificationBus::Handler
         , protected AzFramework::GameEntityContextEventBus::Handler
     {
         friend class DynamicNavigationMeshEditorComponent;
@@ -44,14 +44,14 @@ namespace SparkyStudios::AI::Behave::Navigation
         static void Reflect(AZ::ReflectContext* rc);
 
         DynamicNavigationMeshComponent() = default;
-        explicit DynamicNavigationMeshComponent(AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb, OffMeshConnections offMeshConnections);
+        explicit DynamicNavigationMeshComponent(AZ::Data::Asset<NavigationMeshSettingsAsset> settings, AZ::Aabb aabb, OffMeshConnections offMeshConnections);
 
-        // IBehaveNavigationMesh
-        [[nodiscard]] const BehaveNavigationMeshSettingsAsset* GetSettings() const override;
+        // INavigationMesh
+        [[nodiscard]] const NavigationMeshSettingsAsset* GetSettings() const override;
         [[nodiscard]] const AZ::Aabb& GetBoundingBox() const override;
         [[nodiscard]] const OffMeshConnections& GetOffMeshConnections() const override;
 
-        // BehaveNavigationMeshRequestBus
+        // NavigationMeshRequestBus
         bool UpdateNavigationMesh() override;
         AZStd::vector<AZ::Vector3> FindPathToEntity(const AZ::EntityId& from, const AZ::EntityId& to) override;
         AZStd::vector<AZ::Vector3> FindPathToPosition(const AZ::Vector3& from, const AZ::Vector3& to) override;
@@ -70,7 +70,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
 
     private:
-        AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> _settings;
+        AZ::Data::Asset<NavigationMeshSettingsAsset> _settings;
         AZ::Aabb _aabb = AZ::Aabb::CreateNull();
         OffMeshConnections _offMeshConnections;
 

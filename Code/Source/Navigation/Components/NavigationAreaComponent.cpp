@@ -18,59 +18,59 @@
 
 #include <LmbrCentral/Shape/PolygonPrismShapeComponentBus.h>
 
-#include <Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
-#include <Navigation/Components/NavigationMeshAreaComponent.h>
+#include <Navigation/NavigationAreaProviderRequestBus.h>
+#include <Navigation/Components/NavigationAreaComponent.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    void NavigationMeshAreaComponent::Reflect(AZ::ReflectContext* rc)
+    void NavigationAreaComponent::Reflect(AZ::ReflectContext* rc)
     {
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            // We may have been reflected by NavigationMeshAreaEditorComponent already, so check first
-            if (sc->FindClassData(azrtti_typeid<NavigationMeshAreaComponent>()) == nullptr)
+            // We may have been reflected by NavigationAreaEditorComponent already, so check first
+            if (sc->FindClassData(azrtti_typeid<NavigationAreaComponent>()) == nullptr)
             {
-                sc->Class<NavigationMeshAreaComponent, Component>()
+                sc->Class<NavigationAreaComponent, Component>()
                     ->Version(0)
-                    ->Field("Area", &NavigationMeshAreaComponent::_area)
-                    ->Field("Volume", &NavigationMeshAreaComponent::_polygonPrism);
+                    ->Field("Area", &NavigationAreaComponent::_area)
+                    ->Field("Volume", &NavigationAreaComponent::_polygonPrism);
             }
         }
     }
 
-    NavigationMeshAreaComponent::NavigationMeshAreaComponent(BehaveNavigationMeshArea area, AZ::PolygonPrism polygon)
+    NavigationAreaComponent::NavigationAreaComponent(NavigationArea area, AZ::PolygonPrism polygon)
         : _area(AZStd::move(area))
         , _polygonPrism(AZStd::move(polygon))
     {
     }
 
-    void NavigationMeshAreaComponent::Init()
+    void NavigationAreaComponent::Init()
     {
         Component::Init();
     }
 
-    void NavigationMeshAreaComponent::Activate()
+    void NavigationAreaComponent::Activate()
     {
-        BehaveNavigationMeshAreaRequestBus::Handler::BusConnect(GetEntityId());
+        NavigationAreaRequestBus::Handler::BusConnect(GetEntityId());
     }
 
-    void NavigationMeshAreaComponent::Deactivate()
+    void NavigationAreaComponent::Deactivate()
     {
-        BehaveNavigationMeshAreaRequestBus::Handler::BusDisconnect(GetEntityId());
+        NavigationAreaRequestBus::Handler::BusDisconnect(GetEntityId());
     }
 
-    bool NavigationMeshAreaComponent::IsNavigationMeshArea([[maybe_unused]] AZ::EntityId navigationMeshEntityId)
+    bool NavigationAreaComponent::IsNavigationMeshArea([[maybe_unused]] AZ::EntityId navigationMeshEntityId)
     {
         // TODO: Add entities exception list
         return true;
     }
 
-    BehaveNavigationMeshArea NavigationMeshAreaComponent::GetNavigationMeshArea()
+    NavigationArea NavigationAreaComponent::GetNavigationMeshArea()
     {
         return _area;
     }
 
-    AZ::PolygonPrism NavigationMeshAreaComponent::GetNavigationMeshAreaPolygon()
+    AZ::PolygonPrism NavigationAreaComponent::GetNavigationMeshAreaPolygon()
     {
         return _polygonPrism;
     }

@@ -14,13 +14,14 @@
 #pragma once
 
 #include <AzCore/Component/Component.h>
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h>
+
+#include <SparkyStudios/AI/Behave/Navigation/NavigationMeshBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
     class WalkableComponent
         : public AZ::Component
-        , public BehaveWalkableRequestBus::Handler
+        , public WalkableRequestBus::Handler
     {
         friend class WalkableEditorComponent;
 
@@ -36,7 +37,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         //////////////////////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////////////////////
-        // BehaveWalkableRequestBus
+        // WalkableRequestBus
         bool IsWalkable([[maybe_unused]] AZ::EntityId navigationMeshEntity) override
         {
             return m_isWalkable;

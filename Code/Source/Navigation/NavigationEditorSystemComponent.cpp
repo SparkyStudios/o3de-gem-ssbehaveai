@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <Navigation/BehaveNavigationEditorSystemComponent.h>
+#include <Navigation/NavigationEditorSystemComponent.h>
 #include <Navigation/Utils/Constants.h>
 
 #include <AzCore/Serialization/SerializeContext.h>
@@ -27,68 +27,68 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
         static constexpr char kBehaveAssetCategoryName[] = "Behave AI";
 
-#pragma region BehaveNavigationAgentAsset
-        static AzFramework::GenericAssetHandler<BehaveNavigationAgentAsset>* s_navigationAgentsAssetHandler = nullptr;
+#pragma region NavigationAgentsAsset
+        static AzFramework::GenericAssetHandler<NavigationAgentsAsset>* sNavigationAgentsAssetHandler = nullptr;
 
         static constexpr char kDefaultNavigationAgentsAssetFilePath[] = "Assets/AI/Navigation/Agents";
 
-        static constexpr char kNavigationAgentAssetDisplayName[] = "Navigation Agent";
-        static constexpr char kNavigationAgentAssetExtension[] = "bhnavagent";
+        static constexpr char kNavigationAgentsAssetDisplayName[] = "Navigation Agents";
+        static constexpr char kNavigationAgentsAssetExtension[] = "bhnavagents";
 #pragma endregion
 
-#pragma region BehaveNavigationMeshAreaAsset
-        static AzFramework::GenericAssetHandler<BehaveNavigationMeshAreaAsset>* s_navigationMeshAreaAssetHandler = nullptr;
+#pragma region NavigationAreasAsset
+        static AzFramework::GenericAssetHandler<NavigationAreasAsset>* sNavigationAreasAssetHandler = nullptr;
 
-        static constexpr char kDefaultNavigationMeshAreasAssetFilePath[] = "Assets/AI/Navigation/Areas";
+        static constexpr char kDefaultNavigationAreasAssetFilePath[] = "Assets/AI/Navigation/Areas";
 
-        static constexpr char kNavigationMeshAreaAssetDisplayName[] = "Navigation Mesh Area";
-        static constexpr char kNavigationMeshAreaAssetExtension[] = "bhnavmesharea";
+        static constexpr char kNavigationAreasAssetDisplayName[] = "Navigation Areas";
+        static constexpr char kNavigationAreasAssetExtension[] = "bhnavareas";
 #pragma endregion
 
-#pragma region BehaveNavigationMeshSettingsAsset
-        static AzFramework::GenericAssetHandler<BehaveNavigationMeshSettingsAsset>* s_navigationMeshSettingAssetHandler = nullptr;
+#pragma region NavigationMeshSettingsAsset
+        static AzFramework::GenericAssetHandler<NavigationMeshSettingsAsset>* sNavigationMeshSettingsAssetHandler = nullptr;
 
-        static constexpr char kNavigationMeshSettingsAssetDisplayName[] = "Navigation Mesh Settings";
+        static constexpr char kNavigationMeshSettingsAssetDisplayName[] = "Navigation Settings";
         static constexpr char kNavigationMeshSettingsAssetExtension[] = "bhnavmeshconfig";
 #pragma endregion
 
         static void RegisterAssetHandlers()
         {
-            s_navigationAgentsAssetHandler = aznew AzFramework::GenericAssetHandler<BehaveNavigationAgentAsset>(
-                kNavigationAgentAssetDisplayName, kBehaveAssetCategoryName, kNavigationAgentAssetExtension);
+            sNavigationAgentsAssetHandler = aznew AzFramework::GenericAssetHandler<NavigationAgentsAsset>(
+                kNavigationAgentsAssetDisplayName, kBehaveAssetCategoryName, kNavigationAgentsAssetExtension);
 
-            s_navigationMeshAreaAssetHandler = aznew AzFramework::GenericAssetHandler<BehaveNavigationMeshAreaAsset>(
-                kNavigationMeshAreaAssetDisplayName, kBehaveAssetCategoryName, kNavigationMeshAreaAssetExtension);
+            sNavigationAreasAssetHandler = aznew AzFramework::GenericAssetHandler<NavigationAreasAsset>(
+                kNavigationAreasAssetDisplayName, kBehaveAssetCategoryName, kNavigationAreasAssetExtension);
 
-            s_navigationMeshSettingAssetHandler = aznew AzFramework::GenericAssetHandler<BehaveNavigationMeshSettingsAsset>(
+            sNavigationMeshSettingsAssetHandler = aznew AzFramework::GenericAssetHandler<NavigationMeshSettingsAsset>(
                 kNavigationMeshSettingsAssetDisplayName, kBehaveAssetCategoryName, kNavigationMeshSettingsAssetExtension);
 
-            s_navigationAgentsAssetHandler->Register();
-            s_navigationMeshAreaAssetHandler->Register();
-            s_navigationMeshSettingAssetHandler->Register();
+            sNavigationAgentsAssetHandler->Register();
+            sNavigationAreasAssetHandler->Register();
+            sNavigationMeshSettingsAssetHandler->Register();
         }
 
         static void UnregisterAssetHandlers()
         {
-            if (s_navigationAgentsAssetHandler)
+            if (sNavigationAgentsAssetHandler)
             {
-                s_navigationAgentsAssetHandler->Unregister();
-                delete s_navigationAgentsAssetHandler;
-                s_navigationAgentsAssetHandler = nullptr;
+                sNavigationAgentsAssetHandler->Unregister();
+                delete sNavigationAgentsAssetHandler;
+                sNavigationAgentsAssetHandler = nullptr;
             }
 
-            if (s_navigationMeshAreaAssetHandler)
+            if (sNavigationAreasAssetHandler)
             {
-                s_navigationMeshAreaAssetHandler->Unregister();
-                delete s_navigationMeshAreaAssetHandler;
-                s_navigationMeshAreaAssetHandler = nullptr;
+                sNavigationAreasAssetHandler->Unregister();
+                delete sNavigationAreasAssetHandler;
+                sNavigationAreasAssetHandler = nullptr;
             }
 
-            if (s_navigationMeshSettingAssetHandler)
+            if (sNavigationMeshSettingsAssetHandler)
             {
-                s_navigationMeshSettingAssetHandler->Unregister();
-                delete s_navigationMeshSettingAssetHandler;
-                s_navigationMeshSettingAssetHandler = nullptr;
+                sNavigationMeshSettingsAssetHandler->Unregister();
+                delete sNavigationMeshSettingsAssetHandler;
+                sNavigationMeshSettingsAssetHandler = nullptr;
             }
         }
 
@@ -98,7 +98,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             AZ::IO::FileIOStream fileStream(fullTargetFilePath.c_str(), AZ::IO::OpenMode::ModeWrite);
             if (fileStream.IsOpen())
             {
-                const auto& assetType = azrtti_typeid<BehaveNavigationMeshAreaAsset>();
+                const auto& assetType = azrtti_typeid<NavigationAreasAsset>();
 
                 AZ::Data::AssetId assetId;
                 EBUS_EVENT_RESULT(assetId, AZ::Data::AssetCatalogRequestBus, GetAssetIdByPath, relativePath.c_str(), assetType, true);
@@ -106,13 +106,13 @@ namespace SparkyStudios::AI::Behave::Navigation
                 AZ::Data::Asset<AZ::Data::AssetData> newAsset =
                     AZ::Data::AssetManager::Instance().FindOrCreateAsset(assetId, assetType, AZ::Data::AssetLoadBehavior::Default);
 
-                if (auto* asset = azrtti_cast<BehaveNavigationMeshAreaAsset*>(newAsset.GetData()))
+                if (auto* asset = azrtti_cast<NavigationAreasAsset*>(newAsset.GetData()))
                 {
-                    asset->mAreas.push_back(BehaveNavigationMeshArea(0, "Ground", 1, eNMAF_WALK));
-                    asset->mAreas.push_back(BehaveNavigationMeshArea(1, "Water", 2, eNMAF_SWIM));
-                    asset->mAreas.push_back(BehaveNavigationMeshArea(2, "Ledge", 1, eNMAF_JUMP));
-                    asset->mAreas.push_back(BehaveNavigationMeshArea(3, "Snow", 5, eNMAF_WALK));
-                    asset->mAreas.push_back(BehaveNavigationMeshArea(4, "Disabled", 0, eNMAF_DISABLED));
+                    asset->mAreas.push_back(NavigationArea(0, "Ground", 1, eNAF_WALK));
+                    asset->mAreas.push_back(NavigationArea(1, "Water", 2, eNAF_SWIM));
+                    asset->mAreas.push_back(NavigationArea(2, "Ledge", 1, eNAF_JUMP));
+                    asset->mAreas.push_back(NavigationArea(3, "Snow", 5, eNAF_WALK));
+                    asset->mAreas.push_back(NavigationArea(4, "Disabled", 0, eNAF_DISABLED));
 
                     // Check it out in the source control system
                     EBUS_EVENT(
@@ -122,8 +122,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                         });
 
                     // Save the asset into a file
-                    if (s_navigationMeshAreaAssetHandler != nullptr &&
-                        s_navigationMeshAreaAssetHandler->SaveAssetData(newAsset, &fileStream))
+                    if (sNavigationAreasAssetHandler != nullptr && sNavigationAreasAssetHandler->SaveAssetData(newAsset, &fileStream))
                     {
                         return newAsset;
                     }
@@ -142,7 +141,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             AZ::IO::FileIOStream fileStream(fullTargetFilePath.c_str(), AZ::IO::OpenMode::ModeWrite);
             if (fileStream.IsOpen())
             {
-                const auto& assetType = azrtti_typeid<BehaveNavigationAgentAsset>();
+                const auto& assetType = azrtti_typeid<NavigationAgentsAsset>();
 
                 AZ::Data::AssetId assetId;
                 EBUS_EVENT_RESULT(assetId, AZ::Data::AssetCatalogRequestBus, GetAssetIdByPath, relativePath.c_str(), assetType, true);
@@ -150,7 +149,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                 AZ::Data::Asset<AZ::Data::AssetData> newAsset =
                     AZ::Data::AssetManager::Instance().FindOrCreateAsset(assetId, assetType, AZ::Data::AssetLoadBehavior::Default);
 
-                if (auto* asset = azrtti_cast<BehaveNavigationAgentAsset*>(newAsset.GetData()))
+                if (auto* asset = azrtti_cast<NavigationAgentsAsset*>(newAsset.GetData()))
                 {
                     asset->mAgents.push_back(NavigationAgent());
 
@@ -162,7 +161,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                         });
 
                     // Save the asset into a file
-                    if (s_navigationAgentsAssetHandler != nullptr && s_navigationAgentsAssetHandler->SaveAssetData(newAsset, &fileStream))
+                    if (sNavigationAgentsAssetHandler != nullptr && sNavigationAgentsAssetHandler->SaveAssetData(newAsset, &fileStream))
                     {
                         return newAsset;
                     }
@@ -175,16 +174,17 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     } // namespace Assets
 
-    void BehaveNavigationEditorSystemComponent::Reflect(AZ::ReflectContext* rc)
+    void NavigationEditorSystemComponent::Reflect(AZ::ReflectContext* rc)
     {
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Class<BehaveNavigationEditorSystemComponent, BehaveNavigationSystemComponent>()->Version(0);
+            sc->Class<NavigationEditorSystemComponent, NavigationSystemComponent>()->Version(0);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
-                ec->Class<BehaveNavigationEditorSystemComponent>(
-                      "BehaveNavigation", "2D navigation meshes and path finding powered by Recast Navigation.")
+                ec->Class<NavigationEditorSystemComponent>(
+                      "Behave AI - Navigation System",
+                      "2D navigation meshes and path finding for small and large worlds, powered by Recast Navigation.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("System"))
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true);
@@ -192,70 +192,69 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
-    void BehaveNavigationEditorSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
+    void NavigationEditorSystemComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
         BaseSystemComponent::GetProvidedServices(provided);
-        provided.push_back(AZ_CRC_CE("BehaveNavigationEditorService"));
+        provided.push_back(AZ_CRC_CE("BehaveAI_EditorNavigationService"));
     }
 
-    void BehaveNavigationEditorSystemComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
+    void NavigationEditorSystemComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
         BaseSystemComponent::GetIncompatibleServices(incompatible);
-        incompatible.push_back(AZ_CRC_CE("BehaveNavigationEditorService"));
+        incompatible.push_back(AZ_CRC_CE("BehaveAI_EditorNavigationService"));
     }
 
-    void BehaveNavigationEditorSystemComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)
+    void NavigationEditorSystemComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)
     {
         BaseSystemComponent::GetRequiredServices(required);
     }
 
-    void BehaveNavigationEditorSystemComponent::GetDependentServices(
-        [[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
+    void NavigationEditorSystemComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
     {
         BaseSystemComponent::GetDependentServices(dependent);
     }
 
-    void BehaveNavigationEditorSystemComponent::LoadNavigationMeshSettingsAsset(const AZ::Data::AssetId& assetId)
+    void NavigationEditorSystemComponent::LoadNavigationMeshSettingsAsset(const AZ::Data::AssetId& assetId)
     {
-        m_navigationMeshSettingsAssets[assetId] = AZ::Data::AssetManager::Instance().GetAsset(
-            assetId, azrtti_typeid<BehaveNavigationMeshSettingsAsset>(), AZ::Data::AssetLoadBehavior::Default);
+        _navigationMeshSettingsAssets[assetId] = AZ::Data::AssetManager::Instance().GetAsset(
+            assetId, azrtti_typeid<NavigationMeshSettingsAsset>(), AZ::Data::AssetLoadBehavior::Default);
 
         AZ::Data::AssetBus::MultiHandler::BusConnect(assetId);
     }
 
-    void BehaveNavigationEditorSystemComponent::AddAsset(const AZ::Data::Asset<AZ::Data::AssetData>& asset)
+    void NavigationEditorSystemComponent::AddAsset(const AZ::Data::Asset<AZ::Data::AssetData>& asset)
     {
-        if (asset.GetType() == azrtti_typeid<BehaveNavigationMeshAreaAsset>())
+        if (asset.GetType() == azrtti_typeid<NavigationAreasAsset>())
         {
-            m_navigationMeshAreasAsset = asset;
+            _navigationMeshAreasAsset = asset;
         }
-        else if (asset.GetType() == azrtti_typeid<BehaveNavigationAgentAsset>())
+        else if (asset.GetType() == azrtti_typeid<NavigationAgentsAsset>())
         {
-            m_navigationAgentsAsset = asset;
+            _navigationAgentsAsset = asset;
         }
-        else if (asset.GetType() == azrtti_typeid<BehaveNavigationMeshSettingsAsset>())
+        else if (asset.GetType() == azrtti_typeid<NavigationMeshSettingsAsset>())
         {
-            m_navigationMeshSettingsAssets[asset.GetId()] = asset;
+            _navigationMeshSettingsAssets[asset.GetId()] = asset;
         }
 
         EBUS_EVENT(AzToolsFramework::PropertyEditorGUIMessages::Bus, RequestRefresh, AzToolsFramework::Refresh_AttributesAndValues);
     }
 
-    AZStd::optional<AZ::Data::Asset<AZ::Data::AssetData>> BehaveNavigationEditorSystemComponent::RetrieveNavigationMeshAreas()
+    AZStd::optional<AZ::Data::Asset<AZ::Data::AssetData>> NavigationEditorSystemComponent::RetrieveNavigationMeshAreas()
     {
         AZ::Data::AssetId resultAssetId;
 
         // Constructing the path to the asset
-        const AZStd::string& assetExtension = Assets::kNavigationMeshAreaAssetExtension;
+        const AZStd::string& assetExtension = Assets::kNavigationAreasAssetExtension;
 
         // Use the path relative to the asset root to avoid hardcoding full path in the configuration
-        AZStd::string relativePath = Assets::kDefaultNavigationMeshAreasAssetFilePath;
+        AZStd::string relativePath = Assets::kDefaultNavigationAreasAssetFilePath;
         AzFramework::StringFunc::Path::ReplaceExtension(relativePath, assetExtension.c_str());
 
         // Try to find an already existing asset
         EBUS_EVENT_RESULT(
-            resultAssetId, AZ::Data::AssetCatalogRequestBus, GetAssetIdByPath, relativePath.c_str(),
-            azrtti_typeid<BehaveNavigationMeshAreaAsset>(), false);
+            resultAssetId, AZ::Data::AssetCatalogRequestBus, GetAssetIdByPath, relativePath.c_str(), azrtti_typeid<NavigationAreasAsset>(),
+            false);
 
         if (!resultAssetId.IsValid())
         {
@@ -266,7 +265,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                 settingsRegistry->Get(fullPath.Native(), AZ::SettingsRegistryMergeUtils::FilePathKey_ProjectPath);
             }
 
-            fullPath /= Assets::kDefaultNavigationMeshAreasAssetFilePath;
+            fullPath /= Assets::kDefaultNavigationAreasAssetFilePath;
             fullPath.ReplaceExtension(AZ::IO::PathView(assetExtension));
 
             if (auto asset = Assets::CreateDefaultNavigationMeshAreasAsset(fullPath.Native(), relativePath))
@@ -282,8 +281,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
         else
         {
-            AZ::Data::Asset<AZ::Data::AssetData> asset = AZ::Data::AssetManager::Instance().GetAsset<BehaveNavigationMeshAreaAsset>(
-                resultAssetId, AZ::Data::AssetLoadBehavior::NoLoad);
+            AZ::Data::Asset<AZ::Data::AssetData> asset =
+                AZ::Data::AssetManager::Instance().GetAsset<NavigationAreasAsset>(resultAssetId, AZ::Data::AssetLoadBehavior::NoLoad);
 
             return asset;
         }
@@ -291,12 +290,12 @@ namespace SparkyStudios::AI::Behave::Navigation
         return AZStd::nullopt;
     }
 
-    AZStd::optional<AZ::Data::Asset<AZ::Data::AssetData>> BehaveNavigationEditorSystemComponent::RetrieveNavigationAgents()
+    AZStd::optional<AZ::Data::Asset<AZ::Data::AssetData>> NavigationEditorSystemComponent::RetrieveNavigationAgents()
     {
         AZ::Data::AssetId resultAssetId;
 
         // Constructing the path to the asset
-        const AZStd::string& assetExtension = Assets::kNavigationAgentAssetExtension;
+        const AZStd::string& assetExtension = Assets::kNavigationAgentsAssetExtension;
 
         // Use the path relative to the asset root to avoid hardcoding full path in the configuration
         AZStd::string relativePath = Assets::kDefaultNavigationAgentsAssetFilePath;
@@ -304,8 +303,8 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         // Try to find an already existing asset
         EBUS_EVENT_RESULT(
-            resultAssetId, AZ::Data::AssetCatalogRequestBus, GetAssetIdByPath, relativePath.c_str(),
-            azrtti_typeid<BehaveNavigationAgentAsset>(), false);
+            resultAssetId, AZ::Data::AssetCatalogRequestBus, GetAssetIdByPath, relativePath.c_str(), azrtti_typeid<NavigationAgentsAsset>(),
+            false);
 
         if (!resultAssetId.IsValid())
         {
@@ -333,7 +332,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         else
         {
             AZ::Data::Asset<AZ::Data::AssetData> asset =
-                AZ::Data::AssetManager::Instance().GetAsset<BehaveNavigationAgentAsset>(resultAssetId, AZ::Data::AssetLoadBehavior::NoLoad);
+                AZ::Data::AssetManager::Instance().GetAsset<NavigationAgentsAsset>(resultAssetId, AZ::Data::AssetLoadBehavior::NoLoad);
 
             return asset;
         }
@@ -341,7 +340,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         return AZStd::nullopt;
     }
 
-    void BehaveNavigationEditorSystemComponent::Activate()
+    void NavigationEditorSystemComponent::Activate()
     {
         Assets::RegisterAssetHandlers();
 
@@ -349,14 +348,14 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         AzFramework::AssetCatalogEventBus::Handler::BusConnect();
         AzToolsFramework::EditorEvents::Bus::Handler::BusConnect();
-        BehaveNavigationMeshAreaProviderRequestBus::Handler::BusConnect();
+        NavigationAreaProviderRequestBus::Handler::BusConnect();
         NavigationAgentProviderRequestBus::Handler::BusConnect();
     }
 
-    void BehaveNavigationEditorSystemComponent::Deactivate()
+    void NavigationEditorSystemComponent::Deactivate()
     {
         NavigationAgentProviderRequestBus::Handler::BusDisconnect();
-        BehaveNavigationMeshAreaProviderRequestBus::Handler::BusDisconnect();
+        NavigationAreaProviderRequestBus::Handler::BusDisconnect();
         AzToolsFramework::EditorEvents::Bus::Handler::BusDisconnect();
         AzFramework::AssetCatalogEventBus::Handler::BusDisconnect();
 
@@ -367,19 +366,19 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::Data::AssetBus::MultiHandler::BusDisconnect();
     }
 
-    void BehaveNavigationEditorSystemComponent::OnCatalogLoaded([[maybe_unused]] const char* string)
+    void NavigationEditorSystemComponent::OnCatalogLoaded([[maybe_unused]] const char* string)
     {
         // Create or retrieve navigation mesh areas from library
         if (const auto asset = RetrieveNavigationMeshAreas(); asset.has_value())
         {
-            m_navigationMeshAreasAsset = asset.value();
+            _navigationMeshAreasAsset = asset.value();
             AZ::Data::AssetBus::MultiHandler::BusConnect(asset->GetId());
         }
 
         // Create or retrieve navigation agents from library
         if (const auto asset = RetrieveNavigationAgents(); asset.has_value())
         {
-            m_navigationAgentsAsset = asset.value();
+            _navigationAgentsAsset = asset.value();
             AZ::Data::AssetBus::MultiHandler::BusConnect(asset->GetId());
         }
 
@@ -391,7 +390,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             AZ::Data::AssetCatalogRequestBus, EnumerateAssets, nullptr,
             [&assetIds](const AZ::Data::AssetId assetId, const AZ::Data::AssetInfo& assetInfo)
             {
-                if (const auto assetType = azrtti_typeid<BehaveNavigationMeshSettingsAsset>(); assetInfo.m_assetType == assetType)
+                if (const auto assetType = azrtti_typeid<NavigationMeshSettingsAsset>(); assetInfo.m_assetType == assetType)
                 {
                     assetIds.insert(assetId);
                 }
@@ -407,63 +406,62 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
-    void BehaveNavigationEditorSystemComponent::OnCatalogAssetAdded(const AZ::Data::AssetId& assetId)
+    void NavigationEditorSystemComponent::OnCatalogAssetAdded(const AZ::Data::AssetId& assetId)
     {
         AZ::Data::AssetInfo assetInfo;
         EBUS_EVENT_RESULT(assetInfo, AZ::Data::AssetCatalogRequestBus, GetAssetInfoById, assetId);
 
-        if (assetInfo.m_assetType == azrtti_typeid<BehaveNavigationMeshSettingsAsset>())
+        if (assetInfo.m_assetType == azrtti_typeid<NavigationMeshSettingsAsset>())
         {
             // A new navigation mesh settings asset was added, so load it.
             LoadNavigationMeshSettingsAsset(assetId);
         }
     }
 
-    void BehaveNavigationEditorSystemComponent::OnCatalogAssetRemoved(
-        const AZ::Data::AssetId& assetId, const AZ::Data::AssetInfo& assetInfo)
+    void NavigationEditorSystemComponent::OnCatalogAssetRemoved(const AZ::Data::AssetId& assetId, const AZ::Data::AssetInfo& assetInfo)
     {
-        if (assetInfo.m_assetType == azrtti_typeid<BehaveNavigationMeshSettingsAsset>())
+        if (assetInfo.m_assetType == azrtti_typeid<NavigationMeshSettingsAsset>())
         {
             // A navigation mesh settings asset was removed, so stop listening for it and remove it from our set of loaded assets.
             AZ::Data::AssetBus::MultiHandler::BusDisconnect(assetId);
-            m_navigationMeshSettingsAssets.erase(assetId);
+            _navigationMeshSettingsAssets.erase(assetId);
         }
     }
 
-    void BehaveNavigationEditorSystemComponent::OnAssetReloaded(AZ::Data::Asset<AZ::Data::AssetData> asset)
+    void NavigationEditorSystemComponent::OnAssetReloaded(AZ::Data::Asset<AZ::Data::AssetData> asset)
     {
         AddAsset(asset);
     }
 
-    void BehaveNavigationEditorSystemComponent::OnAssetReady(AZ::Data::Asset<AZ::Data::AssetData> asset)
+    void NavigationEditorSystemComponent::OnAssetReady(AZ::Data::Asset<AZ::Data::AssetData> asset)
     {
         AddAsset(asset);
     }
 
-    void BehaveNavigationEditorSystemComponent::GetRegisteredNavigationMeshAreaNames(BehaveNavigationMeshAreaNameSet& names) const
+    void NavigationEditorSystemComponent::GetRegisteredNavigationAreaNames(BehaveNavigationMeshAreaNameSet& names) const
     {
         names.clear();
         names.insert(kDefaultNavigationMeshAreaName);
 
-        if (m_navigationMeshAreasAsset.IsReady())
+        if (_navigationMeshAreasAsset.IsReady())
         {
-            for (const auto& area : m_navigationMeshAreasAsset->mAreas)
+            for (const auto& area : _navigationMeshAreasAsset->mAreas)
             {
                 names.insert(area.GetName());
             }
         }
     }
 
-    void BehaveNavigationEditorSystemComponent::GetRegisteredNavigationMeshAreas(BehaveNavigationMeshAreaVector& areas) const
+    void NavigationEditorSystemComponent::GetRegisteredNavigationAreas(BehaveNavigationMeshAreaVector& areas) const
     {
         areas.clear();
-        areas.push_back(BehaveNavigationMeshArea::Default());
+        areas.push_back(NavigationArea::Default());
 
-        if (m_navigationMeshAreasAsset.IsReady())
+        if (_navigationMeshAreasAsset.IsReady())
         {
             AZ::u8 id = 0;
 
-            for (BehaveNavigationMeshArea area : m_navigationMeshAreasAsset->mAreas)
+            for (NavigationArea area : _navigationMeshAreasAsset->mAreas)
             {
                 area.SetId(id++);
                 areas.push_back(area);
@@ -471,11 +469,11 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
-    BehaveNavigationMeshArea BehaveNavigationEditorSystemComponent::GetNavigationMeshArea(const AZStd::string& name) const
+    NavigationArea NavigationEditorSystemComponent::GetNavigationArea(const AZStd::string& name) const
     {
-        if (m_navigationMeshAreasAsset.IsReady())
+        if (_navigationMeshAreasAsset.IsReady())
         {
-            for (const auto& area : m_navigationMeshAreasAsset->mAreas)
+            for (const auto& area : _navigationMeshAreasAsset->mAreas)
             {
                 if (area.GetName() == name)
                 {
@@ -484,40 +482,40 @@ namespace SparkyStudios::AI::Behave::Navigation
             }
         }
 
-        return BehaveNavigationMeshArea::Default();
+        return NavigationArea::Default();
     }
 
-    void BehaveNavigationEditorSystemComponent::GetRegisteredNavigationAgentNames(NavigationAgentNameSet& names) const
+    void NavigationEditorSystemComponent::GetRegisteredNavigationAgentNames(NavigationAgentNameSet& names) const
     {
         names.clear();
 
-        if (m_navigationAgentsAsset.IsReady())
+        if (_navigationAgentsAsset.IsReady())
         {
-            for (const auto& area : m_navigationAgentsAsset->mAgents)
+            for (const auto& area : _navigationAgentsAsset->mAgents)
             {
                 names.insert(area.GetName());
             }
         }
     }
 
-    void BehaveNavigationEditorSystemComponent::GetRegisteredNavigationAgents(NavigationAgentList& agents) const
+    void NavigationEditorSystemComponent::GetRegisteredNavigationAgents(NavigationAgentList& agents) const
     {
         agents.clear();
 
-        if (m_navigationAgentsAsset.IsReady())
+        if (_navigationAgentsAsset.IsReady())
         {
-            for (const auto& agent : m_navigationAgentsAsset->mAgents)
+            for (const auto& agent : _navigationAgentsAsset->mAgents)
             {
                 agents.push_back(agent);
             }
         }
     }
 
-    NavigationAgent BehaveNavigationEditorSystemComponent::GetNavigationAgent(const AZStd::string& name) const
+    NavigationAgent NavigationEditorSystemComponent::GetNavigationAgent(const AZStd::string& name) const
     {
-        if (m_navigationAgentsAsset.IsReady())
+        if (_navigationAgentsAsset.IsReady())
         {
-            for (const auto& area : m_navigationAgentsAsset->mAgents)
+            for (const auto& area : _navigationAgentsAsset->mAgents)
             {
                 if (area.GetName() == name)
                 {

@@ -15,19 +15,13 @@
 #pragma once
 
 #include <AzCore/Component/Component.h>
-#include <AzCore/Component/TickBus.h>
-
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class BehaveNavigationSystemComponent
-        : public AZ::Component
-        , public AZ::TickBus::Handler
-        , public BehaveNavigationRequestBus::Handler
+    class NavigationSystemComponent : public AZ::Component
     {
     public:
-        AZ_COMPONENT(BehaveNavigationSystemComponent, "{45F8E5D4-D7DD-47F9-A9A7-2A65C9FE924A}");
+        AZ_COMPONENT(NavigationSystemComponent, "{45F8E5D4-D7DD-47F9-A9A7-2A65C9FE924A}");
 
         static void Reflect(AZ::ReflectContext* rc);
 
@@ -36,18 +30,13 @@ namespace SparkyStudios::AI::Behave::Navigation
         static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
-        BehaveNavigationSystemComponent();
-        ~BehaveNavigationSystemComponent() override;
+        NavigationSystemComponent() = default;
+        ~NavigationSystemComponent() override = default;
 
     protected:
-        // BehaveNavigationRequestBus
-
         // AZ::Component
         void Init() override;
         void Activate() override;
         void Deactivate() override;
-
-        // AZ::TickBus
-        void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

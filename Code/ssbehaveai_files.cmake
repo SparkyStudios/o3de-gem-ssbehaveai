@@ -65,25 +65,25 @@ set(FILES
     Source/BehaviorTree/BehaviorTreeSystemComponent.cpp
     Source/BehaviorTree/BehaviorTreeSystemComponent.h
 
-    Source/Navigation/Assets/BehaveNavigationAgentAsset.h
-    Source/Navigation/Assets/BehaveNavigationAgentAsset.cpp
-    Source/Navigation/Assets/BehaveNavigationMeshAreaAsset.h
-    Source/Navigation/Assets/BehaveNavigationMeshAreaAsset.cpp
-    Source/Navigation/Assets/BehaveNavigationMeshSettingsAsset.h
-    Source/Navigation/Assets/BehaveNavigationMeshSettingsAsset.cpp
+    Source/Navigation/Assets/NavigationAgentsAsset.h
+    Source/Navigation/Assets/NavigationAgentsAsset.cpp
+    Source/Navigation/Assets/NavigationAreasAsset.h
+    Source/Navigation/Assets/NavigationAreasAsset.cpp
+    Source/Navigation/Assets/NavigationMeshSettingsAsset.h
+    Source/Navigation/Assets/NavigationMeshSettingsAsset.cpp
 
     Source/Navigation/NavigationAgent.cpp
-    Source/Navigation/BehaveNavigationMeshArea.cpp
-    Source/Navigation/BehaveNavigationMeshAreaProviderRequestBus.h
+    Source/Navigation/NavigationArea.cpp
+    Source/Navigation/NavigationAreaProviderRequestBus.h
     Source/Navigation/NavigationAgentProviderRequestBus.h
-    Source/Navigation/BehaveNavigationSystemComponent.h
-    Source/Navigation/BehaveNavigationSystemComponent.cpp
+    Source/Navigation/NavigationSystemComponent.h
+    Source/Navigation/NavigationSystemComponent.cpp
     Source/Navigation/OffMeshConnection.cpp
 
     Source/Navigation/Components/DynamicNavigationMeshComponent.h
     Source/Navigation/Components/DynamicNavigationMeshComponent.cpp
-    Source/Navigation/Components/NavigationMeshAreaComponent.h
-    Source/Navigation/Components/NavigationMeshAreaComponent.cpp
+    Source/Navigation/Components/NavigationAreaComponent.h
+    Source/Navigation/Components/NavigationAreaComponent.cpp
     Source/Navigation/Components/WalkableComponent.h
     Source/Navigation/Components/WalkableComponent.cpp
 

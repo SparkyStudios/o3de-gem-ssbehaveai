@@ -12,35 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <Recast.h>
+#include <Navigation/Assets/NavigationAgentsAsset.h>
 
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 
-#include <Navigation/Assets/BehaveNavigationMeshAreaAsset.h>
-
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    void BehaveNavigationMeshAreaAsset::Reflect(AZ::ReflectContext* rc)
+    void NavigationAgentsAsset::Reflect(AZ::ReflectContext* rc)
     {
-        BehaveNavigationMeshArea::Reflect(rc);
+        NavigationAgent::Reflect(rc);
 
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Class<BehaveNavigationMeshAreaAsset, AssetData>()
+            sc->Class<NavigationAgentsAsset, AssetData>()
                 ->Version(0)
                 ->Attribute(AZ::Edit::Attributes::EnableForAssetEditor, true)
-                ->Field("Areas", &BehaveNavigationMeshAreaAsset::mAreas);
+                ->Field("Agents", &NavigationAgentsAsset::mAgents);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
-                ec->Class<BehaveNavigationMeshAreaAsset>("Navigation Mesh Area", "Navigation Mesh Area")
+                ec->Class<NavigationAgentsAsset>("Behave AI - Navigation Agents Asset", "An asset to setup the list of navigation agents.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &BehaveNavigationMeshAreaAsset::mAreas, "Areas", "Navigation areas.")
-                    ->Attribute(AZ::Edit::Attributes::MaxLength, RC_WALKABLE_AREA);
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationAgentsAsset::mAgents, "Agents", "Navigation agents.");
             }
         }
     }

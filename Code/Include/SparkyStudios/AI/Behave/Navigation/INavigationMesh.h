@@ -6,14 +6,14 @@
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class BehaveNavigationMeshSettingsAsset;
+    class NavigationMeshSettingsAsset;
 
-    class IBehaveNavigationMesh
+    class INavigationMesh
     {
     public:
-        virtual ~IBehaveNavigationMesh() = default;
+        virtual ~INavigationMesh() = default;
 
-        [[nodiscard]] virtual const BehaveNavigationMeshSettingsAsset* GetSettings() const = 0;
+        [[nodiscard]] virtual const NavigationMeshSettingsAsset* GetSettings() const = 0;
         [[nodiscard]] virtual const AZ::Aabb& GetBoundingBox() const = 0;
         [[nodiscard]] virtual const OffMeshConnections& GetOffMeshConnections() const = 0;
     };

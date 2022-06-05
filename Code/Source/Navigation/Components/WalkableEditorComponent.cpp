@@ -11,8 +11,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         {
             WalkableComponent::Reflect(rc);
 
-            sc->Class<WalkableEditorComponent, EditorComponentBase>()->Version(0)->Field(
-                "walkable", &WalkableEditorComponent::m_isWalkable);
+            sc->Class<WalkableEditorComponent, EditorComponentBase>()->Version(0)->Field("walkable", &WalkableEditorComponent::_isWalkable);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
@@ -20,22 +19,22 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("Game"))
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(nullptr, &WalkableEditorComponent::m_isWalkable, "Is Walkable", "");
+                    ->DataElement(nullptr, &WalkableEditorComponent::_isWalkable, "Is Walkable", "");
             }
         }
     }
 
     void WalkableEditorComponent::Activate()
     {
-        BehaveWalkableRequestBus::Handler::BusConnect(GetEntityId());
+        WalkableRequestBus::Handler::BusConnect(GetEntityId());
 
         _component.Init();
-        _component.m_isWalkable = m_isWalkable;
+        _component.m_isWalkable = _isWalkable;
     }
 
     void WalkableEditorComponent::Deactivate()
     {
-        BehaveWalkableRequestBus::Handler::BusDisconnect();
+        WalkableRequestBus::Handler::BusDisconnect();
     }
 
     void WalkableEditorComponent::BuildGameEntity(AZ::Entity* entity)

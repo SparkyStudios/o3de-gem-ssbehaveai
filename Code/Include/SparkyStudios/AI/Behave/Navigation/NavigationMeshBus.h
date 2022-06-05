@@ -18,36 +18,38 @@
 #include <AzCore/Math/PolygonPrism.h>
 #include <AzCore/Math/Vector3.h>
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationArea.h>
 
 class dtNavMeshQuery;
 class dtNavMesh;
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class BehaveNavigationMeshRequests : public AZ::ComponentBus
+    class NavigationMeshRequests : public AZ::ComponentBus
     {
     public:
+        AZ_RTTI(NavigationMeshRequests, "{EAE7AC85-F463-414E-9735-6AA59E6EF7DA}");
+
         virtual bool UpdateNavigationMesh() = 0;
 
         virtual AZStd::vector<AZ::Vector3> FindPathToEntity(const AZ::EntityId& from, const AZ::EntityId& to) = 0;
         virtual AZStd::vector<AZ::Vector3> FindPathToPosition(const AZ::Vector3& from, const AZ::Vector3& target) = 0;
     };
 
-    using BehaveNavigationMeshRequestBus = AZ::EBus<BehaveNavigationMeshRequests>;
+    using NavigationMeshRequestBus = AZ::EBus<NavigationMeshRequests>;
 
-    class BehaveNavigationMeshNotifications : public AZ::ComponentBus
+    class NavigationMeshNotifications : public AZ::ComponentBus
     {
     public:
         virtual void OnNavigationMeshUpdated() = 0;
     };
 
-    using BehaveNavigationMeshNotificationBus = AZ::EBus<BehaveNavigationMeshNotifications>;
+    using NavigationMeshNotificationBus = AZ::EBus<NavigationMeshNotifications>;
 
-    class BehaveWalkableInterface : public AZ::ComponentBus
+    class WalkableInterface : public AZ::ComponentBus
     {
     public:
-        AZ_RTTI(BehaveWalkableInterface, "{0F974E8D-7601-47D1-B557-E771E4A83DEF}");
+        AZ_RTTI(WalkableInterface, "{0F974E8D-7601-47D1-B557-E771E4A83DEF}");
 
         //! Overrides the default AZ::EBusTraits handler policy to allow one listener only.
         static constexpr AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Single;
@@ -62,13 +64,13 @@ namespace SparkyStudios::AI::Behave::Navigation
         virtual bool IsWalkable(AZ::EntityId navigationMeshEntity) = 0;
     };
 
-    // Use to mark objects as walkable
-    using BehaveWalkableRequestBus = AZ::EBus<BehaveWalkableInterface>;
+    // Use to mark objects as walkable.
+    using WalkableRequestBus = AZ::EBus<WalkableInterface>;
 
-    class BehaveNavigationMeshAreaInterface : public AZ::ComponentBus
+    class NavigationAreaInterface : public AZ::ComponentBus
     {
     public:
-        AZ_RTTI(BehaveNavigationMeshAreaInterface, "{371E595C-D631-4E61-8EC5-24431A1B26FF}");
+        AZ_RTTI(NavigationAreaInterface, "{371E595C-D631-4E61-8EC5-24431A1B26FF}");
 
         //! Overrides the default AZ::EBusTraits handler policy to allow one listener only.
         static constexpr AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Single;
@@ -87,11 +89,11 @@ namespace SparkyStudios::AI::Behave::Navigation
          *
          * @return A valid navigation mesh area asset if the entity is a navigation mesh area, the default area otherwise.
          */
-        virtual BehaveNavigationMeshArea GetNavigationMeshArea() = 0;
+        virtual NavigationArea GetNavigationMeshArea() = 0;
 
         virtual AZ::PolygonPrism GetNavigationMeshAreaPolygon() = 0;
     };
 
-    // Use to mark objects as walkable
-    using BehaveNavigationMeshAreaRequestBus = AZ::EBus<BehaveNavigationMeshAreaInterface>;
+    // Use to mark navigation areas.
+    using NavigationAreaRequestBus = AZ::EBus<NavigationAreaInterface>;
 } // namespace SparkyStudios::AI::Behave::Navigation

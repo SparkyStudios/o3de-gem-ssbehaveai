@@ -14,16 +14,16 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationArea.h>
 
 #include <AzCore/EBus/EBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
     /**
-     * @brief EBus is used to request registered navigation mesh areas.
+     * @brief EBus used to request registered navigation areas.
      */
-    class BehaveNavigationMeshAreaProviderRequests : public AZ::EBusTraits
+    class NavigationAreaProviderRequests : public AZ::EBusTraits
     {
     public:
         // EBusTraits
@@ -33,32 +33,32 @@ namespace SparkyStudios::AI::Behave::Navigation
         //! allows multiple threads to call
         using MutexType = AZStd::recursive_mutex;
 
-        virtual ~BehaveNavigationMeshAreaProviderRequests() = default;
+        virtual ~NavigationAreaProviderRequests() = default;
 
         /**
-         * @brief Gets all the registered navigation mesh area names.
+         * @brief Gets all the registered navigation area names.
          *
-         * @param[out] names The names of the registered navigation mesh areas.
+         * @param[out] names The names of the registered navigation areas.
          */
-        virtual void GetRegisteredNavigationMeshAreaNames(BehaveNavigationMeshAreaNameSet& names) const = 0;
+        virtual void GetRegisteredNavigationAreaNames(BehaveNavigationMeshAreaNameSet& names) const = 0;
 
         /**
-         * @brief Gets all the registered navigation mesh area names.
+         * @brief Gets all the registered navigation area names.
          *
-         * @param[out] areas The registered navigation mesh areas.
+         * @param[out] areas The registered navigation areas.
          */
-        virtual void GetRegisteredNavigationMeshAreas(BehaveNavigationMeshAreaVector& areas) const = 0;
+        virtual void GetRegisteredNavigationAreas(BehaveNavigationMeshAreaVector& areas) const = 0;
 
         /**
-         * @brief Gets the navigation mesh area with the given name.
+         * @brief Gets the navigation area with the given name.
          *
-         * @param name The name of the navigation mesh area to get. If no navigation mesh area
+         * @param name The name of the navigation area to get. If no navigation area
          * with the provided name is found, the default one will be returned.
          *
-         * @return The found navigation mesh area, or the default one if not found.
+         * @return The found navigation area, or the default one if not found.
          */
-        [[nodiscard]] virtual BehaveNavigationMeshArea GetNavigationMeshArea(const AZStd::string& name) const = 0;
+        [[nodiscard]] virtual NavigationArea GetNavigationArea(const AZStd::string& name) const = 0;
     };
 
-    typedef AZ::EBus<BehaveNavigationMeshAreaProviderRequests> BehaveNavigationMeshAreaProviderRequestBus;
+    typedef AZ::EBus<NavigationAreaProviderRequests> NavigationAreaProviderRequestBus;
 } // namespace SparkyStudios::AI::Behave::Navigation

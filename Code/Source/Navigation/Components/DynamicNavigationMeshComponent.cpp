@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
+#include <Navigation/NavigationAreaProviderRequestBus.h>
 #include <Navigation/Components/DynamicNavigationMeshComponent.h>
 
 #include <AzCore/Asset/AssetSerializer.h>
@@ -44,14 +44,14 @@ namespace SparkyStudios::AI::Behave::Navigation
     }
 
     DynamicNavigationMeshComponent::DynamicNavigationMeshComponent(
-        AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> settings, AZ::Aabb aabb, OffMeshConnections offMeshConnections)
+        AZ::Data::Asset<NavigationMeshSettingsAsset> settings, AZ::Aabb aabb, OffMeshConnections offMeshConnections)
         : _settings(AZStd::move(settings))
         , _aabb(AZStd::move(aabb))
         , _offMeshConnections(AZStd::move(offMeshConnections))
     {
     }
 
-    const BehaveNavigationMeshSettingsAsset* DynamicNavigationMeshComponent::GetSettings() const
+    const NavigationMeshSettingsAsset* DynamicNavigationMeshComponent::GetSettings() const
     {
         return _settings.Get();
     }
@@ -170,8 +170,8 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
         _navigationMesh = new RecastNavigationMesh(GetEntityId());
 
-        BehaveNavigationMeshNotificationBus::Handler::BusConnect(GetEntityId());
-        BehaveNavigationMeshRequestBus::Handler::BusConnect(GetEntityId());
+        NavigationMeshNotificationBus::Handler::BusConnect(GetEntityId());
+        NavigationMeshRequestBus::Handler::BusConnect(GetEntityId());
 
         AzFramework::GameEntityContextEventBus::Handler::BusConnect();
         AZ::TickBus::Handler::BusConnect();
@@ -182,8 +182,8 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::TickBus::Handler::BusDisconnect();
         AzFramework::GameEntityContextEventBus::Handler::BusDisconnect();
 
-        BehaveNavigationMeshRequestBus::Handler::BusDisconnect();
-        BehaveNavigationMeshNotificationBus::Handler::BusDisconnect();
+        NavigationMeshRequestBus::Handler::BusDisconnect();
+        NavigationMeshNotificationBus::Handler::BusDisconnect();
 
         delete _navigationMesh;
     }

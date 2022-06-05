@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationMeshBus.h>
 
 #include <DetourNavMeshBuilder.h>
 
-#include <Navigation/Assets/BehaveNavigationMeshSettingsAsset.h>
-#include <Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
+#include <Navigation/Assets/NavigationMeshSettingsAsset.h>
+#include <Navigation/NavigationAreaProviderRequestBus.h>
 #include <Navigation/Utils/Constants.h>
 #include <Navigation/Utils/RecastContext.h>
 #include <Navigation/Utils/RecastNavigationMesh.h>
@@ -135,8 +135,8 @@ namespace SparkyStudios::AI::Behave::Navigation
                 AZ::EntityId hitEntityId = overlapHit.m_entityId;
 
                 bool isWalkable = false, isArea = false;
-                EBUS_EVENT_ID_RESULT(isWalkable, hitEntityId, BehaveWalkableRequestBus, IsWalkable, _entityId);
-                EBUS_EVENT_ID_RESULT(isArea, hitEntityId, BehaveNavigationMeshAreaRequestBus, IsNavigationMeshArea, _entityId);
+                EBUS_EVENT_ID_RESULT(isWalkable, hitEntityId, WalkableRequestBus, IsWalkable, _entityId);
+                EBUS_EVENT_ID_RESULT(isArea, hitEntityId, NavigationAreaRequestBus, IsNavigationMeshArea, _entityId);
 
                 // If this collider is not a part of the navigation mesh generation, skip it
                 if (!isWalkable && !isArea)
@@ -149,10 +149,10 @@ namespace SparkyStudios::AI::Behave::Navigation
                 {
                     RecastAreaConvexVolume area;
 
-                    BehaveNavigationMeshArea areaSettings;
-                    EBUS_EVENT_ID_RESULT(areaSettings, hitEntityId, BehaveNavigationMeshAreaRequestBus, GetNavigationMeshArea);
+                    NavigationArea areaSettings;
+                    EBUS_EVENT_ID_RESULT(areaSettings, hitEntityId, NavigationAreaRequestBus, GetNavigationMeshArea);
                     AZ::PolygonPrism areaPolygon;
-                    EBUS_EVENT_ID_RESULT(areaPolygon, hitEntityId, BehaveNavigationMeshAreaRequestBus, GetNavigationMeshAreaPolygon);
+                    EBUS_EVENT_ID_RESULT(areaPolygon, hitEntityId, NavigationAreaRequestBus, GetNavigationMeshAreaPolygon);
 
                     area = RecastAreaConvexVolume(areaPolygon, t);
                     area.mArea = static_cast<AZ::u8>(areaSettings);
@@ -222,7 +222,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         return geom;
     }
 
-    bool RecastNavigationMesh::BuildNavigationMesh(const IBehaveNavigationMesh* navMesh)
+    bool RecastNavigationMesh::BuildNavigationMesh(const INavigationMesh* navMesh)
     {
         _navMeshReady = false;
         _settings = navMesh->GetSettings();
@@ -279,7 +279,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                 {
                     if ((_navMeshReady = Build()))
                     {
-                        EBUS_EVENT_ID(_entityId, BehaveNavigationMeshNotificationBus, OnNavigationMeshUpdated);
+                        EBUS_EVENT_ID(_entityId, NavigationMeshNotificationBus, OnNavigationMeshUpdated);
                     }
                 },
                 true);
@@ -756,7 +756,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             }
 
             BehaveNavigationMeshAreaVector areas;
-            EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
+            EBUS_EVENT(NavigationAreaProviderRequestBus, GetRegisteredNavigationAreas, areas);
 
             // Update poly flags from navigation mesh areas.
             if (!areas.empty())

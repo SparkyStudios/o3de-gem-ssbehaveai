@@ -31,8 +31,8 @@ namespace SparkyStudios::AI::Behave::Navigation
     class DynamicNavigationMeshEditorComponent
         : public AzToolsFramework::Components::EditorComponentBase
         , public AZ::TickBus::Handler
-        , public IBehaveNavigationMesh
-        , protected BehaveNavigationMeshNotificationBus::Handler
+        , public INavigationMesh
+        , protected NavigationMeshNotificationBus::Handler
         , private LmbrCentral::ShapeComponentNotificationsBus::Handler
         , private AzFramework::EntityDebugDisplayEventBus::Handler
         , private AZ::Data::AssetBus::Handler
@@ -47,12 +47,12 @@ namespace SparkyStudios::AI::Behave::Navigation
         static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
-        ~DynamicNavigationMeshEditorComponent() override;
+        ~DynamicNavigationMeshEditorComponent() override = default;
 
         AZ::u32 NavigationMeshSettingsAssetUpdated();
 
-        // SparkyStudios::AI::Behave::Navigation::IBehaveNavigationMesh
-        [[nodiscard]] const BehaveNavigationMeshSettingsAsset* GetSettings() const override;
+        // SparkyStudios::AI::Behave::Navigation::INavigationMesh
+        [[nodiscard]] const NavigationMeshSettingsAsset* GetSettings() const override;
         [[nodiscard]] const AZ::Aabb& GetBoundingBox() const override;
         [[nodiscard]] const OffMeshConnections& GetOffMeshConnections() const override;
 
@@ -68,7 +68,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
         int GetTickOrder() override;
 
-        // SparkyStudios::AI::Behave::Navigation::BehaveNavigationMeshNotificationBus
+        // SparkyStudios::AI::Behave::Navigation::NavigationMeshNotificationBus
         void OnNavigationMeshUpdated() override;
 
         // LmbrCentral::ShapeComponentNotificationsBus
@@ -88,7 +88,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         void SetSettings(const AZ::Data::Asset<AZ::Data::AssetData>& settings = {});
         void UpdateNavMeshAABB();
 
-        [[nodiscard]] AZ::Crc32 OnBuildNavigationMesh();
+        AZ::Crc32 OnBuildNavigationMesh();
 
         AZ::Transform _currentEntityTransform{};
 
@@ -96,7 +96,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         bool _depthTest = false;
         RecastNavMeshDebugDraw _debugDraw{};
 
-        AZ::Data::Asset<BehaveNavigationMeshSettingsAsset> _settings{};
+        AZ::Data::Asset<NavigationMeshSettingsAsset> _settings{};
         AZ::Aabb _aabb = AZ::Aabb::CreateNull();
         OffMeshConnections _offMeshConnections;
 

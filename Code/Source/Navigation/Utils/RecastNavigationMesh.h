@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/Navigation/IBehaveNavigationMesh.h>
+#include <SparkyStudios/AI/Behave/Navigation/INavigationMesh.h>
 
 #include <Navigation/Utils/RecastMath.h>
 #include <Navigation/Utils/RecastSmartPointer.h>
@@ -37,7 +37,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     public:
         RecastNavigationMesh(AZ::EntityId navigationMeshEntityId, bool isEditor = false);
 
-        bool BuildNavigationMesh(const IBehaveNavigationMesh* navMesh);
+        bool BuildNavigationMesh(const INavigationMesh* navMesh);
 
         dtNavMesh* GetNavigationMesh() const;
         dtNavMeshQuery* GetNavigationMeshQuery() const;
@@ -56,7 +56,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::EntityId _entityId;
         bool _isEditor;
 
-        const BehaveNavigationMeshSettingsAsset* _settings;
+        const NavigationMeshSettingsAsset* _settings;
         AZ::Aabb _aabb;
 
         AZStd::atomic<bool> _navMeshReady = false;

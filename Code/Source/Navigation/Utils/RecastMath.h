@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationArea.h>
 #include <SparkyStudios/AI/Behave/Navigation/OffMeshConnection.h>
 
 #include <Navigation/Utils/RecastChunkedGeometry.h>

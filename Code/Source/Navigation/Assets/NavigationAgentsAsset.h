@@ -29,11 +29,11 @@ namespace SparkyStudios::AI::Behave::Navigation
     /**
      * @brief Asset containing data about a navigation agent configuration.
      */
-    class BehaveNavigationAgentAsset final : public AZ::Data::AssetData
+    class NavigationAgentsAsset final : public AZ::Data::AssetData
     {
     public:
-        AZ_RTTI(BehaveNavigationAgentAsset, "{F47AEB2C-909C-4095-ACA8-6B896BB09CC7}", AZ::Data::AssetData);
-        AZ_CLASS_ALLOCATOR(BehaveNavigationAgentAsset, AZ::SystemAllocator, 0);
+        AZ_RTTI(NavigationAgentsAsset, "{F47AEB2C-909C-4095-ACA8-6B896BB09CC7}", AZ::Data::AssetData);
+        AZ_CLASS_ALLOCATOR(NavigationAgentsAsset, AZ::SystemAllocator, 0);
 
         static void Reflect(AZ::ReflectContext* rc);
 

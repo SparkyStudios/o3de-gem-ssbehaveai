@@ -59,11 +59,10 @@ set(FILES
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes/Common/WaitNode.h
     Include/SparkyStudios/AI/Behave/BehaviorTree/Nodes/Navigation/NavigationFindPathToEntityNode.h
 
-    Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h
+    Include/SparkyStudios/AI/Behave/Navigation/NavigationArea.h
     Include/SparkyStudios/AI/Behave/Navigation/NavigationAgent.h
-    Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationBus.h
-    Include/SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h
-    Include/SparkyStudios/AI/Behave/Navigation/IBehaveNavigationMesh.h
+    Include/SparkyStudios/AI/Behave/Navigation/NavigationMeshBus.h
+    Include/SparkyStudios/AI/Behave/Navigation/INavigationMesh.h
     Include/SparkyStudios/AI/Behave/Navigation/OffMeshConnection.h
 
     # Recast Navigation SDK

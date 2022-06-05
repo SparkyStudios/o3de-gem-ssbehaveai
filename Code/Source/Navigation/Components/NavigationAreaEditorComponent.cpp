@@ -22,87 +22,86 @@
 
 #include <LmbrCentral/Shape/PolygonPrismShapeComponentBus.h>
 
-#include <Navigation/Components/NavigationMeshAreaComponent.h>
-#include <Navigation/Components/NavigationMeshAreaEditorComponent.h>
+#include <Navigation/Components/NavigationAreaComponent.h>
+#include <Navigation/Components/NavigationAreaEditorComponent.h>
 
-#include <Source/Navigation/BehaveNavigationMeshAreaProviderRequestBus.h>
+#include <Source/Navigation/NavigationAreaProviderRequestBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    void NavigationMeshAreaEditorComponent::Reflect(AZ::ReflectContext* rc)
+    void NavigationAreaEditorComponent::Reflect(AZ::ReflectContext* rc)
     {
-        NavigationMeshAreaComponent::Reflect(rc);
+        NavigationAreaComponent::Reflect(rc);
 
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Class<NavigationMeshAreaEditorComponent, EditorComponentBase>()
+            sc->Class<NavigationAreaEditorComponent, EditorComponentBase>()
                 ->Version(0)
-                ->Field("Area", &NavigationMeshAreaEditorComponent::_areaId)
-                ->Field("Volume", &NavigationMeshAreaEditorComponent::_polygonPrism);
+                ->Field("Area", &NavigationAreaEditorComponent::_areaId)
+                ->Field("Volume", &NavigationAreaEditorComponent::_polygonPrism);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
-                ec->Class<NavigationMeshAreaEditorComponent>("Navigation Mesh Area", "Set the navigation cost for a specific area.")
+                ec->Class<NavigationAreaEditorComponent>("Navigation Mesh Area", "Set the navigation cost for a specific area.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "Behave AI")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC("Game", 0x232b318c))
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
                     ->DataElement(
-                        AZ::Edit::UIHandlers::ComboBox, &NavigationMeshAreaEditorComponent::_areaId, "Area",
-                        "The navigation mesh area name.")
-                    ->Attribute(AZ::Edit::Attributes::EnumValues, &NavigationMeshAreaEditorComponent::BuildSelectableNavigationMeshAreaList)
+                        AZ::Edit::UIHandlers::ComboBox, &NavigationAreaEditorComponent::_areaId, "Area", "The navigation mesh area name.")
+                    ->Attribute(AZ::Edit::Attributes::EnumValues, &NavigationAreaEditorComponent::BuildSelectableNavigationMeshAreaList)
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues);
             }
         }
     }
 
-    void NavigationMeshAreaEditorComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
+    void NavigationAreaEditorComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
-        provided.push_back(AZ_CRC("NavigationMeshAreaService"));
+        provided.push_back(AZ_CRC_CE("BehaveAI_NavigationAreaService"));
     }
 
-    void NavigationMeshAreaEditorComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
+    void NavigationAreaEditorComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
-        incompatible.push_back(AZ_CRC("NavigationMeshAreaService"));
+        incompatible.push_back(AZ_CRC_CE("BehaveAI_NavigationAreaService"));
     }
 
-    void NavigationMeshAreaEditorComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
+    void NavigationAreaEditorComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
     {
         required.push_back(AZ_CRC("PolygonPrismShapeService", 0x1cbc4ed4));
         required.push_back(AZ_CRC_CE("PhysXShapeColliderService"));
     }
 
-    void NavigationMeshAreaEditorComponent::Activate()
+    void NavigationAreaEditorComponent::Activate()
     {
         AZ::TransformNotificationBus::Handler::BusConnect(GetEntityId());
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusConnect(GetEntityId());
-        BehaveNavigationMeshAreaRequestBus::Handler::BusConnect(GetEntityId());
+        NavigationAreaRequestBus::Handler::BusConnect(GetEntityId());
 
         UpdatePolygonPrism();
     }
 
-    void NavigationMeshAreaEditorComponent::Deactivate()
+    void NavigationAreaEditorComponent::Deactivate()
     {
-        BehaveNavigationMeshAreaRequestBus::Handler::BusDisconnect(GetEntityId());
+        NavigationAreaRequestBus::Handler::BusDisconnect(GetEntityId());
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusDisconnect(GetEntityId());
         AZ::TransformNotificationBus::Handler::BusDisconnect(GetEntityId());
     }
 
-    void NavigationMeshAreaEditorComponent::BuildGameEntity(AZ::Entity* gameEntity)
+    void NavigationAreaEditorComponent::BuildGameEntity(AZ::Entity* gameEntity)
     {
-        gameEntity->CreateComponent<NavigationMeshAreaComponent>(GetNavigationMeshArea(), GetNavigationMeshAreaPolygon());
+        gameEntity->CreateComponent<NavigationAreaComponent>(GetNavigationMeshArea(), GetNavigationMeshAreaPolygon());
     }
 
-    bool NavigationMeshAreaEditorComponent::IsNavigationMeshArea([[maybe_unused]] AZ::EntityId navigationMeshEntityId)
+    bool NavigationAreaEditorComponent::IsNavigationMeshArea([[maybe_unused]] AZ::EntityId navigationMeshEntityId)
     {
         // TODO: Add entities exception list
         return true;
     }
 
-    BehaveNavigationMeshArea NavigationMeshAreaEditorComponent::GetNavigationMeshArea()
+    NavigationArea NavigationAreaEditorComponent::GetNavigationMeshArea()
     {
         BehaveNavigationMeshAreaVector areas;
-        EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
+        EBUS_EVENT(NavigationAreaProviderRequestBus, GetRegisteredNavigationAreas, areas);
 
         for (const auto& area : areas)
         {
@@ -112,15 +111,15 @@ namespace SparkyStudios::AI::Behave::Navigation
             }
         }
 
-        return BehaveNavigationMeshArea::Default();
+        return NavigationArea::Default();
     }
 
-    AZ::PolygonPrism NavigationMeshAreaEditorComponent::GetNavigationMeshAreaPolygon()
+    AZ::PolygonPrism NavigationAreaEditorComponent::GetNavigationMeshAreaPolygon()
     {
         return _polygonPrism;
     }
 
-    void NavigationMeshAreaEditorComponent::OnShapeChanged(ShapeChangeReasons changeReason)
+    void NavigationAreaEditorComponent::OnShapeChanged(ShapeChangeReasons changeReason)
     {
         if (changeReason == ShapeChangeReasons::ShapeChanged)
         {
@@ -128,13 +127,13 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
-    void NavigationMeshAreaEditorComponent::OnTransformChanged(
+    void NavigationAreaEditorComponent::OnTransformChanged(
         [[maybe_unused]] const AZ::Transform& transform, [[maybe_unused]] const AZ::Transform& transform1)
     {
         UpdatePolygonPrism();
     }
 
-    void NavigationMeshAreaEditorComponent::UpdatePolygonPrism()
+    void NavigationAreaEditorComponent::UpdatePolygonPrism()
     {
         AZ::PolygonPrismPtr polygonPrismPtr = nullptr;
         EBUS_EVENT_ID_RESULT(polygonPrismPtr, GetEntityId(), LmbrCentral::PolygonPrismShapeComponentRequestBus, GetPolygonPrism);
@@ -148,13 +147,13 @@ namespace SparkyStudios::AI::Behave::Navigation
         }
     }
 
-    NavigationMeshAreaEditorComponent::NavigationAreaComboBoxEntries NavigationMeshAreaEditorComponent::
-        BuildSelectableNavigationMeshAreaList() const
+    NavigationAreaEditorComponent::NavigationAreaComboBoxEntries NavigationAreaEditorComponent::BuildSelectableNavigationMeshAreaList()
+        const
     {
         AZ_PROFILE_FUNCTION(Entity);
 
         BehaveNavigationMeshAreaVector areas;
-        EBUS_EVENT(BehaveNavigationMeshAreaProviderRequestBus, GetRegisteredNavigationMeshAreas, areas);
+        EBUS_EVENT(NavigationAreaProviderRequestBus, GetRegisteredNavigationAreas, areas);
 
         NavigationAreaComboBoxEntries selectableAreas;
         selectableAreas.reserve(areas.size());

@@ -20,16 +20,16 @@ namespace SparkyStudios::AI::Behave::Navigation
 {
     typedef AZ::u8 NavigationAreaId;
 
-    enum NavigationMeshAreaFlag : AZ::u16
+    enum NavigationAreaFlag : AZ::u16
     {
-        eNMAF_NONE = 0x00,
-        eNMAF_WALK = 0x01,
-        eNMAF_SWIM = 0x02,
-        eNMAF_JUMP = 0x04,
-        eNMAF_FLY = 0x08,
-        eNMAF_DOOR = 0x10,
-        eNMAF_DISABLED = 0x20,
-        eNMAF_ALL = 0xFFFF,
+        eNAF_NONE = 0x00,
+        eNAF_WALK = 0x01,
+        eNAF_SWIM = 0x02,
+        eNAF_JUMP = 0x04,
+        eNAF_FLY = 0x08,
+        eNAF_DOOR = 0x10,
+        eNAF_DISABLED = 0x20,
+        eNAF_ALL = 0xFFFF,
     };
 
     /**
@@ -39,23 +39,23 @@ namespace SparkyStudios::AI::Behave::Navigation
      * which agent can move across it. The agents allowed to move on this area are affected by the navigation
      * cost of the area.
      */
-    class BehaveNavigationMeshArea final
+    class NavigationArea final
     {
     public:
-        AZ_TYPE_INFO(BehaveNavigationMeshArea, "{06E238C1-E763-4344-B764-54F8EFBACDB3}");
-        AZ_CLASS_ALLOCATOR(BehaveNavigationMeshArea, AZ::SystemAllocator, 0);
+        AZ_TYPE_INFO(NavigationArea, "{06E238C1-E763-4344-B764-54F8EFBACDB3}");
+        AZ_CLASS_ALLOCATOR(NavigationArea, AZ::SystemAllocator, 0);
 
         static void Reflect(AZ::ReflectContext* rc);
 
         /**
          * @brief Returns the default navigation mesh area.
          */
-        static const BehaveNavigationMeshArea& Default();
+        static const NavigationArea& Default();
 
         /**
          * @brief Creates a new navigation mesh area.
          */
-        BehaveNavigationMeshArea();
+        NavigationArea();
 
         /**
          * @brief Creates a new navigation mesh area.
@@ -65,13 +65,13 @@ namespace SparkyStudios::AI::Behave::Navigation
          * @param cost The cost of the navigation mesh area.
          * @param flags The flags of the navigation mesh area.
          */
-        explicit BehaveNavigationMeshArea(NavigationAreaId id, AZStd::string name, float cost = 1.0f, AZ::u16 flags = eNMAF_ALL);
+        explicit NavigationArea(NavigationAreaId id, AZStd::string name, float cost = 1.0f, AZ::u16 flags = eNAF_ALL);
 
-        bool operator==(const BehaveNavigationMeshArea& rhs) const;
+        bool operator==(const NavigationArea& rhs) const;
 
-        bool operator!=(const BehaveNavigationMeshArea& rhs) const;
+        bool operator!=(const NavigationArea& rhs) const;
 
-        bool operator<(const BehaveNavigationMeshArea& rhs) const;
+        bool operator<(const NavigationArea& rhs) const;
 
         explicit operator NavigationAreaId() const;
 
@@ -113,24 +113,24 @@ namespace SparkyStudios::AI::Behave::Navigation
     };
 
     using BehaveNavigationMeshAreaNameSet = AZStd::unordered_set<AZStd::string>;
-    using BehaveNavigationMeshAreaVector = AZStd::vector<BehaveNavigationMeshArea>;
+    using BehaveNavigationMeshAreaVector = AZStd::vector<NavigationArea>;
 
-    AZ_INLINE bool BehaveNavigationMeshArea::operator==(const BehaveNavigationMeshArea& rhs) const
+    AZ_INLINE bool NavigationArea::operator==(const NavigationArea& rhs) const
     {
         return rhs._name == _name && rhs._cost == _cost && rhs._flags == _flags;
     }
 
-    AZ_INLINE bool BehaveNavigationMeshArea::operator!=(const BehaveNavigationMeshArea& rhs) const
+    AZ_INLINE bool NavigationArea::operator!=(const NavigationArea& rhs) const
     {
         return !(*this == rhs);
     }
 
-    AZ_INLINE bool BehaveNavigationMeshArea::operator<(const BehaveNavigationMeshArea& rhs) const
+    AZ_INLINE bool NavigationArea::operator<(const NavigationArea& rhs) const
     {
         return rhs._id < _id;
     }
 
-    AZ_INLINE BehaveNavigationMeshArea::operator NavigationAreaId() const
+    AZ_INLINE NavigationArea::operator NavigationAreaId() const
     {
         return _id;
     }
@@ -138,5 +138,5 @@ namespace SparkyStudios::AI::Behave::Navigation
 
 namespace AZ
 {
-    AZ_TYPE_INFO_SPECIALIZE(SparkyStudios::AI::Behave::Navigation::NavigationMeshAreaFlag, "{D220378C-9F2B-4756-AF88-6E4B4ED876E0}");
+    AZ_TYPE_INFO_SPECIALIZE(SparkyStudios::AI::Behave::Navigation::NavigationAreaFlag, "{D220378C-9F2B-4756-AF88-6E4B4ED876E0}");
 } // namespace AZ

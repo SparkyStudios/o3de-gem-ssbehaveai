@@ -100,7 +100,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             mDirections.push_back(static_cast<AZ::u8>(connection.mDirection));
 
             mAreas.push_back(kDefaultNavigationMeshAreaId); // TODO: Add support for area IDs
-            mFlags.push_back(eNMAF_JUMP); // TODO: Add support for flags
+            mFlags.push_back(eNAF_JUMP); // TODO: Add support for flags
 
             mIds.push_back(1000 + id++);
         }

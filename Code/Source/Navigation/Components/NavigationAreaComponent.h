@@ -18,37 +18,35 @@
 
 #include <Navigation/Utils/RecastMath.h>
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationArea.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationMeshBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class NavigationMeshAreaComponent
+    class NavigationAreaComponent
         : public AZ::Component
-        , public BehaveNavigationMeshAreaRequestBus::Handler
+        , public NavigationAreaRequestBus::Handler
     {
-        friend class NavigationMeshAreaEditorComponent;
-
     public:
-        AZ_COMPONENT(NavigationMeshAreaComponent, "{2D8C08DA-9A0B-4644-AA1E-D71C5A08F46D}");
+        AZ_COMPONENT(NavigationAreaComponent, "{2D8C08DA-9A0B-4644-AA1E-D71C5A08F46D}");
 
         static void Reflect(AZ::ReflectContext* rc);
 
-        NavigationMeshAreaComponent() = default;
-        explicit NavigationMeshAreaComponent(BehaveNavigationMeshArea area, AZ::PolygonPrism polygon);
+        NavigationAreaComponent() = default;
+        explicit NavigationAreaComponent(NavigationArea area, AZ::PolygonPrism polygon);
 
         // AZ::Component
         void Init() override;
         void Activate() override;
         void Deactivate() override;
 
-        // BehaveNavigationMeshAreaRequestBus
+        // NavigationAreaRequestBus
         bool IsNavigationMeshArea(AZ::EntityId navigationMeshEntityId) override;
-        BehaveNavigationMeshArea GetNavigationMeshArea() override;
+        NavigationArea GetNavigationMeshArea() override;
         AZ::PolygonPrism GetNavigationMeshAreaPolygon() override;
 
     private:
-        BehaveNavigationMeshArea _area;
+        NavigationArea _area;
         AZ::PolygonPrism _polygonPrism;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

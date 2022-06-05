@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationArea.h>
 
 #include <AzCore/Asset/AssetCommon.h>
 #include <AzCore/RTTI/RTTI.h>
@@ -26,17 +26,17 @@ namespace AZ
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class BehaveNavigationMeshAreaAsset : public AZ::Data::AssetData
+    class NavigationAreasAsset : public AZ::Data::AssetData
     {
     public:
-        AZ_RTTI(BehaveNavigationMeshAreaAsset, "{E9F8F8E0-F8E0-4D7D-A8E0-F8E0E9F8F8E0}", AZ::Data::AssetData);
-        AZ_CLASS_ALLOCATOR(BehaveNavigationMeshAreaAsset, AZ::SystemAllocator, 0);
+        AZ_RTTI(NavigationAreasAsset, "{E9F8F8E0-F8E0-4D7D-A8E0-F8E0E9F8F8E0}", AZ::Data::AssetData);
+        AZ_CLASS_ALLOCATOR(NavigationAreasAsset, AZ::SystemAllocator, 0);
 
         static void Reflect(AZ::ReflectContext* rc);
 
         /**
          * @brief Navigation mesh areas.
          */
-        AZStd::vector<BehaveNavigationMeshArea> mAreas;
+        AZStd::vector<NavigationArea> mAreas;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

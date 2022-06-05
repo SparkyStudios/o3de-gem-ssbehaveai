@@ -20,19 +20,19 @@
 
 #include <LmbrCentral/Shape/ShapeComponentBus.h>
 
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshArea.h>
-#include <SparkyStudios/AI/Behave/Navigation/BehaveNavigationMeshBus.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationArea.h>
+#include <SparkyStudios/AI/Behave/Navigation/NavigationMeshBus.h>
 
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    class NavigationMeshAreaEditorComponent
+    class NavigationAreaEditorComponent
         : public AzToolsFramework::Components::EditorComponentBase
-        , public BehaveNavigationMeshAreaRequestBus::Handler
+        , public NavigationAreaRequestBus::Handler
         , private LmbrCentral::ShapeComponentNotificationsBus::Handler
         , private AZ::TransformNotificationBus::Handler
     {
     public:
-        AZ_EDITOR_COMPONENT(NavigationMeshAreaEditorComponent, "{0087E9C7-7C09-4C81-A489-D46A436F31EE}");
+        AZ_EDITOR_COMPONENT(NavigationAreaEditorComponent, "{0087E9C7-7C09-4C81-A489-D46A436F31EE}");
 
         static void Reflect(AZ::ReflectContext* rc);
 
@@ -47,9 +47,9 @@ namespace SparkyStudios::AI::Behave::Navigation
         // AzToolsFramework::Components::EditorComponentBase
         void BuildGameEntity(AZ::Entity* gameEntity) override;
 
-        // BehaveNavigationMeshAreaRequestBus
+        // NavigationAreaRequestBus
         bool IsNavigationMeshArea(AZ::EntityId navigationMeshEntityId) override;
-        BehaveNavigationMeshArea GetNavigationMeshArea() override;
+        NavigationArea GetNavigationMeshArea() override;
         AZ::PolygonPrism GetNavigationMeshAreaPolygon() override;
 
         // LmbrCentral::ShapeComponentNotificationsBus

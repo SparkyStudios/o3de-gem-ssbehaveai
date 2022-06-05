@@ -17,11 +17,11 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void WalkableComponent::Activate()
     {
-        BehaveWalkableRequestBus::Handler::BusConnect(GetEntityId());
+        WalkableRequestBus::Handler::BusConnect(GetEntityId());
     }
 
     void WalkableComponent::Deactivate()
     {
-        BehaveWalkableRequestBus::Handler::BusDisconnect();
+        WalkableRequestBus::Handler::BusDisconnect();
     }
 } // namespace SparkyStudios::AI::Behave::Navigation

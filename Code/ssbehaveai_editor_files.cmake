@@ -24,13 +24,13 @@ set(FILES
     Source/BehaviorTree/BehaviorTreeEditorSystemComponent.cpp
     Source/BehaviorTree/BehaviorTreeEditorSystemComponent.h
 
-    Source/Navigation/BehaveNavigationEditorSystemComponent.h
-    Source/Navigation/BehaveNavigationEditorSystemComponent.cpp
+    Source/Navigation/NavigationEditorSystemComponent.h
+    Source/Navigation/NavigationEditorSystemComponent.cpp
 
     Source/Navigation/Components/DynamicNavigationMeshEditorComponent.h
     Source/Navigation/Components/DynamicNavigationMeshEditorComponent.cpp
-    Source/Navigation/Components/NavigationMeshAreaEditorComponent.h
-    Source/Navigation/Components/NavigationMeshAreaEditorComponent.cpp
+    Source/Navigation/Components/NavigationAreaEditorComponent.h
+    Source/Navigation/Components/NavigationAreaEditorComponent.cpp
     Source/Navigation/Components/WalkableEditorComponent.h
     Source/Navigation/Components/WalkableEditorComponent.cpp
 

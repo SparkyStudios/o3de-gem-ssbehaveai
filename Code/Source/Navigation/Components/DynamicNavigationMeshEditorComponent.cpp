@@ -86,12 +86,12 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void DynamicNavigationMeshEditorComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
-        provided.push_back(AZ_CRC("DynamicNavigationMeshService"));
+        provided.push_back(AZ_CRC_CE("BehaveAI_DynamicNavigationMeshService"));
     }
 
     void DynamicNavigationMeshEditorComponent::GetIncompatibleServices(AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
-        incompatible.push_back(AZ_CRC("DynamicNavigationMeshService"));
+        incompatible.push_back(AZ_CRC_CE("BehaveAI_DynamicNavigationMeshService"));
     }
 
     void DynamicNavigationMeshEditorComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
@@ -101,10 +101,6 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void DynamicNavigationMeshEditorComponent::GetDependentServices(
         [[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
-    {
-    }
-
-    DynamicNavigationMeshEditorComponent::~DynamicNavigationMeshEditorComponent()
     {
     }
 
@@ -125,7 +121,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         return AZ::Edit::PropertyRefreshLevels::EntireTree;
     }
 
-    const BehaveNavigationMeshSettingsAsset* DynamicNavigationMeshEditorComponent::GetSettings() const
+    const NavigationMeshSettingsAsset* DynamicNavigationMeshEditorComponent::GetSettings() const
     {
         return _settings.Get();
     }
@@ -148,7 +144,7 @@ namespace SparkyStudios::AI::Behave::Navigation
     {
         _navigationMesh = new RecastNavigationMesh(GetEntityId(), true);
 
-        BehaveNavigationMeshNotificationBus::Handler::BusConnect(GetEntityId());
+        NavigationMeshNotificationBus::Handler::BusConnect(GetEntityId());
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusConnect(GetEntityId());
         AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(GetEntityId());
 
@@ -157,7 +153,7 @@ namespace SparkyStudios::AI::Behave::Navigation
             AZ::Data::AssetBus::Handler::BusDisconnect(_settings.GetId());
 
             // Re-retrieve the asset in case it was reloaded while we were inactive.
-            _settings = AZ::Data::AssetManager::Instance().GetAsset<BehaveNavigationMeshSettingsAsset>(
+            _settings = AZ::Data::AssetManager::Instance().GetAsset<NavigationMeshSettingsAsset>(
                 _settings.GetId(), AZ::Data::AssetLoadBehavior::Default);
 
             SetSettings(_settings);
@@ -177,7 +173,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
         AzFramework::EntityDebugDisplayEventBus::Handler::BusDisconnect(GetEntityId());
         LmbrCentral::ShapeComponentNotificationsBus::Handler::BusDisconnect(GetEntityId());
-        BehaveNavigationMeshNotificationBus::Handler::BusDisconnect(GetEntityId());
+        NavigationMeshNotificationBus::Handler::BusDisconnect(GetEntityId());
 
         delete _navigationMesh;
     }
@@ -242,7 +238,9 @@ namespace SparkyStudios::AI::Behave::Navigation
 #if defined(AZ_ENABLE_TRACING)
         if ((asset.GetId().IsValid()) && (asset == _settings))
         {
-            AZ_Error("BehaveAI", false, "Navigation Mesh Settings asset \"%s\" failed to load.", asset.ToString<AZStd::string>().c_str());
+            AZ_Error(
+                "BehaveAI [Navigation]", false, "Navigation Mesh Settings asset \"%s\" failed to load.",
+                asset.ToString<AZStd::string>().c_str());
         }
 #else // else if AZ_ENABLE_TRACING is not currently defined...
         AZ_UNUSED(asset);

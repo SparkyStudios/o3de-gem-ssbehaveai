@@ -17,9 +17,9 @@
 #include <BehaviorTree/BehaviorTreeComponent.h>
 #include <BehaviorTree/BehaviorTreeSystemComponent.h>
 
-#include <Navigation/BehaveNavigationSystemComponent.h>
+#include <Navigation/NavigationSystemComponent.h>
 #include <Navigation/Components/DynamicNavigationMeshComponent.h>
-#include <Navigation/Components/NavigationMeshAreaComponent.h>
+#include <Navigation/Components/NavigationAreaComponent.h>
 #include <Navigation/Components/WalkableComponent.h>
 
 #include <AzCore/Memory/SystemAllocator.h>
@@ -41,8 +41,8 @@ namespace SparkyStudios::AI::Behave
                     BehaviorTree::BehaviorTreeSystemComponent::CreateDescriptor(),
                     BehaviorTree::BehaviorTreeComponent::CreateDescriptor(),
 
-                    Navigation::BehaveNavigationSystemComponent::CreateDescriptor(),
-                    Navigation::NavigationMeshAreaComponent::CreateDescriptor(),
+                    Navigation::NavigationSystemComponent::CreateDescriptor(),
+                    Navigation::NavigationAreaComponent::CreateDescriptor(),
                     Navigation::DynamicNavigationMeshComponent::CreateDescriptor(),
                     Navigation::WalkableComponent::CreateDescriptor(),
                 });
@@ -56,7 +56,7 @@ namespace SparkyStudios::AI::Behave
             return AZ::ComponentTypeList{
                 azrtti_typeid<BehaviorTree::BehaviorTreeSystemComponent>(),
 
-                azrtti_typeid<Navigation::BehaveNavigationSystemComponent>(),
+                azrtti_typeid<Navigation::NavigationSystemComponent>(),
             };
         }
     };

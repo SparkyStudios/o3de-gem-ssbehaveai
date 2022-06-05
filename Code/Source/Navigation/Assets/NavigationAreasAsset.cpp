@@ -12,31 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <Navigation/Assets/BehaveNavigationAgentAsset.h>
+#include <Recast.h>
 
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 
+#include <Navigation/Assets/NavigationAreasAsset.h>
+
 namespace SparkyStudios::AI::Behave::Navigation
 {
-    void BehaveNavigationAgentAsset::Reflect(AZ::ReflectContext* rc)
+    void NavigationAreasAsset::Reflect(AZ::ReflectContext* rc)
     {
-        NavigationAgent::Reflect(rc);
+        NavigationArea::Reflect(rc);
 
         if (auto* const sc = azrtti_cast<AZ::SerializeContext*>(rc))
         {
-            sc->Class<BehaveNavigationAgentAsset, AssetData>()
+            sc->Class<NavigationAreasAsset, AssetData>()
                 ->Version(0)
                 ->Attribute(AZ::Edit::Attributes::EnableForAssetEditor, true)
-                ->Field("Agents", &BehaveNavigationAgentAsset::mAgents);
+                ->Field("Areas", &NavigationAreasAsset::mAreas);
 
             if (AZ::EditContext* ec = sc->GetEditContext())
             {
-                ec->Class<BehaveNavigationAgentAsset>("Behave AI - Navigation Agents Asset", "An asset to setup navigation agents.")
+                ec->Class<NavigationAreasAsset>("Behave AI - Navigation Areas Asset", "An asset to setup the list of navigation areas.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Visibility, AZ::Edit::PropertyVisibility::ShowChildrenOnly)
                     ->Attribute(AZ::Edit::Attributes::AutoExpand, true)
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &BehaveNavigationAgentAsset::mAgents, "Agents", "Navigation agents.");
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationAreasAsset::mAreas, "Areas", "Navigation areas.")
+                    ->Attribute(AZ::Edit::Attributes::MaxLength, RC_WALKABLE_AREA);
             }
         }
     }

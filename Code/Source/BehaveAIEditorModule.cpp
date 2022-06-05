@@ -19,9 +19,9 @@
 #include <BehaviorTree/BehaviorTreeEditorComponent.h>
 #include <BehaviorTree/BehaviorTreeEditorSystemComponent.h>
 
-#include <Navigation/BehaveNavigationEditorSystemComponent.h>
+#include <Navigation/NavigationEditorSystemComponent.h>
 #include <Navigation/Components/DynamicNavigationMeshEditorComponent.h>
-#include <Navigation/Components/NavigationMeshAreaEditorComponent.h>
+#include <Navigation/Components/NavigationAreaEditorComponent.h>
 #include <Navigation/Components/WalkableEditorComponent.h>
 
 namespace SparkyStudios::AI::Behave
@@ -41,9 +41,9 @@ namespace SparkyStudios::AI::Behave
                     BehaviorTree::BehaviorTreeEditorSystemComponent::CreateDescriptor(),
                     BehaviorTree::BehaviorTreeEditorComponent::CreateDescriptor(),
 
-                    Navigation::BehaveNavigationEditorSystemComponent::CreateDescriptor(),
+                    Navigation::NavigationEditorSystemComponent::CreateDescriptor(),
                     Navigation::DynamicNavigationMeshEditorComponent::CreateDescriptor(),
-                    Navigation::NavigationMeshAreaEditorComponent::CreateDescriptor(),
+                    Navigation::NavigationAreaEditorComponent::CreateDescriptor(),
                     Navigation::WalkableEditorComponent::CreateDescriptor(),
                 });
         }
@@ -57,7 +57,7 @@ namespace SparkyStudios::AI::Behave
             return AZ::ComponentTypeList{
                 azrtti_typeid<BehaviorTree::BehaviorTreeEditorSystemComponent>(),
 
-                azrtti_typeid<Navigation::BehaveNavigationEditorSystemComponent>(),
+                azrtti_typeid<Navigation::NavigationEditorSystemComponent>(),
             };
         }
     };
