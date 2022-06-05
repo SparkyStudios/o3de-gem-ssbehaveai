@@ -89,6 +89,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         void UpdateNavMeshAABB();
 
         AZ::Crc32 OnBuildNavigationMesh();
+        [[nodiscard]] bool IsNavigationMeshBuilding() const;
 
         AZ::Transform _currentEntityTransform{};
 
@@ -100,7 +101,7 @@ namespace SparkyStudios::AI::Behave::Navigation
         AZ::Aabb _aabb = AZ::Aabb::CreateNull();
         OffMeshConnections _offMeshConnections;
 
-        bool _waitingOnNavMeshBuild = false;
+        AZStd::atomic_bool _waitingOnNavMeshBuild = false;
         RecastNavigationMesh* _navigationMesh = nullptr;
     };
 } // namespace SparkyStudios::AI::Behave::Navigation

@@ -72,7 +72,7 @@ namespace SparkyStudios::AI::Behave::Navigation
                     ->UIElement(AZ::Edit::UIHandlers::Button, "", "Build the navigation mesh with the current settings.")
                     ->Attribute(AZ::Edit::Attributes::ButtonText, "Build")
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, &DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh)
-                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &DynamicNavigationMeshEditorComponent::_waitingOnNavMeshBuild);
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &DynamicNavigationMeshEditorComponent::IsNavigationMeshBuilding);
             }
         }
 
@@ -194,7 +194,7 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     void DynamicNavigationMeshEditorComponent::OnNavigationMeshUpdated()
     {
-        _waitingOnNavMeshBuild = false;
+        AZStd::atomic_store_explicit(&_waitingOnNavMeshBuild, false, AZStd::memory_order_release);
         EBUS_EVENT(AzToolsFramework::ToolsApplicationEvents::Bus, InvalidatePropertyDisplay, AzToolsFramework::Refresh_AttributesAndValues);
     }
 
@@ -264,12 +264,17 @@ namespace SparkyStudios::AI::Behave::Navigation
 
     AZ::Crc32 DynamicNavigationMeshEditorComponent::OnBuildNavigationMesh()
     {
-        if (_waitingOnNavMeshBuild)
+        if (IsNavigationMeshBuilding())
             return AZ::Edit::PropertyRefreshLevels::None;
 
-        _waitingOnNavMeshBuild = true;
+        AZStd::atomic_store_explicit(&_waitingOnNavMeshBuild, true, AZStd::memory_order_release);
         _navigationMesh->BuildNavigationMesh(this);
 
         return AZ::Edit::PropertyRefreshLevels::AttributesAndValues;
+    }
+
+    bool DynamicNavigationMeshEditorComponent::IsNavigationMeshBuilding() const
+    {
+        return AZStd::atomic_load_explicit(&_waitingOnNavMeshBuild, AZStd::memory_order_acquire);
     }
 } // namespace SparkyStudios::AI::Behave::Navigation
